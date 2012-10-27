@@ -1,0 +1,8 @@
+lcn_document fields=1
+lcn_field="int32"
+properties=BINARY STORED FIXED_SIZE 
+size=32
+char bin_value[4] = { 15, 99, 240, 156,  }
+char default_value[4] = { 0, 0, 0, 0,  }
+lcn_analyzer=NONE
+

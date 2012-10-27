@@ -1,0 +1,17 @@
+#! /bin/sh
+
+set -x
+aclocal #-I /usr/local/share/aclocal -I config
+
+if [ -e /usr/bin/glibtoolize ]
+then
+    glibtoolize --force --copy
+else
+    libtoolize --force --copy
+fi
+
+autoheader
+automake --foreign --add-missing --copy
+autoconf
+
+

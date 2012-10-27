@@ -1,0 +1,11 @@
+lcn_document fields=2
+lcn_field="id"
+properties=STORED OMIT_NORMS
+lcn_analyzer=NONE
+value="0"
+
+lcn_field="int_1"
+properties=STORED FIXED_SIZE
+lcn_analyzer=NONE
+field_size=1
+char bin_value[432] = { 5, }

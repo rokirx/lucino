@@ -1,0 +1,1 @@
+SUBDIRS = liblucene4j

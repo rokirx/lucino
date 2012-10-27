@@ -1,0 +1,15 @@
+fs_index_1
+fs_index_2
+test_all
+cmake_install.cmake
+CTestTestfile.cmake
+CMakeFiles
+Makefile
+*.o
+*.so
+*.a
+*~
+CMakeCache.txt
+DartTestfile.txt
+/nbproject
+CMakeScripts

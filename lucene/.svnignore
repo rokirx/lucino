@@ -1,0 +1,6 @@
+*.class
+Makefile.in
+Makefile
+.deps
+.libs
+lucene-core-1.9.2-dev.jar

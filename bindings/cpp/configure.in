@@ -1,0 +1,41 @@
+dnl Process this file with autoconf to produce a configure script.
+AC_INIT(lucene/lucene.h)
+# The following RCS revision string applies to configure.in
+# $Revision: 1.8 $
+
+AC_CONFIG_SRCDIR([config])
+AC_CONFIG_AUX_DIR([config])
+AM_CONFIG_HEADER([config.h])
+AM_INIT_AUTOMAKE(lucenecpp, 0.1)
+dnl AC_DISABLE_SHARED
+
+dnl Checks for programs.
+AC_PROG_AWK
+AC_PROG_CC
+AC_PROG_CXX
+AC_PROG_INSTALL
+AC_PROG_LN_S
+AC_PROG_LIBTOOL
+
+dnl This macro is defined in check.m4 and tests if check.h and libcheck.a
+dnl can be found. It sets CHECK_CFLAGS and CHECK_LIBS accordingly.
+dnl AM_PATH_CHECK([MINIMUM-VERSION, [ACTION-IF-FOUND [, ACTION-IF-NOT-FOUND]]])
+AC_CHECK_LIB([m], [sqrt],, [AC_MSG_ERROR(m is required!)])
+AC_CHECK_LIB([bz2], [BZ2_bzBuffToBuffCompress],, [AC_MSG_ERROR(bz2 is required!)])
+AC_CHECK_LIB([apr-1], [apr_file_close],, [AC_MSG_ERROR(apr-1 is required!)])
+AC_CHECK_LIB([lucene], [sqrt],, [AC_MSG_ERROR(lucene is required!)])
+
+dnl Checks for header files.
+dnl AM_CONFIG_HEADER(config.h) TODO
+AC_CHECK_HEADERS(errno.h strings.h unistd.h)
+
+dnl Checks for typedefs, structures, and compiler characteristics.
+AC_C_CONST
+AC_TYPE_SIZE_T
+
+dnl Checks for library functions.
+AC_FUNC_LSTAT
+AC_FUNC_MALLOC
+AC_CHECK_FUNCS([sqrt log])
+
+AC_OUTPUT([Makefile lucenecpp/Makefile test/Makefile ])

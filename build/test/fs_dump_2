@@ -1,0 +1,213 @@
+lcn_document fields=2
+lcn_field="int_1"
+properties=BINARY STORED FIXED_SIZE 
+size=3
+char bin_value[1] = { 4,  }
+char default_value[1] = { 1,  }
+lcn_analyzer=NONE
+
+lcn_field="int_16"
+properties=BINARY STORED FIXED_SIZE 
+size=16
+char bin_value[2] = { 3, 1,  }
+char default_value[2] = { 1, 0,  }
+lcn_analyzer=NONE
+
+lcn_document fields=4
+lcn_field="int_1"
+properties=BINARY STORED FIXED_SIZE 
+size=3
+char bin_value[1] = { 6,  }
+char default_value[1] = { 1,  }
+lcn_analyzer=NONE
+
+lcn_field="int_16"
+properties=BINARY STORED FIXED_SIZE 
+size=16
+char bin_value[2] = { 3, 1,  }
+char default_value[2] = { 1, 0,  }
+lcn_analyzer=NONE
+
+lcn_field="dump2"
+properties=BINARY STORED FIXED_SIZE 
+size=5
+char bin_value[1] = { 30,  }
+char default_value[1] = { 5,  }
+lcn_analyzer=NONE
+
+lcn_field="string"
+properties=STORED 
+lcn_analyzer=NONE
+value="field30"
+
+
+lcn_document fields=2
+lcn_field="int_1"
+properties=BINARY STORED FIXED_SIZE 
+size=3
+char bin_value[1] = { 5,  }
+char default_value[1] = { 1,  }
+lcn_analyzer=NONE
+
+lcn_field="int_16"
+properties=BINARY STORED FIXED_SIZE 
+size=16
+char bin_value[2] = { 3, 1,  }
+char default_value[2] = { 1, 0,  }
+lcn_analyzer=NONE
+
+lcn_document fields=2
+lcn_field="int_1"
+properties=BINARY STORED FIXED_SIZE 
+size=3
+char bin_value[1] = { 3,  }
+char default_value[1] = { 1,  }
+lcn_analyzer=NONE
+
+lcn_field="int_16"
+properties=BINARY STORED FIXED_SIZE 
+size=16
+char bin_value[2] = { 3, 1,  }
+char default_value[2] = { 1, 0,  }
+lcn_analyzer=NONE
+
+lcn_document fields=4
+
+lcn_field="string"
+properties=STORED 
+lcn_analyzer=NONE
+value="field23"
+
+lcn_field="int_1"
+properties=BINARY STORED FIXED_SIZE 
+size=3
+char bin_value[1] = { 3,  }
+char default_value[1] = { 1,  }
+lcn_analyzer=NONE
+
+lcn_field="dump2"
+properties=BINARY STORED FIXED_SIZE 
+size=5
+char bin_value[1] = { 23,  }
+char default_value[1] = { 5,  }
+lcn_analyzer=NONE
+
+lcn_field="int_16"
+properties=BINARY STORED FIXED_SIZE 
+size=16
+char bin_value[2] = { 3, 1,  }
+char default_value[2] = { 1, 0,  }
+lcn_analyzer=NONE
+
+lcn_document fields=2
+lcn_field="int_1"
+properties=BINARY STORED FIXED_SIZE 
+size=3
+char bin_value[1] = { 3,  }
+char default_value[1] = { 1,  }
+lcn_analyzer=NONE
+
+lcn_field="int_16"
+properties=BINARY STORED FIXED_SIZE 
+size=16
+char bin_value[2] = { 3, 1,  }
+char default_value[2] = { 1, 0,  }
+lcn_analyzer=NONE
+
+lcn_document fields=2
+lcn_field="int_1"
+properties=BINARY STORED FIXED_SIZE 
+size=3
+char bin_value[1] = { 3,  }
+char default_value[1] = { 1,  }
+lcn_analyzer=NONE
+
+lcn_field="int_16"
+properties=BINARY STORED FIXED_SIZE 
+size=16
+char bin_value[2] = { 3, 1,  }
+char default_value[2] = { 1, 0,  }
+lcn_analyzer=NONE
+
+lcn_document fields=3
+lcn_field="int_1"
+properties=BINARY STORED FIXED_SIZE 
+size=3
+char bin_value[1] = { 3,  }
+char default_value[1] = { 1,  }
+lcn_analyzer=NONE
+
+lcn_field="int_16"
+properties=BINARY STORED FIXED_SIZE 
+size=16
+char bin_value[2] = { 3, 1,  }
+char default_value[2] = { 1, 0,  }
+lcn_analyzer=NONE
+
+lcn_field="int_10"
+properties=BINARY STORED FIXED_SIZE 
+size=10
+char bin_value[2] = { 3, 1,  }
+char default_value[2] = { 1, 0,  }
+lcn_analyzer=NONE
+
+lcn_document fields=2
+lcn_field="int_1"
+properties=BINARY STORED FIXED_SIZE 
+size=3
+char bin_value[1] = { 3,  }
+char default_value[1] = { 1,  }
+lcn_analyzer=NONE
+
+lcn_field="int_16"
+properties=BINARY STORED FIXED_SIZE 
+size=16
+char bin_value[2] = { 3, 1,  }
+char default_value[2] = { 1, 0,  }
+lcn_analyzer=NONE
+
+lcn_document fields=2
+lcn_field="int_1"
+properties=BINARY STORED FIXED_SIZE 
+size=3
+char bin_value[1] = { 3,  }
+char default_value[1] = { 1,  }
+lcn_analyzer=NONE
+
+lcn_field="int_16"
+properties=BINARY STORED FIXED_SIZE 
+size=16
+char bin_value[2] = { 3, 1,  }
+char default_value[2] = { 1, 0,  }
+lcn_analyzer=NONE
+
+lcn_document fields=2
+lcn_field="int_1"
+properties=BINARY STORED FIXED_SIZE 
+size=3
+char bin_value[1] = { 3,  }
+char default_value[1] = { 1,  }
+lcn_analyzer=NONE
+
+lcn_field="int_16"
+properties=BINARY STORED FIXED_SIZE 
+size=16
+char bin_value[2] = { 3, 1,  }
+char default_value[2] = { 1, 0,  }
+lcn_analyzer=NONE
+
+lcn_document fields=2
+lcn_field="int_1"
+properties=BINARY STORED FIXED_SIZE 
+size=3
+char bin_value[1] = { 3,  }
+char default_value[1] = { 1,  }
+lcn_analyzer=NONE
+
+lcn_field="int_16"
+properties=BINARY STORED FIXED_SIZE 
+size=16
+char bin_value[2] = { 3, 1,  }
+char default_value[2] = { 1, 0,  }
+lcn_analyzer=NONE
+

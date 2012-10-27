@@ -1,0 +1,443 @@
+lcn_document fields=5
+lcn_field="int_field"
+properties=INDEXED STORED OMIT_NORMS
+lcn_analyzer=NONE
+value="128"
+
+lcn_field="string_field"
+properties=INDEXED STORED OMIT_NORMS
+lcn_analyzer=NONE
+value="zzzz"
+
+lcn_field="year"
+properties=INDEXED STORED OMIT_NORMS
+lcn_analyzer=NONE
+value="2000"
+
+lcn_field="month"
+properties=INDEXED STORED OMIT_NORMS
+lcn_analyzer=NONE
+value="12"
+
+lcn_field="day"
+properties=INDEXED STORED OMIT_NORMS
+lcn_analyzer=NONE
+value="1"
+
+lcn_document fields=5
+lcn_field="int_field"
+properties=INDEXED STORED OMIT_NORMS
+lcn_analyzer=NONE
+value="64"
+
+lcn_field="string_field"
+properties=INDEXED STORED OMIT_NORMS
+lcn_analyzer=NONE
+value="zzzzaz"
+
+lcn_field="year"
+properties=INDEXED STORED OMIT_NORMS
+lcn_analyzer=NONE
+value="2001"
+
+lcn_field="month"
+properties=INDEXED STORED OMIT_NORMS
+lcn_analyzer=NONE
+value="10"
+
+lcn_field="day"
+properties=INDEXED STORED OMIT_NORMS
+lcn_analyzer=NONE
+value="2"
+
+lcn_document fields=5
+lcn_field="int_field"
+properties=INDEXED STORED OMIT_NORMS
+lcn_analyzer=NONE
+value="32"
+
+lcn_field="string_field"
+properties=INDEXED STORED OMIT_NORMS
+lcn_analyzer=NONE
+value="zxaab"
+
+lcn_field="year"
+properties=INDEXED STORED OMIT_NORMS
+lcn_analyzer=NONE
+value="2000"
+
+lcn_field="month"
+properties=INDEXED STORED OMIT_NORMS
+lcn_analyzer=NONE
+value="8"
+
+lcn_field="day"
+properties=INDEXED STORED OMIT_NORMS
+lcn_analyzer=NONE
+value="16"
+
+lcn_document fields=5
+lcn_field="int_field"
+properties=INDEXED STORED OMIT_NORMS
+lcn_analyzer=NONE
+value="2002"
+
+lcn_field="string_field"
+properties=INDEXED STORED OMIT_NORMS
+lcn_analyzer=NONE
+value="2002"
+
+lcn_field="year"
+properties=INDEXED STORED OMIT_NORMS
+lcn_analyzer=NONE
+value="2000"
+
+lcn_field="month"
+properties=INDEXED STORED OMIT_NORMS
+lcn_analyzer=NONE
+value="10"
+
+lcn_field="day"
+properties=INDEXED STORED OMIT_NORMS
+lcn_analyzer=NONE
+value="12"
+
+lcn_document fields=5
+lcn_field="int_field"
+properties=INDEXED STORED OMIT_NORMS
+lcn_analyzer=NONE
+value="16"
+
+lcn_field="string_field"
+properties=INDEXED STORED OMIT_NORMS
+lcn_analyzer=NONE
+value="abcd"
+
+lcn_field="year"
+properties=INDEXED STORED OMIT_NORMS
+lcn_analyzer=NONE
+value="2001"
+
+lcn_field="month"
+properties=INDEXED STORED OMIT_NORMS
+lcn_analyzer=NONE
+value="8"
+
+lcn_field="day"
+properties=INDEXED STORED OMIT_NORMS
+lcn_analyzer=NONE
+value="5"
+
+lcn_document fields=5
+lcn_field="int_field"
+properties=INDEXED STORED OMIT_NORMS
+lcn_analyzer=NONE
+value="8"
+
+lcn_field="string_field"
+properties=INDEXED STORED OMIT_NORMS
+lcn_analyzer=NONE
+value="IMB"
+
+lcn_field="year"
+properties=INDEXED STORED OMIT_NORMS
+lcn_analyzer=NONE
+value="2000"
+
+lcn_field="month"
+properties=INDEXED STORED OMIT_NORMS
+lcn_analyzer=NONE
+value="6"
+
+lcn_field="day"
+properties=INDEXED STORED OMIT_NORMS
+lcn_analyzer=NONE
+value="6"
+
+lcn_document fields=4
+lcn_field="int_field"
+properties=INDEXED STORED OMIT_NORMS
+lcn_analyzer=NONE
+value="96"
+
+lcn_field="year"
+properties=INDEXED STORED OMIT_NORMS
+lcn_analyzer=NONE
+value="2001"
+
+lcn_field="month"
+properties=INDEXED STORED OMIT_NORMS
+lcn_analyzer=NONE
+value="8"
+
+lcn_field="day"
+properties=INDEXED STORED OMIT_NORMS
+lcn_analyzer=NONE
+value="7"
+
+lcn_document fields=4
+lcn_field="int_field"
+properties=INDEXED STORED OMIT_NORMS
+lcn_analyzer=NONE
+value="96"
+
+lcn_field="year"
+properties=INDEXED STORED OMIT_NORMS
+lcn_analyzer=NONE
+value="2000"
+
+lcn_field="month"
+properties=INDEXED STORED OMIT_NORMS
+lcn_analyzer=NONE
+value="10"
+
+lcn_field="day"
+properties=INDEXED STORED OMIT_NORMS
+lcn_analyzer=NONE
+value="8"
+
+lcn_document fields=5
+lcn_field="int_field"
+properties=INDEXED STORED OMIT_NORMS
+lcn_analyzer=NONE
+value="96"
+
+lcn_field="string_field"
+properties=INDEXED STORED OMIT_NORMS
+lcn_analyzer=NONE
+value="IMB"
+
+lcn_field="year"
+properties=INDEXED STORED OMIT_NORMS
+lcn_analyzer=NONE
+value="2001"
+
+lcn_field="month"
+properties=INDEXED STORED OMIT_NORMS
+lcn_analyzer=NONE
+value="12"
+
+lcn_field="day"
+properties=INDEXED STORED OMIT_NORMS
+lcn_analyzer=NONE
+value="9"
+
+lcn_document fields=4
+lcn_field="string_field"
+properties=INDEXED STORED OMIT_NORMS
+lcn_analyzer=NONE
+value="IMB"
+
+lcn_field="year"
+properties=INDEXED STORED OMIT_NORMS
+lcn_analyzer=NONE
+value="2000"
+
+lcn_field="month"
+properties=INDEXED STORED OMIT_NORMS
+lcn_analyzer=NONE
+value="9"
+
+lcn_field="day"
+properties=INDEXED STORED OMIT_NORMS
+lcn_analyzer=NONE
+value="10"
+
+lcn_document fields=4
+lcn_field="float_field"
+properties=INDEXED STORED OMIT_NORMS
+lcn_analyzer=NONE
+value="1.5"
+
+lcn_field="year"
+properties=INDEXED STORED OMIT_NORMS
+lcn_analyzer=NONE
+value="2001"
+
+lcn_field="month"
+properties=INDEXED STORED OMIT_NORMS
+lcn_analyzer=NONE
+value="8"
+
+lcn_field="day"
+properties=INDEXED STORED OMIT_NORMS
+lcn_analyzer=NONE
+value="11"
+
+lcn_document fields=5
+lcn_field="int_field"
+properties=INDEXED STORED OMIT_NORMS
+lcn_analyzer=NONE
+value="4"
+
+lcn_field="string_field"
+properties=INDEXED STORED OMIT_NORMS
+lcn_analyzer=NONE
+value="AFg"
+
+lcn_field="year"
+properties=INDEXED STORED OMIT_NORMS
+lcn_analyzer=NONE
+value="2000"
+
+lcn_field="month"
+properties=INDEXED STORED OMIT_NORMS
+lcn_analyzer=NONE
+value="10"
+
+lcn_field="day"
+properties=INDEXED STORED OMIT_NORMS
+lcn_analyzer=NONE
+value="4"
+
+lcn_document fields=5
+lcn_field="int_field"
+properties=INDEXED STORED OMIT_NORMS
+lcn_analyzer=NONE
+value="2"
+
+lcn_field="string_field"
+properties=INDEXED STORED OMIT_NORMS
+lcn_analyzer=NONE
+value="Xabc"
+
+lcn_field="year"
+properties=INDEXED STORED OMIT_NORMS
+lcn_analyzer=NONE
+value="2001"
+
+lcn_field="month"
+properties=INDEXED STORED OMIT_NORMS
+lcn_analyzer=NONE
+value="12"
+
+lcn_field="day"
+properties=INDEXED STORED OMIT_NORMS
+lcn_analyzer=NONE
+value="13"
+
+lcn_document fields=5
+lcn_field="int_field"
+properties=INDEXED STORED OMIT_NORMS
+lcn_analyzer=NONE
+value="1"
+
+lcn_field="string_field"
+properties=INDEXED STORED OMIT_NORMS
+lcn_analyzer=NONE
+value="57096"
+
+lcn_field="year"
+properties=INDEXED STORED OMIT_NORMS
+lcn_analyzer=NONE
+value="2000"
+
+lcn_field="month"
+properties=INDEXED STORED OMIT_NORMS
+lcn_analyzer=NONE
+value="11"
+
+lcn_field="day"
+properties=INDEXED STORED OMIT_NORMS
+lcn_analyzer=NONE
+value="14"
+
+lcn_document fields=5
+lcn_field="int_field"
+properties=INDEXED STORED OMIT_NORMS
+lcn_analyzer=NONE
+value="3"
+
+lcn_field="string_field"
+properties=INDEXED STORED OMIT_NORMS
+lcn_analyzer=NONE
+value="F1F2"
+
+lcn_field="year"
+properties=INDEXED STORED OMIT_NORMS
+lcn_analyzer=NONE
+value="2001"
+
+lcn_field="month"
+properties=INDEXED STORED OMIT_NORMS
+lcn_analyzer=NONE
+value="10"
+
+lcn_field="day"
+properties=INDEXED STORED OMIT_NORMS
+lcn_analyzer=NONE
+value="15"
+
+lcn_document fields=5
+lcn_field="int_field"
+properties=INDEXED STORED OMIT_NORMS
+lcn_analyzer=NONE
+value="6"
+
+lcn_field="string_field"
+properties=INDEXED STORED OMIT_NORMS
+lcn_analyzer=NONE
+value="command"
+
+lcn_field="year"
+properties=INDEXED STORED OMIT_NORMS
+lcn_analyzer=NONE
+value="2000"
+
+lcn_field="month"
+properties=INDEXED STORED OMIT_NORMS
+lcn_analyzer=NONE
+value="8"
+
+lcn_field="day"
+properties=INDEXED STORED OMIT_NORMS
+lcn_analyzer=NONE
+value="3"
+
+lcn_document fields=5
+lcn_field="int_field"
+properties=INDEXED STORED OMIT_NORMS
+lcn_analyzer=NONE
+value="12"
+
+lcn_field="string_field"
+properties=INDEXED STORED OMIT_NORMS
+lcn_analyzer=NONE
+value="1503"
+
+lcn_field="year"
+properties=INDEXED STORED OMIT_NORMS
+lcn_analyzer=NONE
+value="2001"
+
+lcn_field="month"
+properties=INDEXED STORED OMIT_NORMS
+lcn_analyzer=NONE
+value="7"
+
+lcn_field="day"
+properties=INDEXED STORED OMIT_NORMS
+lcn_analyzer=NONE
+value="17"
+
+lcn_document fields=2
+lcn_field="int_field"
+properties=INDEXED STORED OMIT_NORMS
+lcn_analyzer=NONE
+value="24"
+
+lcn_field="string_field"
+properties=INDEXED STORED OMIT_NORMS
+lcn_analyzer=NONE
+value="ST12"
+
+lcn_document fields=2
+lcn_field="int_field"
+properties=INDEXED STORED OMIT_NORMS
+lcn_analyzer=NONE
+value="48"
+
+lcn_field="string_field"
+properties=INDEXED STORED OMIT_NORMS
+lcn_analyzer=NONE
+value="XVW"

@@ -1,0 +1,583 @@
+lcn_document fields=1
+lcn_field="field_A"
+properties=INDEXED OMIT_NORMS
+lcn_analyzer=NONE
+value="1"
+
+lcn_document fields=1
+lcn_field="field_A"
+properties=INDEXED OMIT_NORMS
+lcn_analyzer=NONE
+value="1"
+
+lcn_document fields=1
+lcn_field="field_A"
+properties=INDEXED OMIT_NORMS
+lcn_analyzer=NONE
+value="1"
+
+lcn_document fields=1
+lcn_field="field_B"
+properties=INDEXED OMIT_NORMS
+lcn_analyzer=NONE
+value="2002"
+
+lcn_document fields=1
+lcn_field="field_A"
+properties=INDEXED OMIT_NORMS
+lcn_analyzer=NONE
+value="1"
+
+lcn_document fields=1
+lcn_field="field_A"
+properties=INDEXED OMIT_NORMS
+lcn_analyzer=NONE
+value="1"
+
+lcn_document fields=1
+lcn_field="field_A"
+properties=INDEXED OMIT_NORMS
+lcn_analyzer=NONE
+value="1"
+
+lcn_document fields=1
+lcn_field="field_A"
+properties=INDEXED OMIT_NORMS
+lcn_analyzer=NONE
+value="1"
+
+lcn_document fields=2
+lcn_field="field_A"
+properties=INDEXED OMIT_NORMS
+lcn_analyzer=NONE
+value="1"
+
+lcn_field="id"
+properties=INDEXED
+lcn_analyzer=NONE
+value="57096"
+
+lcn_document fields=1
+lcn_field="field_A"
+properties=INDEXED OMIT_NORMS
+lcn_analyzer=NONE
+value="1"
+
+lcn_document fields=1
+lcn_field="field_A"
+properties=INDEXED OMIT_NORMS
+lcn_analyzer=NONE
+value="1"
+
+lcn_document fields=1
+lcn_field="field_A"
+properties=INDEXED OMIT_NORMS
+lcn_analyzer=NONE
+value="1"
+
+lcn_document fields=1
+lcn_field="field_A"
+properties=INDEXED OMIT_NORMS
+lcn_analyzer=NONE
+value="1"
+
+lcn_document fields=1
+lcn_field="field_A"
+properties=INDEXED OMIT_NORMS
+lcn_analyzer=NONE
+value="1"
+
+lcn_document fields=1
+lcn_field="field_A"
+properties=INDEXED OMIT_NORMS
+lcn_analyzer=NONE
+value="1"
+
+lcn_document fields=1
+lcn_field="field_A"
+properties=INDEXED OMIT_NORMS
+lcn_analyzer=NONE
+value="1"
+
+lcn_document fields=2
+lcn_field="field_A"
+properties=INDEXED OMIT_NORMS
+lcn_analyzer=NONE
+value="1"
+
+lcn_field="id"
+properties=INDEXED
+lcn_analyzer=NONE
+value="57113"
+
+lcn_document fields=1
+lcn_field="field_A"
+properties=INDEXED OMIT_NORMS
+lcn_analyzer=NONE
+value="1"
+
+lcn_document fields=1
+lcn_field="field_A"
+properties=INDEXED OMIT_NORMS
+lcn_analyzer=NONE
+value="1"
+
+lcn_document fields=1
+lcn_field="field_A"
+properties=INDEXED OMIT_NORMS
+lcn_analyzer=NONE
+value="1"
+
+lcn_document fields=2
+lcn_field="field_A"
+properties=INDEXED OMIT_NORMS
+lcn_analyzer=NONE
+value="1"
+
+lcn_field="id"
+properties=INDEXED
+lcn_analyzer=NONE
+value="57125"
+
+lcn_document fields=1
+lcn_field="field_A"
+properties=INDEXED OMIT_NORMS
+lcn_analyzer=NONE
+value="1"
+
+lcn_document fields=1
+lcn_field="field_A"
+properties=INDEXED OMIT_NORMS
+lcn_analyzer=NONE
+value="1"
+
+lcn_document fields=1
+lcn_field="field_A"
+properties=INDEXED OMIT_NORMS
+lcn_analyzer=NONE
+value="1"
+
+lcn_document fields=1
+lcn_field="field_A"
+properties=INDEXED OMIT_NORMS
+lcn_analyzer=NONE
+value="1"
+
+lcn_document fields=2
+lcn_field="field_A"
+properties=INDEXED OMIT_NORMS
+lcn_analyzer=NONE
+value="1"
+
+lcn_field="id"
+properties=INDEXED 
+lcn_analyzer=NONE
+value="57135"
+
+lcn_document fields=1
+lcn_field="field_A"
+properties=INDEXED OMIT_NORMS
+lcn_analyzer=NONE
+value="1"
+
+lcn_document fields=1
+lcn_field="field_A"
+properties=INDEXED OMIT_NORMS
+lcn_analyzer=NONE
+value="1"
+
+lcn_document fields=1
+lcn_field="field_A"
+properties=INDEXED OMIT_NORMS
+lcn_analyzer=NONE
+value="1"
+
+lcn_document fields=1
+lcn_field="field_A"
+properties=INDEXED OMIT_NORMS
+lcn_analyzer=NONE
+value="2"
+
+lcn_document fields=1
+lcn_field="field_A"
+properties=INDEXED OMIT_NORMS
+lcn_analyzer=NONE
+value="1"
+
+lcn_document fields=1
+lcn_field="field_A"
+properties=INDEXED OMIT_NORMS
+lcn_analyzer=NONE
+value="1"
+
+lcn_document fields=2
+lcn_field="field_A"
+properties=INDEXED OMIT_NORMS
+lcn_analyzer=NONE
+value="1"
+
+lcn_field="id"
+properties=INDEXED 
+lcn_analyzer=NONE
+value="57139"
+
+lcn_document fields=2
+lcn_field="field_A"
+properties=INDEXED OMIT_NORMS
+lcn_analyzer=NONE
+value="2"
+
+lcn_field="id"
+properties=INDEXED 
+lcn_analyzer=NONE
+value="57141"
+
+lcn_document fields=1
+lcn_field="field_A"
+properties=INDEXED OMIT_NORMS
+lcn_analyzer=NONE
+value="1"
+
+lcn_document fields=1
+lcn_field="field_A"
+properties=INDEXED OMIT_NORMS
+lcn_analyzer=NONE
+value="1"
+
+lcn_document fields=1
+lcn_field="field_A"
+properties=INDEXED OMIT_NORMS
+lcn_analyzer=NONE
+value="1"
+
+lcn_document fields=1
+lcn_field="field_A"
+properties=INDEXED OMIT_NORMS
+lcn_analyzer=NONE
+value="1"
+
+lcn_document fields=2
+lcn_field="field_A"
+properties=INDEXED OMIT_NORMS
+lcn_analyzer=NONE
+value="1"
+
+lcn_field="id"
+properties=INDEXED
+lcn_analyzer=NONE
+value="57150"
+
+lcn_document fields=1
+lcn_field="field_A"
+properties=INDEXED OMIT_NORMS
+lcn_analyzer=NONE
+value="1"
+
+lcn_document fields=1
+lcn_field="field_A"
+properties=INDEXED OMIT_NORMS
+lcn_analyzer=NONE
+value="1"
+
+lcn_document fields=1
+lcn_field="field_A"
+properties=INDEXED OMIT_NORMS
+lcn_analyzer=NONE
+value="1"
+
+lcn_document fields=1
+lcn_field="field_A"
+properties=INDEXED OMIT_NORMS
+lcn_analyzer=NONE
+value="1"
+
+lcn_document fields=2
+lcn_field="field_A"
+properties=INDEXED OMIT_NORMS
+lcn_analyzer=NONE
+value="1"
+
+lcn_field="id"
+properties=INDEXED
+lcn_analyzer=NONE
+value="57152"
+
+lcn_document fields=1
+lcn_field="field_A"
+properties=INDEXED OMIT_NORMS
+lcn_analyzer=NONE
+value="1"
+
+lcn_document fields=1
+lcn_field="field_A"
+properties=INDEXED OMIT_NORMS
+lcn_analyzer=NONE
+value="1"
+
+lcn_document fields=1
+lcn_field="field_A"
+properties=INDEXED OMIT_NORMS
+lcn_analyzer=NONE
+value="1"
+
+lcn_document fields=1
+lcn_field="field_A"
+properties=INDEXED OMIT_NORMS
+lcn_analyzer=NONE
+value="1"
+
+lcn_document fields=1
+lcn_field="field_A"
+properties=INDEXED OMIT_NORMS
+lcn_analyzer=NONE
+value="1"
+
+lcn_document fields=1
+lcn_field="field_A"
+properties=INDEXED OMIT_NORMS
+lcn_analyzer=NONE
+value="2"
+
+lcn_document fields=1
+lcn_field="field_A"
+properties=INDEXED OMIT_NORMS
+lcn_analyzer=NONE
+value="1"
+
+lcn_document fields=2
+lcn_field="field_A"
+properties=INDEXED OMIT_NORMS
+lcn_analyzer=NONE
+value="1"
+
+lcn_field="id"
+properties=INDEXED
+lcn_analyzer=NONE
+value="57155"
+
+lcn_document fields=2
+lcn_field="field_A"
+properties=INDEXED OMIT_NORMS
+lcn_analyzer=NONE
+value="1"
+
+lcn_field="id"
+properties=INDEXED 
+lcn_analyzer=NONE
+value="57163"
+
+lcn_document fields=2
+lcn_field="field_A"
+properties=INDEXED OMIT_NORMS
+lcn_analyzer=NONE
+value="1"
+
+lcn_field="id"
+properties=INDEXED
+lcn_analyzer=NONE
+value="57168"
+
+lcn_document fields=1
+lcn_field="field_A"
+properties=INDEXED OMIT_NORMS
+lcn_analyzer=NONE
+value="1"
+
+lcn_document fields=1
+lcn_field="field_A"
+properties=INDEXED OMIT_NORMS
+lcn_analyzer=NONE
+value="1"
+
+lcn_document fields=1
+lcn_field="field_A"
+properties=INDEXED OMIT_NORMS
+lcn_analyzer=NONE
+value="1"
+
+lcn_document fields=3
+lcn_field="field_A"
+properties=INDEXED OMIT_NORMS
+lcn_analyzer=NONE
+value="1"
+
+lcn_field="id"
+properties=INDEXED
+lcn_analyzer=NONE
+value="57213"
+
+lcn_field="field_B"
+properties=INDEXED OMIT_NORMS
+lcn_analyzer=NONE
+value="1"
+
+lcn_document fields=1
+lcn_field="field_A"
+properties=INDEXED OMIT_NORMS
+lcn_analyzer=NONE
+value="1"
+
+lcn_document fields=1
+lcn_field="field_A"
+properties=INDEXED OMIT_NORMS
+lcn_analyzer=NONE
+value="1"
+
+lcn_document fields=1
+lcn_field="field_A"
+properties=INDEXED OMIT_NORMS
+lcn_analyzer=NONE
+value="1"
+
+lcn_document fields=1
+lcn_field="field_A"
+properties=INDEXED OMIT_NORMS
+lcn_analyzer=NONE
+value="1"
+
+lcn_document fields=2
+lcn_field="field_A"
+properties=INDEXED OMIT_NORMS
+lcn_analyzer=NONE
+value="1"
+
+lcn_field="id"
+properties=INDEXED 
+lcn_analyzer=NONE
+value="57214"
+
+lcn_document fields=1
+lcn_field="field_A"
+properties=INDEXED OMIT_NORMS
+lcn_analyzer=NONE
+value="1"
+
+lcn_document fields=2
+lcn_field="field_A"
+properties=INDEXED OMIT_NORMS
+lcn_analyzer=NONE
+value="1"
+
+lcn_field="id"
+properties=INDEXED
+lcn_analyzer=NONE
+value="57215"
+
+lcn_document fields=2
+lcn_field="field_A"
+properties=INDEXED OMIT_NORMS
+lcn_analyzer=NONE
+value="1"
+
+lcn_field="id"
+properties=INDEXED 
+lcn_analyzer=NONE
+value="57239"
+
+lcn_document fields=1
+lcn_field="field_A"
+properties=INDEXED OMIT_NORMS
+lcn_analyzer=NONE
+value="1"
+
+lcn_document fields=1
+lcn_field="field_A"
+properties=INDEXED OMIT_NORMS
+lcn_analyzer=NONE
+value="1"
+
+lcn_document fields=1
+lcn_field="field_A"
+properties=INDEXED OMIT_NORMS
+lcn_analyzer=NONE
+value="1"
+
+lcn_document fields=1
+lcn_field="field_A"
+properties=INDEXED OMIT_NORMS
+lcn_analyzer=NONE
+value="1"
+
+lcn_document fields=2
+lcn_field="field_A"
+properties=INDEXED OMIT_NORMS
+lcn_analyzer=NONE
+value="1"
+
+lcn_field="id"
+properties=INDEXED 
+lcn_analyzer=NONE
+value="57246"
+
+lcn_document fields=1
+lcn_field="field_A"
+properties=INDEXED OMIT_NORMS
+lcn_analyzer=NONE
+value="1"
+
+lcn_document fields=2
+lcn_field="field_A"
+properties=INDEXED OMIT_NORMS
+lcn_analyzer=NONE
+value="1"
+
+lcn_field="id"
+properties=INDEXED 
+lcn_analyzer=NONE
+value="57263"
+
+lcn_document fields=1
+lcn_field="field_A"
+properties=INDEXED OMIT_NORMS
+lcn_analyzer=NONE
+value="1"
+
+lcn_document fields=1
+lcn_field="field_A"
+properties=INDEXED OMIT_NORMS
+lcn_analyzer=NONE
+value="1"
+
+lcn_document fields=1
+lcn_field="field_A"
+properties=INDEXED OMIT_NORMS
+lcn_analyzer=NONE
+value="1"
+
+lcn_document fields=1
+lcn_field="field_A"
+properties=INDEXED OMIT_NORMS
+lcn_analyzer=NONE
+value="1"
+
+lcn_document fields=3
+lcn_field="field_A"
+properties=INDEXED OMIT_NORMS
+lcn_analyzer=NONE
+value="1"
+
+lcn_field="id"
+properties=INDEXED 
+lcn_analyzer=NONE
+value="57264"
+
+lcn_field="field_B"
+properties=INDEXED OMIT_NORMS
+lcn_analyzer=NONE
+value="1996"
+
+lcn_document fields=3
+lcn_field="field_A"
+properties=INDEXED OMIT_NORMS
+lcn_analyzer=NONE
+value="1"
+
+lcn_field="id"
+properties=INDEXED 
+lcn_analyzer=NONE
+value="58086"
+
+lcn_field="field_B"
+properties=INDEXED OMIT_NORMS
+lcn_analyzer=NONE
+value="1995"

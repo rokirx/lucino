@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<project name="Liblucene4J" default="release" basedir=".">
+
+    <property file="build.properties"/>
+
+    <!-- Build classpath -->
+    <path id="classpath">
+      <fileset dir="${java.home}/lib/">
+        <include name="**/*.jar"/>
+      </fileset>
+      <pathelement location="build/classes"/>
+    </path>
+
+    <!-- Help-Task -->
+    <target name="help" description="Show help text">
+	    <echo message="List options with 'ant -projecthelp'"/>
+    </target>
+   
+   <!-- Setup-Task -->
+    <target name="setup" description="Setup variables">
+        <property file="build.properties"/>                      
+    </target>
+    
+    <!-- Init-Task -->
+    <target name="init">
+        <mkdir dir="${build.classes}"/>
+        <mkdir dir="${release}"/>
+	    <mkdir dir="${documentation}"/>
+    </target>
+     
+    <!-- compile-Task -->
+    <target name="compile" depends="init" description="Compile sources">
+
+        <javac destdir="${build.classes}" deprecation="yes" debug="true" target="1.5" encoding="ISO-8859-1">
+            <src path="${src}"/>
+            <classpath refid="classpath"/>
+        </javac>
+    </target>
+
+    <!-- jar-Task -->
+    <target name="release" depends="compile" description="Create liblucene4j archive">
+	    <jar destfile="${release}/liblucene4j.jar" basedir="${build.classes}"/>	
+    </target>
+
+	<!-- test-Task -->
+	<target name="test" description="Run tests for package" depends="compile">
+
+		<mkdir dir="${build.tests}" />
+		<mkdir dir="${build.tests.config}" />
+
+		<copy file="${support.config}/log4j-tests.properties" tofile="${build.tests.config}/log4j.properties" />
+
+		<javac destdir="${build.tests}" deprecation="true" debug="on" source="1.5">
+			<src path="${tests.src}/java" />
+			<classpath>
+				<fileset dir="${java.home}/lib/">
+					<include name="**/*.jar" />
+				</fileset>
+				<pathelement path="${build.classes}" />
+				<pathelement path="${build.tests.config}" />
+			</classpath>
+		</javac>
+
+
+		<echo>Test classes succesfull builded!</echo>
+
+		<echo>testclass: ${testclass}</echo>
+		<echo>support.lib: ${support.lib}</echo>
+		<echo>build.classes: ${build.classes}</echo>
+		<echo>build.tests: ${build.tests}</echo>
+		<echo>ant.home: ${ant.home}</echo>
+		<echo>${ant.home}/lib</echo>
+
+		<junit printsummary="off" haltonfailure="false" haltonerror="false" errorproperty="junit.error" fork="true" forkmode="once" dir="./">
+			<classpath>
+				<fileset dir="${support.lib}">
+					<include name="**/*.jar" />
+				</fileset>
+				<fileset dir="${ant.home}/lib">
+					<include name="**/*.jar" />
+				</fileset>
+				<fileset dir="${java.home}/lib">
+					<include name="**/*.jar" />
+				</fileset>
+				<pathelement path="${build.classes}" />
+				<pathelement path="${build.tests}" />
+				<pathelement path="${build.tests.config}" />
+			</classpath>
+			<formatter type="xml" usefile="true" />
+			<formatter type="plain" usefile="false" />
+			<test name="${testclass}" />
+		</junit>
+	</target>
+
+    <!-- clean-Task -->
+    <target name="clean" description="Clean project">
+        <delete dir="${build}"/>
+        <delete dir="${tests.output}"/>
+        <delete dir="${release.tmp}"/>
+    </target>
+    
+    <!-- javadoc-Task -->
+    <target name="javadoc" description="Write documentation">
+        <javadoc 	
+            packagenames="liblucene.liblucene4j.*"
+            sourcepath="${src}"
+            destdir="${documentation}"
+            author="${author}"
+            defaultexcludes="true"
+            overview="${doc.overview}">
+        </javadoc>		    		
+    </target>
+</project>

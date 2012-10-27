@@ -1,0 +1,9 @@
+#define LCNQ_SPACE                           1
+#define LCNQ_CLAUSE                          2
+#define LCNQ_TERM_TEXT                       3
+#define LCNQ_FIELD_PREFIX                    4
+#define LCNQ_SEP                             5
+#define LCNQ_QUOT_MARK                       6
+#define LCNQ_ASTERISK                        7
+#define LCNQ_OPEN_BR                         8
+#define LCNQ_CLOSE_BR                        9
