@@ -2,7 +2,6 @@
 #define INDEX_WRITER_H
 
 #include "lucene.h"
-
 #include "segment_infos.h"
 #include "term_docs.h"
 
@@ -29,6 +28,8 @@ struct lcn_index_writer_t {
     apr_pool_t *ram_dir_subpool;
     apr_pool_t *seg_name_subpool;
 
+    lcn_index_writer_config_t *iwc;
+    
     unsigned int max_field_length;
     unsigned int term_index_interval;
     unsigned int max_buffered_docs;
@@ -48,8 +49,5 @@ struct lcn_index_writer_t {
     apr_hash_t *fs_fields;
     unsigned int docs_count;
 };
-
-
-
 
 #endif /* INDEX_WRITER_H */

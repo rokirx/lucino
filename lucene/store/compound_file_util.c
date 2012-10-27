@@ -34,7 +34,7 @@ apr_status_t
 lcn_compound_file_util_compound_file_exists( lcn_directory_t *dir,
                                              const char *file_name,
                                              lcn_bool_t *flag,
-                                             apr_pool_t *pool)
+                                             apr_pool_t *pool )
 {
     apr_status_t s = APR_SUCCESS;
     apr_pool_t *child_pool;
@@ -42,9 +42,9 @@ lcn_compound_file_util_compound_file_exists( lcn_directory_t *dir,
     
     do
     {
-        LCNCE(apr_pool_create(&child_pool, pool));
-        LCNPV( cfs_name = apr_pstrcat(child_pool, file_name, ".cfs", NULL), LCN_ERR_NULL_PTR);
-        LCNCE(lcn_directory_file_exists(dir, cfs_name, flag));
+        LCNCE( apr_pool_create(&child_pool, pool) );
+        LCNPV( cfs_name = apr_pstrcat(child_pool, file_name, ".cfs", NULL), LCN_ERR_NULL_PTR );
+        LCNCE( lcn_directory_file_exists(dir, cfs_name, flag) );
     }
     while(0);
  

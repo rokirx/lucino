@@ -44,8 +44,9 @@ ADD_LIBRARY( lucene
              ../lucene/index/term_enum
              ../lucene/index/term_infos_reader
              ../lucene/index/term_infos_writer
-             ../lucene/query_parser/query_parser.c
-             ../lucene/query_parser/query_tokenizer.c
+             ../lucene/index/index_writer_config
+             ../lucene/query_parser/query_parser
+             ../lucene/query_parser/query_tokenizer
              ../lucene/search/boolean_clause
              ../lucene/search/boolean_query
              ../lucene/search/boolean_scorer

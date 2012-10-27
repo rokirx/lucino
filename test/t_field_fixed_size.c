@@ -511,26 +511,26 @@ test_reading_index( CuTest *tc, int docs, int fields_count )
 
         LCN_TEST( lcn_index_reader_document( index_reader, &doc, i, pool ));
 
-        fields = lcn_document_fields( doc );
+        fields = lcn_document_get_fields( doc );
 
         CuAssertIntEquals( tc, fields_count, lcn_list_size( fields ));
 
         stat = lcn_document_get( doc, &buf, "int_1", pool );
         CuAssertIntEquals( tc, LCN_ERR_DOCUMENT_FIELD_IS_BINARY, stat );
 
-        LCN_TEST( lcn_document_get_binary_field( doc, "int_1", &buf, &len, pool ));
+        LCN_TEST( lcn_document_get_binary_field_value( doc, "int_1", &buf, &len, pool ));
         LCN_TEST( lcn_document_get_int( doc, "int_1", &val ));
 
-        stat = lcn_document_get_binary_field( doc, "int_2", &buf2, &len, pool );
+        stat = lcn_document_get_binary_field_value( doc, "int_2", &buf2, &len, pool );
         CuAssertIntEquals(tc, docs < 3 ? LCN_ERR_DOCUMENT_NO_SUCH_FIELD : APR_SUCCESS, stat );
 
         stat = lcn_document_get_int( doc, "int_2", &val2 );
         CuAssertIntEquals(tc, docs < 3 ? LCN_ERR_DOCUMENT_NO_SUCH_FIELD : APR_SUCCESS, stat );
 
-        LCN_TEST( lcn_document_get_binary_field( doc, "int_16", &buf16, &len, pool ));
+        LCN_TEST( lcn_document_get_binary_field_value( doc, "int_16", &buf16, &len, pool ));
         LCN_TEST( lcn_document_get_int( doc, "int_16", &val16 ));
 
-        stat = lcn_document_get_binary_field( doc, "bit", &buf1, &len, pool );
+        stat = lcn_document_get_binary_field_value( doc, "bit", &buf1, &len, pool );
         CuAssertIntEquals(tc, docs < 4 ? LCN_ERR_DOCUMENT_NO_SUCH_FIELD : APR_SUCCESS, stat );
         stat = lcn_document_get_int( doc, "bit", &val1 );
         CuAssertIntEquals(tc, docs < 4 ? LCN_ERR_DOCUMENT_NO_SUCH_FIELD : APR_SUCCESS, stat );

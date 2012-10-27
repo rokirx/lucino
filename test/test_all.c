@@ -43,8 +43,11 @@ int main (void)
 
     setbuf(stdout, 0);
     
+    CuSuiteAddSuite(sr, make_index_writer_suite());
+    
     CuSuiteAddSuite(sr, make_compound_file_suite());
     CuSuiteAddSuite(sr, make_compound_file_util_suite());
+#if 0
     CuSuiteAddSuite(sr, make_index_reader_suite());    
     CuSuiteAddSuite(sr, make_array_suite() );
     CuSuiteAddSuite(sr, make_atom_suite());
@@ -70,7 +73,7 @@ int main (void)
     CuSuiteAddSuite(sr, make_index_reader_suite());
     CuSuiteAddSuite(sr, make_index_searcher_suite() );
     CuSuiteAddSuite(sr, make_index_writer_bugs_suite());
-    CuSuiteAddSuite(sr, make_index_writer_suite());
+    
     CuSuiteAddSuite(sr, make_input_stream_suite());
     CuSuiteAddSuite(sr, make_linked_list_suite() );
     CuSuiteAddSuite(sr, make_lucene_list_suite());
@@ -107,7 +110,7 @@ int main (void)
     CuSuiteAddSuite(sr, make_term_query_suite());
     CuSuiteAddSuite(sr, make_term_suite());
     CuSuiteAddSuite(sr, make_top_doc_collector_suite() );
-
+#endif
     CuSuiteRun(sr);
 
     CuSuiteSummary(sr, output);

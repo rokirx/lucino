@@ -594,7 +594,7 @@ Document_list_fields( lucene_Document *self, PyObject *args, PyObject *kwds )
         return NULL;
     }
 
-    field_list = lcn_document_fields( self->doc );
+    field_list = lcn_document_get_fields( self->doc );
 
     result = PyTuple_New( lcn_list_size( field_list ));
 

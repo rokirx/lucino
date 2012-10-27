@@ -627,6 +627,12 @@ lcn_index_writer_create_by_directory( lcn_index_writer_t **index_writer,
                                       lcn_bool_t create,
                                       apr_pool_t *pool );
 
+apr_status_t
+lcn_index_writer_create_by_config( lcn_index_writer_t **index_writer, 
+                                   lcn_directory_t *directory,
+                                   lcn_index_writer_config_t *config,
+                                   apr_pool_t *pool );
+
 void
 lcn_index_writer_set_log_stream( lcn_index_writer_t *index_writer,
                                  FILE *log_stream );
@@ -651,6 +657,10 @@ lcn_index_writer_set_term_index_interval( lcn_index_writer_t *index_writer,
 
 unsigned int
 lcn_index_writer_get_term_index_interval( lcn_index_writer_t *index_writer );
+
+void
+lcn_index_writer_set_config( lcn_index_writer_t *index_writer,
+                             lcn_index_writer_config_t *config );
 
 /**
  * @brief Returns total number of docs in this index, including

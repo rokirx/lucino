@@ -5,13 +5,13 @@
 #define BITS2BYTE( x )  (((x)>>3) + ((x)%8 ? 1 : 0))
 
 apr_pool_t *
-lcn_document_pool( lcn_document_t *document)
+lcn_document_get_pool( lcn_document_t *document)
 {
     return document->pool;
 }
 
 lcn_list_t *
-lcn_document_fields( lcn_document_t *document )
+lcn_document_get_fields( lcn_document_t *document )
 {
     return document->field_list;
 }
@@ -62,11 +62,11 @@ lcn_document_get_field ( lcn_document_t *document,
 }
 
 apr_status_t
-lcn_document_get_binary_field( lcn_document_t *document,
-                               const char *field_name,
-                               char **binary,
-                               unsigned int *len,
-                               apr_pool_t *pool )
+lcn_document_get_binary_field_value( lcn_document_t *document,
+                                     const char *field_name,
+                                     char **binary,
+                                     unsigned int *len,
+                                     apr_pool_t *pool )
 {
     apr_status_t s;
 
@@ -77,6 +77,46 @@ lcn_document_get_binary_field( lcn_document_t *document,
         LCNCE( lcn_document_get_field( document, field_name, &field ) );
         LCNASSERTM( lcn_field_is_binary( field ), LCN_ERR_INVALID_ARGUMENT, field_name );
         LCNCE( lcn_field_binary_value( field, binary, len, pool ));
+    }
+    while( 0 );
+
+    return s;
+}
+
+apr_status_t
+lcn_document_get_binary_field_values( lcn_document_t* document,
+                                      const char* field_name,
+                                      lcn_list_t** list_binary_values,
+                                      apr_pool_t* pool )
+{
+    apr_status_t s;
+    lcn_list_t *list_fields;
+    int i = 0;
+
+    do
+    {
+        LCNCE( lcn_list_create( list_binary_values, 2, pool ) );
+        list_fields = lcn_document_get_fields( document );
+
+        for( i = 0; i < lcn_list_size( list_fields ); i++ )
+        {
+            char* field_binary_value;
+            lcn_field_t *field = lcn_list_get( list_fields, i );
+
+            if ( 0 == strcmp( field_name, lcn_field_name( field ) ) )
+            {
+                unsigned int field_size = lcn_field_size( field );
+
+                LCNASSERTM( lcn_field_is_binary( field ), LCN_ERR_INVALID_ARGUMENT, field_name );
+                LCNCE( lcn_field_binary_value( field,
+                                               &field_binary_value,
+                                               &field_size,
+                                               pool ) );
+
+                LCNCE( lcn_list_add( *list_binary_values, field_binary_value ) );
+            }
+        }
+        LCNCE( s );
     }
     while( 0 );
 

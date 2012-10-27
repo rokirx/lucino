@@ -333,8 +333,8 @@ typedef struct lcn_similarity_t lcn_similarity_t;
 typedef struct lcn_term_enum_t lcn_term_enum_t;
 typedef struct lcn_term_info_t lcn_term_info_t;
 typedef struct lcn_term_t lcn_term_t;
-typedef struct lcn_compound_file_writer_t lcn_compound_file_writer_t;
-typedef struct lcn_compound_file_reader_t lcn_compound_file_reader_t;
+
+typedef struct _lcn_index_writer_config_t lcn_index_writer_config_t;
 
 typedef unsigned int lcn_field_type_t;
 
@@ -448,7 +448,7 @@ lcn_document_add_field( lcn_document_t *document,
                         apr_pool_t *pool);
 
 /**
- * @brief Retrieves the contents of a binary field
+ * @brief Retrieves the content of the first binary field that was found
  *
  * @param document   Lucene document
  * @param field_name Name of the field to retrieve the value of
@@ -457,11 +457,25 @@ lcn_document_add_field( lcn_document_t *document,
  * @param pool       APR pool
  */
 apr_status_t
-lcn_document_get_binary_field( lcn_document_t *document,
-                               const char *field_name,
-                               char **binary,
-                               unsigned int *len,
-                               apr_pool_t *pool );
+lcn_document_get_binary_field_value( lcn_document_t *document,
+                                     const char *field_name,
+                                     char **binary,
+                                     unsigned int *len,
+                                     apr_pool_t *pool );
+
+/**
+ * @brief Retrieves the contents of all binary fields by fieldname
+ *
+ * @param document   Lucene document
+ * @param field_name Name of the field to retrieve the value of
+ * @param lcn_list_t Value of the found fields
+ * @param pool       APR pool
+ */
+apr_status_t
+lcn_document_get_binary_field_values( lcn_document_t* document, 
+                                      const char* field_name, 
+                                      lcn_list_t** list_binary_values,  
+                                      apr_pool_t* pool );
 
 /**
  * @brief  Retrieves the field value of the given field
@@ -496,7 +510,7 @@ lcn_document_get_boost( lcn_document_t *document );
  * @param document   Document to fetch list of fields for.
  */
 lcn_list_t *
-lcn_document_fields( lcn_document_t *document );
+lcn_document_get_fields( lcn_document_t *document );
 
 /**
  * @brief Returns the calculated score of the document

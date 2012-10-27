@@ -217,7 +217,7 @@ lcn_document_writer_invert_document( lcn_document_writer_t *document_writer,
 
     do
     {
-        lcn_list_t *fields = lcn_document_fields( doc );
+        lcn_list_t *fields = lcn_document_get_fields( doc );
         unsigned int i;
 
         for( i = 0; i < lcn_list_size( fields ); i++ )

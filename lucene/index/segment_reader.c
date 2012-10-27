@@ -283,7 +283,7 @@ lcn_segment_reader_open_norms( lcn_segment_reader_t *segment_reader )
                 if(!d.fileExists(fileName)){
                     fileName = segment + ".f" + fi.number;
                     d = cfsDir;
-                }
+            }
 #endif
                 LCNCE( lcn_directory_open_input( segment_reader->parent.directory, &istream, file_name, segment_reader->parent.pool ) );
                 LCNCE( lcn_norm_create( &norm, istream, field_info->number, segment_reader->parent.pool ) );

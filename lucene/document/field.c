@@ -301,6 +301,11 @@ lcn_field_create_impl_ft( lcn_field_t **field,
         (*field)->field_type = ft;
         (*field)->analyzer = NULL;
 
+        if ( lcn_field_type_is_binary( ft ) )
+        {
+            (*field)->size = value_size;
+        }
+
         if ( !lcn_field_type_is_indexed( ft ) && lcn_field_type_is_omit_norms( ft ))
         {
             s = LCN_ERR_FIELD_INFO_OMIT_NORMS_ON_UNINDEXED;
@@ -444,8 +449,11 @@ lcn_field_create_binary_ft( lcn_field_t **field,
                             lcn_field_type_t ft,
                             apr_pool_t *pool )
 {
-    /* TODO: IMPLEMENTATION */
-    return APR_SUCCESS;
+    apr_status_t s;
+
+    LCNCR( lcn_field_create_impl_ft( field, name, value, value_size, ft, pool ));
+
+    return s;
 }
 
 apr_status_t

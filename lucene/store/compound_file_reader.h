@@ -5,7 +5,7 @@
 #include "lcn_store.h"
 #include "directory.h"
 
-struct lcn_compound_file_reader_t {
+typedef struct _lcn_compound_file_reader_t {
 
     apr_pool_t *pool;
 
@@ -35,7 +35,7 @@ struct lcn_compound_file_reader_t {
      */
     lcn_bool_t is_open;
     
-};
+} lcn_compound_file_reader_t;
 
 apr_status_t
 lcn_compound_file_reader_create ( lcn_compound_file_reader_t **cfr, 

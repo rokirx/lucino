@@ -31,7 +31,7 @@ Document::get( const String& field )
 int
 Document::fieldCount() const
 {
-    return (int)lcn_list_size( lcn_document_fields( *this ) );
+    return (int)lcn_list_size( lcn_document_get_fields( *this ) );
 }
 
 Document
@@ -59,7 +59,7 @@ void
 Document::field( lcn_field_t** field, lcn_document_t* doc, int n )
 {
     *field = (lcn_field_t*)lcn_list_get( 
-        lcn_document_fields( doc ), n );
+        lcn_document_get_fields( doc ), n );
 }
 
 Field

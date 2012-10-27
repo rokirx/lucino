@@ -315,7 +315,7 @@ Java_liblucene_liblucene4j_jni_LibluceneJNI_documentFree(JNIEnv *env,
         JAVA_GET_POINTER_FIELD(env, java_document, "nativeDocument", &field_native_document);
         lcn_document = (lcn_document_t*)field_native_document;            
 #if 0
-        document_fields = lcn_document_fields(lcn_document);
+        document_fields = lcn_document_get_fields(lcn_document);
 
         DEBUG_PRINT("vor den fields");
 

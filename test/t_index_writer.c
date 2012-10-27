@@ -4,6 +4,7 @@
 #include "lcn_index.h"
 #include "lcn_util.h"
 #include "lcn_analysis.h"
+#include "index_writer_config.h"
 
 char *test_ids[] = { "162879",  "162880",  "162881",  "162882",  "162883",
                      "162884",  "162885",  "162886",  "162887",  "162888",
@@ -459,7 +460,7 @@ test_indexing_7(CuTest* tc)
                                              0,
                                              pool ));
 
-        LCN_TEST( lcn_document_get_binary_field( doc,
+        LCN_TEST( lcn_document_get_binary_field_value( doc,
                                                  "titel",
                                                  &buf,
                                                  &len,
@@ -1089,6 +1090,32 @@ product_a1867_Thread[Thread-6,5,main]
 }
 #endif
 
+
+static void
+test_index_no_documents( CuTest* tc )
+{
+    apr_pool_t *pool = NULL;
+    
+    do
+    {   
+        lcn_directory_t *dir;
+        lcn_index_writer_t *index_writer;
+        lcn_index_writer_config_t *iwc;
+        
+        LCN_TEST( apr_pool_create( &pool, main_pool ) );
+        LCN_TEST( lcn_ram_directory_create( &dir, pool ) ); 
+        LCN_TEST( lcn_index_writer_config_create( &iwc, pool ) );
+        LCN_TEST( lcn_index_writer_create_by_config( &index_writer, dir, iwc, pool ) );
+    }
+    while( 0 );
+    
+    if( pool != NULL )
+    {
+        apr_pool_destroy( pool );
+    }
+    
+}
+
 CuSuite *make_index_writer_suite (void)
 {
     CuSuite *s= CuSuiteNew();
@@ -1110,6 +1137,7 @@ CuSuite *make_index_writer_suite (void)
     SUITE_ADD_TEST(s, test_merge_terms_2         );
     SUITE_ADD_TEST(s, test_empty_field           );
     SUITE_ADD_TEST(s, test_indexing_11           );
+    SUITE_ADD_TEST(s, test_index_no_documents    );
 #endif
     //SUITE_ADD_TEST(s, test_add_indexes           );
 

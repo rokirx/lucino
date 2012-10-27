@@ -4,7 +4,7 @@
 #include "lucene.h"
 #include "lcn_store.h"
 
-struct lcn_compound_file_writer_t {
+typedef struct _lcn_compound_file_writer_t {
 
     apr_pool_t *pool;
 
@@ -32,7 +32,7 @@ struct lcn_compound_file_writer_t {
     
     lcn_bool_t merged;
 
-};
+} lcn_compound_file_writer_t;
 
 apr_status_t
 lcn_compound_file_writer_create ( lcn_compound_file_writer_t **cfw, 
