@@ -1,8 +1,0 @@
-configure
-Makefile.in
-autom4te.cache
-aclocal.m4
-log
-config.h.in
-docs
-TAGS
