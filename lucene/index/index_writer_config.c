@@ -17,7 +17,7 @@ lcn_index_writer_config_create ( lcn_index_writer_config_t **iwc,
 
     do
     {
-        LCNPV( *iwc = apr_pcalloc( pool, sizeof ( lcn_index_writer_config_t ) ), LCN_ERR_NULL_PTR );
+        LCNPV( *iwc = lcn_object_create( lcn_index_writer_config_t, pool ), LCN_ERR_NULL_PTR );
         lcn_index_writer_config_set_open_mode( *iwc, LCN_INDEX_WRITER_CONFIG_OPEN_MODE_APPEND_OR_CREATE );
         lcn_index_writer_config_set_max_buffered_docs( *iwc, LCN_INDEX_WRITER_CONFIG_DEFAULT_MAX_BUFFERED_DOCS );
     }

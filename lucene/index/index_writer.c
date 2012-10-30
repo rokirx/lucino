@@ -569,20 +569,19 @@ lcn_index_writer_create_impl_neu ( lcn_index_writer_t **index_writer,
                                    apr_pool_t *pool )
 {
     apr_status_t s;
-    apr_pool_t *cpool;
+    apr_pool_t *cp;
 
     do
     {
         lcn_bool_t create = LCN_FALSE;
         unsigned int open_mode = lcn_index_writer_config_get_open_mode( iwc );
 
-        LCNCE( apr_pool_create( &cpool, pool ) );
-        LCNPV( *index_writer = ( lcn_index_writer_t* ) apr_pcalloc( pool, sizeof (lcn_index_writer_t ) ),
-                APR_ENOMEM );
+        LCNCE( apr_pool_create( &cp, pool ) );
+        LCNPV( *index_writer = lcn_object_create( lcn_index_writer_t, pool ), APR_ENOMEM );
 
-        ( *index_writer )->pool = pool;
+        (*index_writer)->pool = pool;
+
         lcn_index_writer_set_config( *index_writer, iwc );
-
 
         if ( open_mode == LCN_INDEX_WRITER_CONFIG_OPEN_MODE_CREATE )
         {

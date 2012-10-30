@@ -286,7 +286,7 @@ typedef struct file_entry lcn_file_entry_t;
 #define LCNCE(statement)         if((s=statement)){break;}
 #define LCNCR(statement)         if((s=statement)){return s;}
 #define LCNCM(statement, MSG )   if((s=statement)){break;}
-#define LCNRM(statement, MSG )  if((s=statement)){return s;}
+#define LCNRM(statement, MSG )   if((s=statement)){return s;}
 #endif
 
 #define LCNPV( PTR, ERRCODE )      LCNCE( ( NULL == (PTR) ? ERRCODE : APR_SUCCESS) )

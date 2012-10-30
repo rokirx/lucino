@@ -23,10 +23,17 @@
 
 struct lcn_index_reader_t {
 
+    apr_pool_t *pool;
+
+
+
+    /**
+     * put reviewed and new lucene 4.0 members above this comment
+     */
+
     /**
      * APR pool
      */
-    apr_pool_t *pool;
     apr_pool_t *norms_pool;
 
     /**
@@ -163,6 +170,14 @@ struct lcn_index_reader_t {
 
     FILE *log_stream;
 };
+
+typedef struct lcn_composite_reader_t {
+    struct lcn_index_reader_t index_reader;
+} lcn_composite_reader_t;
+
+typedef struct lcn_base_composite_reader_atomic_t {
+    struct lcn_composite_reader_t composite_reader;
+} lcn_base_composite_reader_atomic_t;
 
 /**
  * @brief  Reader for joining multiple readers together

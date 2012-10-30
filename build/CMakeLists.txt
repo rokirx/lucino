@@ -25,6 +25,7 @@ ADD_LIBRARY( lucene
              ../lucene/document/document_dump_reader
              ../lucene/document/field
              ../lucene/document/field_type
+             ../lucene/index/directory_reader
              ../lucene/index/document_writer
              ../lucene/index/field_infos
              ../lucene/index/fields_reader
