@@ -188,6 +188,21 @@ lcn_list_swap( lcn_list_t *list,
     return s;
 }
 
+static int
+sort_cstrings( const void* a, const void* b )
+{
+    char * const *sa = a;
+    char * const *sb = b;
+    return strcmp( *sa, *sb );
+}
+
+apr_status_t
+lcn_list_sort_cstrings( lcn_list_t *list )
+{
+    return lcn_list_sort( list, sort_cstrings );
+}
+
+
 apr_status_t
 lcn_list_sort( lcn_list_t* list,
                int(*sort_func)(const void* a, const void* b ) )

@@ -161,7 +161,8 @@ lcn_phrase_scorer_do_next( lcn_scorer_t* scorer )
 
         if( p->more )
         {
-            apr_status_t s = p->phrase_freq( scorer, &(p->freq) );
+            /* ignore return value */
+	    (void) p->phrase_freq( scorer, &(p->freq) );
 
             if( p->freq == 0.0f )
             {

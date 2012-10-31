@@ -476,6 +476,8 @@ lcn_fs_field_update_fields_def( lcn_directory_fs_field_t *field,
     {
         apr_hash_t *hash = apr_hash_make( pool );
         apr_hash_index_t *hi;
+	lcn_list_t *sorted_names;
+	int i;
 
         LCNPV( hash, APR_ENOMEM );
         LCNCE( lcn_directory_fs_field_read_field_infos( hash, directory, pool ));
@@ -488,18 +490,27 @@ lcn_fs_field_update_fields_def( lcn_directory_fs_field_t *field,
                                             pool ));
 
         LCNCE( lcn_ostream_write_int( info_os, apr_hash_count( hash )));
+	LCNCE( lcn_list_create( &sorted_names, 10, pool ));
 
         for( hi = apr_hash_first( pool, hash ); hi; hi = apr_hash_next( hi ))
         {
-            lcn_directory_fs_field_t *field;
             const void *vkey;
-            void *vval;
 
-            apr_hash_this( hi, &vkey, NULL, &vval );
+            apr_hash_this( hi, &vkey, NULL, NULL );
 
-            field = (lcn_directory_fs_field_t *) vval;
-            LCNCE( lcn_fs_field_write_info( field, info_os ));
+	    LCNCE( lcn_list_add( sorted_names, (void*) vkey ));
         }
+
+	LCNCE( s );
+
+	LCNCE( lcn_list_sort_cstrings( sorted_names ));
+
+	for( i = 0; i < lcn_list_size( sorted_names ); i++ )
+	{
+	    char *name = (char*) lcn_list_get( sorted_names, i );
+            lcn_directory_fs_field_t *field = (lcn_directory_fs_field_t*) apr_hash_get( hash, name, strlen(name) );
+	    LCNCE( lcn_fs_field_write_info( field, info_os ));
+	}
     }
     while(0);
 

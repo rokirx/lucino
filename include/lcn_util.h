@@ -56,6 +56,9 @@ typedef struct lcn_size_array_t
 
 //typedef struct lcn_list_t lcn_list_t;
 
+apr_status_t
+lcn_list_sort_cstrings( lcn_list_t *list );
+
 void*
 lcn_list_get( const lcn_list_t *list,
               unsigned int nth );
