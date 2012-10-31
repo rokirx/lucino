@@ -273,11 +273,11 @@ lcn_segment_infos_read( lcn_segment_infos_t *segment_infos,
 
         if ( format < 0 )  /* file contains explicit format info */
         {
-	    int counter;
+            int counter;
             LCNASSERT( format >= LCN_SEGMENT_INFOS_FORMAT, LCN_ERR_SEGMENT_INFOS_UNKNOWN_FILE_FORMAT );
             LCNCE( lcn_istream_read_ulong( is, &(segment_infos->version) ));
             LCNCE( lcn_istream_read_int( is, &counter ) );
-	    segment_infos->counter = counter;
+            segment_infos->counter = counter;
 
             segment_infos->format = format;
         }
@@ -293,7 +293,7 @@ lcn_segment_infos_read( lcn_segment_infos_t *segment_infos,
         for( i = 0; i < size; i++ )
         {
             char *name;
-	    int doc_count;
+            int doc_count;
             unsigned int len;
 
             LCNCE( lcn_istream_read_string( is, &name, &len, lcn_list_pool( segment_infos->list )));
@@ -358,15 +358,13 @@ lcn_segment_infos_has_separate_norms( lcn_segment_info_t *segment_info,
     
     return s;
 }
-/* 
-    static boolean hasSeparateNorms(SegmentInfo si) throws IOException {
-    String[] result = si.dir.list();
-    String pattern = si.name + ".s";
-    int patternLength = pattern.length();
-    for(int i = 0; i < result.length; i++){
-      if(result[i].startsWith(pattern) && Character.isDigit(result[i].charAt(patternLength)))
-        return true;
-    }
-    return false;
-  }
-*/
+
+
+/**
+ * Lucene 4.0
+ */
+apr_status_t
+lcn_segment_infos_read_directory( lcn_segment_infos_t *segment_infos,
+                                  lcn_directory_t *directory )
+{
+}

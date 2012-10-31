@@ -593,6 +593,9 @@ lcn_index_writer_create_impl_neu ( lcn_index_writer_t **index_writer,
         }
         else
         {
+            lcn_bool_t exists;
+
+            LCNCE( lcn_directory_reader_index_exists( directory, &exists, cp ));
             /*
              * CREATE_OR_APPEND - create only if an index does not exist
              * create = !DirectoryReader.indexExists(directory);

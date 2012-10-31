@@ -756,6 +756,18 @@ lcn_multiple_term_positions_create( lcn_term_docs_t** mtp,
 apr_status_t
 lcn_index_writer_cf_optimize( lcn_index_writer_t *index_writer );
 
+/**
+ * Sets exists to <code>true</code> if an index exists at the specified directory.
+ * @param  directory the directory to check for an index
+ * @param  exists is set <code>true</code> if an index exists; <code>false</code> otherwise
+ */
+apr_status_t
+lcn_directory_reader_index_exists( lcn_directory_t *directory,
+                                   lcn_bool_t *exists,
+                                   apr_pool_t *pool );
+
+
+
 END_C_DECLS
 
 #endif /* LCN_INDEX_H */

@@ -87,4 +87,17 @@ lcn_segment_infos_has_separate_norms( lcn_segment_info_t *segment_info,
                                       lcn_bool_t *flag,
                                       apr_pool_t *pool);
 
+/**
+ * Lucene 4.0
+ */
+
+/**
+ * Find the latest commit ({@code segments_N file}) and
+ * load all {@link SegmentInfoPerCommit}s.
+ */
+apr_status_t
+lcn_segment_infos_read_directory( lcn_segment_infos_t *segment_infos,
+                                  lcn_directory_t *directory );
+
+
 #endif
