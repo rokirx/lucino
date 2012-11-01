@@ -165,7 +165,7 @@ lcn_index_reader_create_by_directory_impl( lcn_index_reader_t **index_reader,
         unsigned int segments_count;
 
         LCNCE( lcn_segment_infos_create( &infos, pool ) );
-        LCNCE( lcn_segment_infos_read( infos, directory ) );
+        LCNCE( lcn_segment_infos_read_directory( infos, directory ) );
 
         if ( 1 == (segments_count = lcn_segment_infos_size( infos ) ) )
         {

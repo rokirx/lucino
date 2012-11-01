@@ -54,10 +54,6 @@ void
 lcn_segment_infos_remove( lcn_segment_infos_t *segment_infos, unsigned int i );
 
 apr_status_t
-lcn_segment_infos_read( lcn_segment_infos_t *segment_infos,
-                        lcn_directory_t *directory );
-
-apr_status_t
 lcn_segment_infos_get_next_name( lcn_segment_infos_t *segment_infos,
                                  char **seg_name,
                                  apr_pool_t *pool );

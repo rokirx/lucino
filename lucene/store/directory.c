@@ -138,7 +138,7 @@ lcn_directory_segments_format( lcn_directory_t *directory,
         LCNCE( apr_pool_create( &pool, directory->pool ));
         LCNCE( lcn_segment_infos_create( &segment_infos, pool ));
 
-        if ( APR_SUCCESS == lcn_segment_infos_read( segment_infos, directory ) )
+        if ( APR_SUCCESS == lcn_segment_infos_read_directory( segment_infos, directory ) )
         {
             *format = directory->segments_format = lcn_segment_infos_format( segment_infos );
         }

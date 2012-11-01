@@ -58,7 +58,7 @@ test(CuTest* tc)
 
         LCN_TEST( apr_pool_create( &si_pool, pool ) );
         LCN_TEST( lcn_segment_infos_create( &infos, si_pool ) );
-        LCN_TEST( lcn_segment_infos_read( infos, dir ) );
+        LCN_TEST( lcn_segment_infos_read_directory( infos, dir ) );
         CuAssertIntEquals(tc, 0, lcn_segment_infos_size( infos ) );
         CuAssertIntEquals(tc, 1, lcn_segment_infos_version( infos ) );
         /**
@@ -86,7 +86,7 @@ test(CuTest* tc)
 
         LCN_TEST( apr_pool_create( &si_pool, pool ) );
         LCN_TEST( lcn_segment_infos_create( &infos, si_pool ) );
-        LCN_TEST( lcn_segment_infos_read( infos, dir ) );
+        LCN_TEST( lcn_segment_infos_read_directory( infos, dir ) );
         CuAssertIntEquals(tc, 1, lcn_segment_infos_size( infos ) );
         CuAssertIntEquals(tc, 2, lcn_segment_infos_version( infos ) );
         /*

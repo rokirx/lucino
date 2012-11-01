@@ -530,7 +530,7 @@ lcn_index_writer_create_impl ( lcn_index_writer_t **index_writer,
         }
         else
         {
-            LCNCE( lcn_segment_infos_read( ( *index_writer )->segment_infos, directory ) );
+            LCNCE( lcn_segment_infos_read_directory( ( *index_writer )->segment_infos, directory ) );
         }
 
         {
@@ -1289,7 +1289,7 @@ lcn_index_writer_add_indexes ( lcn_index_writer_t *index_writer,
             lcn_directory_t *dir = ( lcn_directory_t* ) lcn_list_get( dirs, i );
 
             LCNCE( lcn_segment_infos_create( &sis, pool ) );
-            LCNCE( lcn_segment_infos_read( sis, dir ) );
+            LCNCE( lcn_segment_infos_read_directory( sis, dir ) );
 
             for ( j = 0; j < lcn_segment_infos_size( sis ); j++ )
             {

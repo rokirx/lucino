@@ -250,9 +250,55 @@ lcn_segment_infos_write( lcn_segment_infos_t *segment_infos,
     return s;
 }
 
+
 apr_status_t
-lcn_segment_infos_read( lcn_segment_infos_t *segment_infos,
-                        lcn_directory_t *dir )
+lcn_segment_infos_has_separate_norms( lcn_segment_info_t *segment_info,
+                                      lcn_bool_t *flag,
+                                      apr_pool_t *pool)
+{
+    apr_status_t s = APR_SUCCESS;
+    apr_pool_t *child_pool;
+    *flag = LCN_FALSE;
+
+    do
+    {
+        lcn_list_t *file_list;
+        char *pattern;
+        int i;
+
+        LCNCE( apr_pool_create( &child_pool, pool ));
+        LCNCE( lcn_directory_list(segment_info->directory, &file_list, child_pool) );
+        LCNPV( pattern = apr_pstrcat(child_pool, segment_info->name, ".s", NULL ), LCN_ERR_NULL_PTR);
+
+        unsigned int pattern_len = strlen(pattern);
+
+        for ( i = 0; i < lcn_list_size( file_list ); i++ )
+        {
+            char *file_name = lcn_list_get( file_list, i );
+
+            if( lcn_string_starts_with(file_name,pattern)  && isdigit( file_name[pattern_len] ) )
+            {
+                *flag = LCN_TRUE;
+            }
+        }
+    }
+    while(0);
+
+    if ( NULL != child_pool )
+    {
+        apr_pool_destroy( child_pool );
+    }
+
+    return s;
+}
+
+
+/**
+ * Lucene 4.0
+ */
+apr_status_t
+lcn_segment_infos_read_directory( lcn_segment_infos_t *segment_infos,
+                                  lcn_directory_t *dir )
 {
     apr_status_t s;
     apr_pool_t *pool;
@@ -280,12 +326,6 @@ lcn_segment_infos_read( lcn_segment_infos_t *segment_infos,
             segment_infos->counter = counter;
 
             segment_infos->format = format;
-        }
-        else   /* file is in old format without explicit format info */
-        {
-            segment_infos->format = 0;
-            segment_infos->version = 0;
-            segment_infos->counter = format;
         }
 
         LCNCE( lcn_istream_read_int( is, (int*)&size ));
@@ -316,55 +356,4 @@ lcn_segment_infos_read( lcn_segment_infos_t *segment_infos,
     apr_pool_destroy( pool );
 
     return s;
-}
-
-apr_status_t
-lcn_segment_infos_has_separate_norms( lcn_segment_info_t *segment_info,
-                                      lcn_bool_t *flag,
-                                      apr_pool_t *pool)
-{
-    apr_status_t s = APR_SUCCESS;
-    apr_pool_t *child_pool;
-    *flag = LCN_FALSE;
-    
-    do
-    {        
-        lcn_list_t *file_list;
-        char *pattern;
-        int i;
-        
-        LCNCE( apr_pool_create( &child_pool, pool ));
-        
-        LCNCE( lcn_directory_list(segment_info->directory, &file_list, child_pool) );
-        LCNPV( pattern = apr_pstrcat(child_pool, segment_info->name, ".s", NULL ), LCN_ERR_NULL_PTR);
-        
-        unsigned int pattern_len = strlen(pattern);
-        for ( i = 0; i < lcn_list_size( file_list ); i++ )
-        {
-            char *file_name = lcn_list_get( file_list, i );
-            if( lcn_string_starts_with(file_name,pattern)  && 
-                isdigit( file_name[pattern_len] ) )
-            {
-                *flag = LCN_TRUE;
-            }
-        }
-    }
-    while(0);
-    
-    if ( NULL != child_pool )
-    {
-        apr_pool_destroy( child_pool );
-    }
-    
-    return s;
-}
-
-
-/**
- * Lucene 4.0
- */
-apr_status_t
-lcn_segment_infos_read_directory( lcn_segment_infos_t *segment_infos,
-                                  lcn_directory_t *directory )
-{
 }
