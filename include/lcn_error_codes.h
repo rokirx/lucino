@@ -203,6 +203,10 @@ LCN_ERRDEF( LCN_ERR_STREAM_CLOSED,
         
 LCN_ERRDEF( LCN_ERR_METHOD_NOT_IMPLEMENTED,
             54, "The called Method was not implemented. Watch error Log for more ditails." )
+
+LCN_ERRDEF( LCN_ERR_SEGMENT_INFOS_INVALID_SEGMENTS_FILE_NAME,
+            55, "The name of a segments file has invalid format" )
+
         
 LCN_ERROR_END
 

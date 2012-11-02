@@ -1,7 +1,7 @@
 #include "lcn_util.h"
 #include "segment_infos.h"
 #include "directory.h"
-
+#include "index_file_names.h"
 
 /********************************************************
  *                                                      *
@@ -233,7 +233,7 @@ lcn_segment_infos_write( lcn_segment_infos_t *segment_infos,
         LCNCE( lcn_ostream_close( os ) );
         os = NULL;
 
-        LCNCE( lcn_directory_rename_file( dir, "segments.new", "segments" ) );
+        LCNCE( lcn_directory_rename_file( dir, "segments.new", LCN_INDEX_FILE_NAMES_SEGMENTS ) );
     }
     while(0);
 
@@ -296,54 +296,192 @@ lcn_segment_infos_has_separate_norms( lcn_segment_info_t *segment_info,
 /**
  * Lucene 4.0
  */
+
+static apr_status_t
+generation_from_segments_file_name(char *file_name, apr_int64_t *gen)
+{
+    if ( 0 == strcmp( file_name, LCN_INDEX_FILE_NAMES_SEGMENTS ))
+    {
+        *gen = 0;
+        return APR_SUCCESS;
+    }
+
+    if ( 0 == strncmp( file_name, LCN_INDEX_FILE_NAMES_SEGMENTS, strlen( LCN_INDEX_FILE_NAMES_SEGMENTS )) &&
+         0 != strcmp( file_name, LCN_INDEX_FILE_NAMES_SEGMENTS_GEN ))
+    {
+        char *end = NULL;
+        apr_int64_t generation = apr_strtoi64( file_name + 1 + strlen(LCN_INDEX_FILE_NAMES_SEGMENTS),  &end,
+                                               LCN_INDEX_FILE_NAMES_MAX_RADIX );
+
+        if ( end == (file_name + strlen(file_name)))
+        {
+            *gen = generation;
+            return APR_SUCCESS;
+        }
+    }
+
+    return LCN_ERR_SEGMENT_INFOS_INVALID_SEGMENTS_FILE_NAME;
+}
+
+static apr_status_t
+get_last_commit_generation( lcn_list_t *files, apr_int64_t *gen )
+{
+    apr_status_t s = APR_SUCCESS;
+    apr_int64_t max = -1;
+    int i;
+
+    do
+    {
+        if ( NULL == files || lcn_list_size( files ) == 0 )
+        {
+            *gen = -1;
+            break;
+        }
+
+        for( i = 0; i < lcn_list_size( files ); i++ )
+        {
+            char *file_name = (char*) lcn_list_get( files, i );
+
+            if ( 0 == strncmp( file_name, LCN_INDEX_FILE_NAMES_SEGMENTS, strlen( LCN_INDEX_FILE_NAMES_SEGMENTS )) &&
+                 0 != strcmp( file_name, LCN_INDEX_FILE_NAMES_SEGMENTS_GEN ))
+            {
+                apr_int64_t generation;
+
+                LCNCE( generation_from_segments_file_name(file_name, &generation));
+
+                if (generation > max)
+                {
+                    max = generation;
+                }
+            }
+        }
+
+        *gen = max;
+    }
+    while(0);
+
+    return s;
+}
+
+/**
+ * List the directory and use the highest
+ * segments_N file.  This method works well as long
+ * as there is no stale caching on the directory
+ * contents (NOTE: NFS clients often have such stale caching):
+ */
+static apr_status_t
+find_segments_file( lcn_directory_t *directory,
+                    char **segments_file,
+                    apr_pool_t *pool )
+{
+    apr_status_t s = APR_SUCCESS;
+
+    do
+    {
+        lcn_bool_t exists;
+        lcn_list_t *file_list;
+        apr_int64_t gen_a;
+
+        /* first check for old format (still 2.4) */
+
+        LCNCE( lcn_directory_file_exists ( directory, LCN_INDEX_FILE_NAMES_SEGMENTS, &exists ));
+
+
+        if ( LCN_TRUE == exists )
+        {
+            *segments_file = apr_pstrdup( pool, LCN_INDEX_FILE_NAMES_SEGMENTS );
+            break;
+        }
+
+        /* now assume we are Lucene 4.0 */
+
+        LCNCE( lcn_directory_list( directory, &file_list, pool ) );
+        LCNCE( get_last_commit_generation( file_list, &gen_a ));
+
+        /**
+         * Also open segments.gen and read its
+         * contents.  Then we take the larger of the two
+         * gens.  This way, if either approach is hitting
+         * a stale cache (NFS) we have a better chance of
+         * getting the right generation.
+         */
+
+        /* TODO find_segments_file */
+
+       *segments_file = NULL;
+    }
+    while(0);
+
+    return APR_SUCCESS;
+}
+
+
 apr_status_t
 lcn_segment_infos_read_directory( lcn_segment_infos_t *segment_infos,
                                   lcn_directory_t *dir )
 {
-    apr_status_t s;
-    apr_pool_t *pool;
+    apr_status_t s = APR_SUCCESS;
+    apr_pool_t *cp = NULL;
     lcn_istream_t *is = NULL;
 
     do
     {
         int format, size, i;
+        char *segments_file;
 
-        LCNCE( apr_pool_create( &pool, segment_infos->pool ));
+        LCNCE( apr_pool_create( &cp, segment_infos->pool ));
 
-        if (( s = lcn_directory_open_input( dir, &is, "segments", pool )))
+        segment_infos->generation = segment_infos->last_generation = -1;
+
+        /**
+         * WARNING: we simplify a lot here. Should be completed.
+         */
+
+        LCNCE( find_segments_file( dir, &segments_file, cp ));
+
+        LCNASSERT( NULL != segments_file, LCN_ERR_NOT_REGULAR_FILE );
+
+        if ( 0 == strcmp( LCN_INDEX_FILE_NAMES_SEGMENTS, segments_file ))
         {
-            break;
+            /* execute old code here (to delete as soon as possible)  */
+
+            if (( s = lcn_directory_open_input( dir, &is, LCN_INDEX_FILE_NAMES_SEGMENTS, cp )))
+            {
+                break;
+            }
+
+            LCNCE( lcn_istream_read_int( is, &format ) );
+
+            if ( format < 0 )  /* file contains explicit format info */
+            {
+                int counter;
+                LCNASSERT( format >= LCN_SEGMENT_INFOS_FORMAT, LCN_ERR_SEGMENT_INFOS_UNKNOWN_FILE_FORMAT );
+                LCNCE( lcn_istream_read_ulong( is, &(segment_infos->version) ));
+                LCNCE( lcn_istream_read_int( is, &counter ) );
+                segment_infos->counter = counter;
+                segment_infos->format = format;
+            }
+
+            LCNCE( lcn_istream_read_int( is, (int*)&size ));
+
+            for( i = 0; i < size; i++ )
+            {
+                char *name;
+                int doc_count;
+                unsigned int len;
+
+                LCNCE( lcn_istream_read_string( is, &name, &len, lcn_list_pool( segment_infos->list )));
+                LCNCE( lcn_istream_read_int( is, (int*)&doc_count ) );
+                LCNCE( lcn_segment_infos_add_info( segment_infos, dir, name, doc_count ));
+            }
+
+            dir->segments_format = segment_infos->format;
+            dir->segments_format_is_init = LCN_TRUE;
         }
-
-        LCNCE( lcn_istream_read_int( is, &format ) );
-
-        if ( format < 0 )  /* file contains explicit format info */
+        else
         {
-            int counter;
-            LCNASSERT( format >= LCN_SEGMENT_INFOS_FORMAT, LCN_ERR_SEGMENT_INFOS_UNKNOWN_FILE_FORMAT );
-            LCNCE( lcn_istream_read_ulong( is, &(segment_infos->version) ));
-            LCNCE( lcn_istream_read_int( is, &counter ) );
-            segment_infos->counter = counter;
-
-            segment_infos->format = format;
+        /* Lucene 4.0 */
         }
-
-        LCNCE( lcn_istream_read_int( is, (int*)&size ));
-
-        for( i = 0; i < size; i++ )
-        {
-            char *name;
-            int doc_count;
-            unsigned int len;
-
-            LCNCE( lcn_istream_read_string( is, &name, &len, lcn_list_pool( segment_infos->list )));
-            LCNCE( lcn_istream_read_int( is, (int*)&doc_count ) );
-            LCNCE( lcn_segment_infos_add_info( segment_infos, dir, name, doc_count ));
-        }
-
-        dir->segments_format = segment_infos->format;
-        dir->segments_format_is_init = LCN_TRUE;
-
     }
     while(0);
 
@@ -353,7 +491,10 @@ lcn_segment_infos_read_directory( lcn_segment_infos_t *segment_infos,
         s = ( s ? s : stat );
     }
 
-    apr_pool_destroy( pool );
+    if ( NULL != cp )
+    {
+        apr_pool_destroy( cp );
+    }
 
     return s;
 }

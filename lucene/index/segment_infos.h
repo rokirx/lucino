@@ -19,13 +19,32 @@ struct lcn_segment_info_t {
 
 struct lcn_segment_infos_t{
 
-    apr_pool_t *pool;
     int format;
     apr_uint64_t version;
     unsigned int counter;
     lcn_list_t *list;
 
     apr_pool_t *subpool;
+
+    /**
+     *  Lucene 4.0
+     */
+
+    apr_pool_t *pool;
+
+
+    /**
+     * generation of the "segments_N" for the next commit
+     */
+    apr_int64_t generation;
+
+    /**
+     * generation of the "segments_N" file we last successfully read
+     * or wrote; this is normally the same as generation except if
+     * there was an IOException that had interrupted a commit
+     */
+    apr_int64_t last_generation;
+
 };
 
 const char *
