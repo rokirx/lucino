@@ -2,6 +2,8 @@
 #include "segment_infos.h"
 #include "directory.h"
 #include "index_file_names.h"
+#include "index_input.h"
+#include "io_context.h"
 
 /********************************************************
  *                                                      *
@@ -380,7 +382,8 @@ find_segments_file( lcn_directory_t *directory,
     {
         lcn_bool_t exists;
         lcn_list_t *file_list;
-        apr_int64_t gen_a;
+        apr_int64_t gen_a, gen_b;
+        lcn_index_input_t *gen_input = NULL;
 
         /* first check for old format (still 2.4) */
 
@@ -405,8 +408,15 @@ find_segments_file( lcn_directory_t *directory,
          * a stale cache (NFS) we have a better chance of
          * getting the right generation.
          */
-
-        /* TODO find_segments_file */
+        gen_b = -1;
+#if 0
+        LCNCE( lcn_directory_open_input_( directory,
+                                          LCN_INDEX_FILE_NAMES_SEGMENTS,
+                                          LCN_IO_CONTEXT_READONCE,
+                                          &gen_input,
+                                          pool ));
+#endif
+        //genInput = directory.openInput(IndexFileNames.SEGMENTS_GEN, IOContext.READONCE);
 
        *segments_file = NULL;
     }

@@ -175,8 +175,6 @@ lcn_directory_rename_file( lcn_directory_t *directory,
 
 /* }}} */
 
-/* {{{ apr_status_t lcn_directory_open_input */
-
 apr_status_t
 lcn_directory_open_input( lcn_directory_t *directory,
                           lcn_istream_t **new_in,
@@ -197,7 +195,17 @@ lcn_directory_open_input( lcn_directory_t *directory,
     return s;
 }
 
-/* }}} */
+apr_status_t
+lcn_directory_open_input_( lcn_directory_t *directory,
+                           const char *file_name,
+                           lcn_io_context_t io_context,
+                           lcn_index_input_t **index_input,
+                           apr_pool_t *pool )
+{
+    return APR_ENOMEM;
+}
+
+
 
 /* {{{ apr_status_t lcn_directory_delete_file */
 
@@ -1043,8 +1051,6 @@ lcn_ram_directory_delete_file( lcn_directory_t *directory,
 
 /* }}} */
 
-/* {{{ apr_status_t lcn_ram_directory_create */
-
 apr_status_t
 lcn_ram_directory_create( lcn_directory_t **new_dir, apr_pool_t *pool )
 {
@@ -1068,5 +1074,3 @@ lcn_ram_directory_create( lcn_directory_t **new_dir, apr_pool_t *pool )
 
     return APR_SUCCESS;
 }
-
-/* }}} */

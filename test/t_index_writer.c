@@ -1105,6 +1105,7 @@ test_index_no_documents( CuTest* tc )
         LCN_TEST( apr_pool_create( &pool, main_pool ) );
         LCN_TEST( lcn_ram_directory_create( &dir, pool ) ); 
         LCN_TEST( lcn_index_writer_config_create( &iwc, pool ) );
+        //LCN_TEST( lcn_index_writer_create_by_config( &index_writer, dir, iwc, pool ) );
         LCN_TEST( lcn_index_writer_create_by_config( &index_writer, dir, iwc, pool ) );
     }
     while( 0 );

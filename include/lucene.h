@@ -325,6 +325,7 @@ typedef struct lcn_directory_t lcn_directory_t;
 typedef struct lcn_document_t lcn_document_t;
 typedef struct lcn_field_info_t lcn_field_info_t;
 typedef struct lcn_field_t lcn_field_t;
+typedef struct lcn_index_input_t lcn_index_input_t;
 typedef struct lcn_istream_t lcn_istream_t;
 typedef struct lcn_list_t lcn_list_t;
 typedef struct lcn_ostream_t lcn_ostream_t;
@@ -337,6 +338,7 @@ typedef struct lcn_term_t lcn_term_t;
 typedef struct _lcn_index_writer_config_t lcn_index_writer_config_t;
 
 typedef unsigned int lcn_field_type_t;
+typedef unsigned int lcn_io_context_t;
 
 
 /***************************************************************************
@@ -944,6 +946,22 @@ lcn_directory_open_input( lcn_directory_t *directory,
                           const char  *file_name,
                           apr_pool_t *pool );
 
+
+/**
+ * Returns a stream reading an existing file, with the
+ * specified read buffer size.  The particular Directory
+ * implementation may ignore the buffer size.  Currently
+ * the only Directory implementations that respect this
+ * parameter are {@link FSDirectory} and {@link
+ * CompoundFileDirectory}.
+ */
+apr_status_t
+lcn_directory_open_input_( lcn_directory_t *directory,
+                           const char *file_name,
+                           lcn_io_context_t io_context,
+                           lcn_index_input_t **index_input,
+                           apr_pool_t *pool );
+
 /**
  * Creates a new file in the directory with the given name. If the
  * file already exists it is deleted.
@@ -1156,5 +1174,3 @@ char* lcn_strerror(apr_status_t statcode,
 END_C_DECLS
 
 #endif /* LUCENE_H */
-
-
