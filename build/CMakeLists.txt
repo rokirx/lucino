@@ -93,6 +93,7 @@ ADD_LIBRARY( lucino
              ../src/store/compound_file_reader
              ../src/store/compound_file_writer
              ../src/store/compound_file_util
+             ../src/store/ram_directory
              ../src/util/array
              ../src/util/atom
              ../src/util/bitvector

@@ -31,7 +31,7 @@ struct file_entry {
      * For use in Compound FileReader only: the length of the file
      */
     off_t length;
-    
+
     /**
      * For use in Compound FileReader only: the name of the file
      */
@@ -86,7 +86,7 @@ struct lcn_directory_t {
                                         lcn_istream_t **new_in,
                                         const char* seg_name,
                                         const char* ext );
-    
+
     apr_status_t
     (*_open_file) ( lcn_directory_t *directory,
                     lcn_istream_t **new_in,
@@ -128,12 +128,10 @@ struct lcn_directory_t {
     /* RAMDirectory */
     apr_hash_t *hash;
 
-    
+
     /* CompoundFileDirectory */
-    
-    
-    /*@temp@*/ 
-    struct lcn_compound_file_reader_t *cfr;         
+
+    struct lcn_compound_file_reader_t *cfr;
 };
 
 /**
