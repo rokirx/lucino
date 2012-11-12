@@ -2,7 +2,7 @@
 
 rm TAGS
 dr=`pwd`
-for i in lucene test
+for i in src test
   do
     cd $i;
     for k in `find -name "*.[ch]"`

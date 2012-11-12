@@ -76,14 +76,14 @@ ADD_EXECUTABLE(
 
 INCLUDE_DIRECTORIES( ${APR_INCLUDE}
                      ../include
-                     ../lucene
-                     ../lucene/analysis
-                     ../lucene/document
-                     ../lucene/index
-                     ../lucene/search
-                     ../lucene/store
-                     ../lucene/util
-                     ../lucene/query_parser )
+                     ../src
+                     ../src/analysis
+                     ../src/document
+                     ../src/index
+                     ../src/search
+                     ../src/store
+                     ../src/util
+                     ../src/query_parser )
 
 IF( NV_LOGGING )
   ADD_DEFINITIONS( -D_LCNTRACE )
@@ -92,7 +92,7 @@ ENDIF( NV_LOGGING )
 IF( NOT WIN32 )
 
   TARGET_LINK_LIBRARIES( test_lcn
-                         lucene
+                         lucino
                          ${APR_LIB}
                          m
                          z
@@ -100,7 +100,7 @@ IF( NOT WIN32 )
 
 ELSE( NOT WIN32 )
     TARGET_LINK_LIBRARIES( test_lcn
-                           lucene
+                           lucino
                            Ws2_32.lib
                            ${APR_LIB} )
 ENDIF( NOT WIN32 )
