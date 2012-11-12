@@ -88,7 +88,7 @@ struct lcn_directory_t {
                                         const char* ext );
 
     apr_status_t
-    (*_open_file) ( lcn_directory_t *directory,
+    (*open_input) ( lcn_directory_t *directory,
                     lcn_istream_t **new_in,
                     const char  *file_name,
                     apr_pool_t *pool );

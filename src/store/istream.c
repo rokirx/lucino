@@ -8,93 +8,6 @@
 
 BEGIN_C_DECLS
 
-
-struct lcn_istream_t {
-
-    /* APR Pool */
-    apr_pool_t *pool;
-
-    /**
-     * APR-File handle. Clones may not release the resource.
-     */
-    apr_file_t *_file_desc;
-
-    /**
-     * Name of file of this InputStream. Memory management
-     * same as file handle.
-     */
-    char *name;
-
-    lcn_bool_t is_open;
-    lcn_bool_t is_clone;
-
-    /**
-     * Internal Buffer for this InputStream.
-     */
-    char *buffer;
-
-    /**
-     * Length of the file
-     */
-    apr_off_t size;
-
-    /**
-     * Position of the end of buffer in file
-     */
-    apr_off_t position;
-
-    /**
-     * Position in file of buffer
-     */
-    apr_off_t buffer_start;
-
-    /**
-     * Index of next byte to read in buffer.
-     */
-    apr_off_t buffer_position;
-
-    /**
-     * Length of the buffer ( end of valid bytes )
-     */
-    unsigned int buffer_length;
-
-    /**
-     * Reads a specified number of bytes into an array at the specified offset.
-     *
-     * @param b the array to read bytes into
-     * @param offset the offset in the array to start storing bytes
-     * @param len the number of bytes to read
-     * @see OutputStream#writeBytes(byte[],int)
-     *
-     * returns status code if some problem occured, APR_SUCCESS on success
-     */
-    apr_status_t (*_read_internal) ( lcn_istream_t *,
-                                     char *dest,
-                                     apr_off_t offset,
-                                     unsigned int len);
-
-    /**
-     * concrete implementation of the clone method
-     *
-     * @param istream The base InputStream
-     * @param clone_is The cloned InputStream
-     */
-    apr_status_t (*_clone) ( lcn_istream_t *istream,
-                             lcn_istream_t **clone,
-                             apr_pool_t *pool );
-
-    apr_status_t (*_close)( lcn_istream_t *istream );
-
-
-    /* RAMInputStream */
-    apr_off_t pointer;
-    lcn_ram_file_t *_file;
-
-    /* CSInputStream */
-    lcn_istream_t *base;
-    apr_off_t file_offset;
-};
-
 apr_off_t
 lcn_istream_file_pointer( lcn_istream_t *istream )
 {
@@ -161,7 +74,7 @@ lcn_istream_fs_read_internal ( lcn_istream_t *istream,
     return s;
 }
 
-static apr_status_t
+apr_status_t
 lcn_istream_init_base( lcn_istream_t **in,
                        apr_pool_t *pool )
 {
@@ -217,38 +130,9 @@ lcn_istream_fs_clone ( lcn_istream_t *istream,
 }
 
 static apr_status_t
-lcn_istream_ram_read_internal ( lcn_istream_t *in,
-                                char *dest,
-                                apr_off_t offset,
-                                unsigned int len)
+lcn_istream_ram_close( lcn_istream_t *istream )
 {
-    unsigned int remainder = len;
-    apr_off_t start = in->pointer;
-
-    unsigned int buffer_number;
-    apr_off_t buffer_offset;
-    unsigned int bytes_in_buffer;
-    unsigned int bytes_to_copy;
-    char *file_buffer;
-
-    while (remainder)
-    {
-        buffer_number = (unsigned int)(start / LCN_STREAM_BUFFER_SIZE);
-        buffer_offset = start % LCN_STREAM_BUFFER_SIZE;
-        bytes_in_buffer = (unsigned int)(LCN_STREAM_BUFFER_SIZE - buffer_offset);
-        bytes_to_copy = bytes_in_buffer >= remainder ? remainder : bytes_in_buffer;
-
-        file_buffer = lcn_list_get( in->_file->buffers,
-                                    (unsigned int) buffer_number );
-
-        memcpy( dest + offset, file_buffer + buffer_offset, bytes_to_copy );
-        offset += bytes_to_copy;
-        start += bytes_to_copy;
-        remainder -= bytes_to_copy;
-    }
-
-    in->position = in->pointer += len;
-
+    istream->is_open = LCN_FALSE;
     return APR_SUCCESS;
 }
 
@@ -708,29 +592,6 @@ lcn_istream_read_string ( lcn_istream_t* in,
     return s;
 }
 
-static apr_status_t
-lcn_istream_ram_close( lcn_istream_t *istream )
-{
-    istream->is_open = LCN_FALSE;
-    return APR_SUCCESS;
-}
-
-
-static apr_status_t
-lcn_istream_ram_clone( lcn_istream_t *istream,
-                       lcn_istream_t **clone_in,
-                       apr_pool_t *pool )
-{
-    apr_status_t s;
-
-    LCNCR( lcn_ram_input_stream_create( clone_in, istream->_file, pool ));
-
-    (*clone_in)->size     = istream->size;
-    (*clone_in)->is_open  = istream->is_open;
-    (*clone_in)->is_clone = LCN_TRUE;
-
-    return s;
-}
 
 static apr_status_t
 lcn_istream_buf_clone( lcn_istream_t *istream,
@@ -794,28 +655,6 @@ LUCENE_API(lcn_istream_create) ( lcn_istream_t **new_is,
         *new_is = is;
     }
     while(0);
-
-    return s;
-}
-
-LUCENE_EXTERN apr_status_t
-LUCENE_API(lcn_ram_input_stream_create) ( lcn_istream_t **new_in,
-                                          lcn_ram_file_t *file,
-                                          apr_pool_t *pool )
-{
-    apr_status_t s;
-
-    LCNCR( lcn_istream_init_base( new_in, pool ) );
-
-    (*new_in)->pointer = 0;
-    (*new_in)->_file = file;
-    (*new_in)->size = file->length;
-
-    /* overload implementation specific methods */
-
-    (*new_in)->_close         = lcn_istream_ram_close;
-    (*new_in)->_read_internal = lcn_istream_ram_read_internal;
-    (*new_in)->_clone         = lcn_istream_ram_clone;
 
     return s;
 }

@@ -1,0 +1,83 @@
+#include "istream.h"
+#include "lcn_store.h"
+
+static apr_status_t
+lcn_istream_ram_read_internal ( lcn_istream_t *in,
+                                char *dest,
+                                apr_off_t offset,
+                                unsigned int len)
+{
+    unsigned int remainder = len;
+    apr_off_t start = in->pointer;
+
+    unsigned int buffer_number;
+    apr_off_t buffer_offset;
+    unsigned int bytes_in_buffer;
+    unsigned int bytes_to_copy;
+    char *file_buffer;
+
+    while (remainder)
+    {
+        buffer_number = (unsigned int)(start / LCN_STREAM_BUFFER_SIZE);
+        buffer_offset = start % LCN_STREAM_BUFFER_SIZE;
+        bytes_in_buffer = (unsigned int)(LCN_STREAM_BUFFER_SIZE - buffer_offset);
+        bytes_to_copy = bytes_in_buffer >= remainder ? remainder : bytes_in_buffer;
+
+        file_buffer = lcn_list_get( in->_file->buffers,
+                                    (unsigned int) buffer_number );
+
+        memcpy( dest + offset, file_buffer + buffer_offset, bytes_to_copy );
+        offset += bytes_to_copy;
+        start += bytes_to_copy;
+        remainder -= bytes_to_copy;
+    }
+
+    in->position = in->pointer += len;
+
+    return APR_SUCCESS;
+}
+
+static apr_status_t
+lcn_istream_ram_clone( lcn_istream_t *istream,
+                       lcn_istream_t **clone_in,
+                       apr_pool_t *pool )
+{
+    apr_status_t s;
+
+    LCNCR( lcn_ram_input_stream_create( clone_in, istream->_file, pool ));
+
+    (*clone_in)->size     = istream->size;
+    (*clone_in)->is_open  = istream->is_open;
+    (*clone_in)->is_clone = LCN_TRUE;
+
+    return s;
+}
+
+static apr_status_t
+lcn_istream_ram_close( lcn_istream_t *istream )
+{
+    istream->is_open = LCN_FALSE;
+    return APR_SUCCESS;
+}
+
+apr_status_t
+lcn_ram_input_stream_create( lcn_istream_t **new_in,
+                             lcn_ram_file_t *file,
+                             apr_pool_t *pool )
+{
+    apr_status_t s;
+
+    LCNCR( lcn_istream_init_base( new_in, pool ) );
+
+    (*new_in)->pointer = 0;
+    (*new_in)->_file = file;
+    (*new_in)->size = file->length;
+
+    /* overload implementation specific methods */
+
+    (*new_in)->_close         = lcn_istream_ram_close;
+    (*new_in)->_read_internal = lcn_istream_ram_read_internal;
+    (*new_in)->_clone         = lcn_istream_ram_clone;
+
+    return s;
+}

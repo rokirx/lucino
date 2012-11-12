@@ -22,6 +22,93 @@ BEGIN_C_DECLS
 LUCENE_EXTERN unsigned int
 LUCENE_API(lcn_istream_size) ( lcn_istream_t *input_stream );
 
+struct lcn_istream_t {
+
+    /* APR Pool */
+    apr_pool_t *pool;
+
+    /**
+     * APR-File handle. Clones may not release the resource.
+     */
+    apr_file_t *_file_desc;
+
+    /**
+     * Name of file of this InputStream. Memory management
+     * same as file handle.
+     */
+    char *name;
+
+    lcn_bool_t is_open;
+    lcn_bool_t is_clone;
+
+    /**
+     * Internal Buffer for this InputStream.
+     */
+    char *buffer;
+
+    /**
+     * Length of the file
+     */
+    apr_off_t size;
+
+    /**
+     * Position of the end of buffer in file
+     */
+    apr_off_t position;
+
+    /**
+     * Position in file of buffer
+     */
+    apr_off_t buffer_start;
+
+    /**
+     * Index of next byte to read in buffer.
+     */
+    apr_off_t buffer_position;
+
+    /**
+     * Length of the buffer ( end of valid bytes )
+     */
+    unsigned int buffer_length;
+
+    /**
+     * Reads a specified number of bytes into an array at the specified offset.
+     *
+     * @param b the array to read bytes into
+     * @param offset the offset in the array to start storing bytes
+     * @param len the number of bytes to read
+     * @see OutputStream#writeBytes(byte[],int)
+     *
+     * returns status code if some problem occured, APR_SUCCESS on success
+     */
+    apr_status_t (*_read_internal) ( lcn_istream_t *,
+                                     char *dest,
+                                     apr_off_t offset,
+                                     unsigned int len);
+
+    /**
+     * concrete implementation of the clone method
+     *
+     * @param istream The base InputStream
+     * @param clone_is The cloned InputStream
+     */
+    apr_status_t (*_clone) ( lcn_istream_t *istream,
+                             lcn_istream_t **clone,
+                             apr_pool_t *pool );
+
+    apr_status_t (*_close)( lcn_istream_t *istream );
+
+
+    /* RAMInputStream */
+    apr_off_t pointer;
+    lcn_ram_file_t *_file;
+
+    /* CSInputStream */
+    lcn_istream_t *base;
+    apr_off_t file_offset;
+};
+
+
 /**
  * Creates an input stream which shares the base
  * file descriptor whith the original input stream.
@@ -46,12 +133,17 @@ lcn_istream_read_bytes( lcn_istream_t *input_stream,
                         apr_off_t offset,
                         unsigned int *len);
 
+apr_status_t
+lcn_istream_init_base( lcn_istream_t **in,
+                       apr_pool_t *pool );
+
+
 /**
  * Reads length characters into buf starting at position start.
  *
  * Returns APR_SUCCESS on success, error code on falure.
  *
- * buf must be at least of size (length + 1). 
+ * buf must be at least of size (length + 1).
  */
 apr_status_t
 lcn_istream_read_chars( lcn_istream_t *,

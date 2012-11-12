@@ -139,7 +139,7 @@ lcn_ram_directory_rename_file( lcn_directory_t *directory,
 
 
 static apr_status_t
-lcn_ram_directory_open_file ( lcn_directory_t *directory,
+lcn_ram_directory_open_input( lcn_directory_t *directory,
                               lcn_istream_t **new_in,
                               const char *file_name,
                               apr_pool_t *pool )
@@ -219,7 +219,7 @@ lcn_ram_directory_create( lcn_directory_t **new_dir, apr_pool_t *pool )
         ram_dir->file_map = apr_hash_make((*new_dir)->pool );
 
         (*new_dir)->name         = NAME;
-        (*new_dir)->_open_file   = lcn_ram_directory_open_file;
+        (*new_dir)->open_input   = lcn_ram_directory_open_input;
         (*new_dir)->_create_file = lcn_ram_directory_create_file;
         (*new_dir)->_delete_file = lcn_ram_directory_delete_file;
         (*new_dir)->_file_exists = lcn_ram_directory_file_exists;

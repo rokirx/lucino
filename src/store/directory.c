@@ -187,10 +187,10 @@ lcn_directory_open_input( lcn_directory_t *directory,
 
     if ( 0 == strcmp( "segments", file_name ) )
     {
-        return directory->_open_file( directory, new_in, file_name, pool );
+        return directory->open_input( directory, new_in, file_name, pool );
     }
 
-    LCNRM( directory->_open_file( directory, new_in, file_name, pool ), file_name );
+    LCNRM( directory->open_input( directory, new_in, file_name, pool ), file_name );
 
     return s;
 }
@@ -440,7 +440,7 @@ lcn_cfs_directory_create( lcn_directory_t **new_dir,
         (*new_dir)->cf_entries = cf_entries;
         (*new_dir)->cf_stream = cf_stream;*/
 
-        (*new_dir)->_open_file   = lcn_cfs_directory_open_file;
+        (*new_dir)->open_input   = lcn_cfs_directory_open_file;
         (*new_dir)->_create_file = lcn_cfs_directory_create_file;
         (*new_dir)->_delete_file = lcn_cfs_directory_delete_file;
         (*new_dir)->_file_exists = lcn_cfs_directory_file_exists;
@@ -825,7 +825,7 @@ lcn_fs_directory_create( lcn_directory_t **new_dir,
         LCNCE( lcn_base_directory_create( new_dir, pool ) );
         LCNPV( (*new_dir)->name = apr_pstrdup( pool, dir_name ), APR_ENOMEM );
 
-        (*new_dir)->_open_file   = lcn_fs_directory_open_file;
+        (*new_dir)->open_input   = lcn_fs_directory_open_file;
         (*new_dir)->_create_file = lcn_fs_directory_create_file;
         (*new_dir)->_delete_file = lcn_fs_directory_delete_file;
         (*new_dir)->_file_exists = lcn_fs_directory_file_exists;
