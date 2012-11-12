@@ -125,10 +125,6 @@ struct lcn_directory_t {
      */
     apr_status_t (*_close) ( lcn_directory_t * );
 
-    /* RAMDirectory */
-    apr_hash_t *hash;
-
-
     /* CompoundFileDirectory */
 
     struct lcn_compound_file_reader_t *cfr;
@@ -152,5 +148,10 @@ lcn_directory_create_segment_file ( lcn_directory_t *directory,
 apr_status_t
 lcn_base_directory_create( lcn_directory_t **new_dir,
                            apr_pool_t *pool );
+
+apr_status_t
+lcn_base_directory_init( lcn_directory_t *directory,
+                         apr_pool_t *pool );
+
 
 #endif /* DIRECTORY_H */

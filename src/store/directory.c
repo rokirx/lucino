@@ -740,10 +740,25 @@ lcn_fs_directory_delete_file ( lcn_directory_t *directory,
 
 /* }}} */
 
-/* {{{ apr_status_t lcn_base_directory_create */
+apr_status_t
+lcn_base_directory_init( lcn_directory_t *directory,
+                         apr_pool_t *pool )
+{
+    apr_status_t s = APR_SUCCESS;
+
+    do
+    {
+        directory->pool    = pool;
+        directory->is_open = LCN_TRUE;
+        directory->_close  = lcn_directory_close;
+    }
+    while(0);
+
+    return s;
+}
 
 apr_status_t
-lcn_base_directory_create ( lcn_directory_t **directory,
+lcn_base_directory_create( lcn_directory_t **directory,
                             apr_pool_t *pool )
 {
     apr_status_t s;
@@ -759,8 +774,6 @@ lcn_base_directory_create ( lcn_directory_t **directory,
 
     return s;
 }
-
-/* }}} */
 
 /* {{{ apr_status_t lcn_fs_directory_create */
 
