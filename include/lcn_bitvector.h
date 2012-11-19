@@ -28,11 +28,11 @@ lcn_one_bitvector_create( lcn_bitvector_t** bitvector,
                           unsigned int size,
                           apr_pool_t* pool );
 /**
- * Reads a bitvector from the lcn_istream_t.
+ * Reads a bitvector from the lcn_index_input_t.
  */
 apr_status_t
 lcn_bitvector_from_stream ( lcn_bitvector_t **new_bv,
-                            lcn_istream_t *in,
+                            lcn_index_input_t *in,
                             apr_pool_t* pool );
 
 apr_status_t

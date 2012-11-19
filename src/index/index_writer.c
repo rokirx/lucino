@@ -136,7 +136,7 @@ lcn_index_writer_read_deletable_files ( lcn_index_writer_t *index_writer,
     do
     {
         apr_status_t stat;
-        lcn_istream_t *input;
+        lcn_index_input_t *input;
         int deletable_size, i;
         lcn_bool_t file_exists;
 
@@ -155,15 +155,14 @@ lcn_index_writer_read_deletable_files ( lcn_index_writer_t *index_writer,
                 LCN_INDEX_WRITER_DELETABLE_FILE_NAME,
                 pool ) );
 
-        LCNCE( lcn_istream_read_int( input,
-                &deletable_size ) );
+        LCNCE( lcn_index_input_read_int( input, &deletable_size ) );
 
         for ( i = deletable_size; i > 0; i-- )
         {
             char *name;
             unsigned int name_len;
 
-            LCNCE( lcn_istream_read_string( input,
+            LCNCE( lcn_index_input_read_string( input,
                     &name,
                     &name_len,
                     pool ) );
@@ -173,7 +172,7 @@ lcn_index_writer_read_deletable_files ( lcn_index_writer_t *index_writer,
 
         LCNCE( s );
 
-        stat = lcn_istream_close( input );
+        stat = lcn_index_input_close( input );
 
         s = ( s ? s : stat );
     }
@@ -488,7 +487,7 @@ lcn_index_writer_maybe_merge_segments ( lcn_index_writer_t *index_writer )
 
 /**
  * @Deprecated Die Methode ist veraltet. Die neue Methode lcn_index_writer_create_impl_neu
- * sollte jetzt genutzt werden. 
+ * sollte jetzt genutzt werden.
  */
 static apr_status_t
 lcn_index_writer_create_impl ( lcn_index_writer_t **index_writer,
@@ -601,7 +600,7 @@ lcn_index_writer_create_impl_neu ( lcn_index_writer_t **index_writer,
              * create = !DirectoryReader.indexExists(directory);
              */
         }
-        /*  
+        /*
          * If index is too old, reading the segments will throw
          * IndexFormatTooOldException.
          *segmentInfos = new SegmentInfos();
@@ -833,11 +832,11 @@ lcn_index_writer_write_fixed_sized_fields ( lcn_index_writer_t *index_writer,
 
                     if ( file_exists )
                     {
-                        lcn_istream_t *is;
+                        lcn_index_input_t *is;
 
                         LCNCE( lcn_directory_open_input( index_writer->directory, &is, file_name, cp ) );
                         LCNCE( lcn_directory_fs_field_read( &field, fname, is, index_writer->pool ) );
-                        LCNCE( lcn_istream_close( is ) );
+                        LCNCE( lcn_index_input_close( is ) );
                     }
                     else
                     {
@@ -1128,10 +1127,10 @@ lcn_index_writer_optimize ( lcn_index_writer_t *index_writer )
             {
                 lcn_segment_info_t *si;
                 lcn_bool_t has_deletions;
-                
+
                 LCNCE( lcn_segment_infos_get( index_writer->segment_infos, &si, 0 ) );
                 LCNCE( lcn_segment_info_has_deletions( si, &has_deletions ) );
-                
+
                 if (( ! has_deletions &&
                      lcn_segment_info_directory( si ) == index_writer->directory ) )
                 {

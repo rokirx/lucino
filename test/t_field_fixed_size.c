@@ -1511,12 +1511,12 @@ test_fs_field_size_char( CuTest* tc )
     }
 
     {
-        lcn_istream_t *is;
+        lcn_index_input_t *is;
         lcn_directory_fs_field_t* f;
-        LCN_TEST( lcn_istream_create( &is, "fsfile", pool ));
+        LCN_TEST( lcn_index_input_create( &is, "fsfile", pool ));
         LCN_TEST( lcn_directory_fs_field_read( &f, "tfield", is, pool ));
         f1 = (lcn_fs_field_t*) f;
-        LCN_TEST( lcn_istream_close( is ));
+        LCN_TEST( lcn_index_input_close( is ));
     }
 
     LCN_TEST( lcn_fs_field_value( f1, val, 0 ));

@@ -196,7 +196,7 @@ TestCuFieldInfosReadWrite(CuTest* tc)
             LCN_TEST( apr_pool_create( &pool, main_pool ) );
 
             {
-                lcn_istream_t *in;
+                lcn_index_input_t *in;
                 apr_pool_t *is_pool;
                 LCN_TEST( apr_pool_create( &is_pool, main_pool ) );
 
@@ -204,7 +204,7 @@ TestCuFieldInfosReadWrite(CuTest* tc)
                 LCN_TEST( lcn_field_infos_create( &new_field_infos, is_pool ));
                 new_field_infos->format = -1;
                 LCN_TEST( lcn_field_infos_read( new_field_infos, in, is_pool ) );
-                LCN_TEST( lcn_istream_close( in ) );
+                LCN_TEST( lcn_index_input_close( in ) );
                 apr_pool_destroy( is_pool );
             }
 

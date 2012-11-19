@@ -17,7 +17,7 @@ struct lcn_term_enum_t {
 
     /* SegmentTermEnum */
 
-    lcn_istream_t     *istream;
+    lcn_index_input_t     *istream;
     lcn_field_infos_t *field_infos;
 
     unsigned int index_interval;
@@ -68,7 +68,7 @@ struct lcn_term_enum_t {
 
 apr_status_t
 lcn_segment_term_enum_create( lcn_term_enum_t **term_enum,
-                              lcn_istream_t *istream,
+                              lcn_index_input_t *istream,
                               lcn_field_infos_t *field_infos,
                               lcn_bool_t is_index,
                               apr_pool_t *pool );

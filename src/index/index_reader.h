@@ -77,9 +77,9 @@ struct lcn_index_reader_t {
      * and MultiReader
      */
     apr_hash_t *norms;
-    
+
     lcn_bool_t is_modified;
-    
+
     lcn_bool_t is_directory_reader;
 
     /**
@@ -276,12 +276,12 @@ typedef struct lcn_segment_reader_t {
     /**
      * Input stream for proximity information
      */
-    lcn_istream_t *prox_stream;
+    lcn_index_input_t *prox_stream;
 
     /**
      * Input stream for frequency information
      */
-    lcn_istream_t *freq_stream;
+    lcn_index_input_t *freq_stream;
 
     /**
      * Term infos reader
@@ -445,7 +445,7 @@ lcn_index_reader_add_fs_fields( lcn_index_reader_t *index_reader,
                                 apr_pool_t *pool );
 
 apr_status_t
-lcn_segment_reader_user_compound_file( lcn_segment_info_t *segment_info, 
+lcn_segment_reader_user_compound_file( lcn_segment_info_t *segment_info,
                                        lcn_bool_t *flag,
                                        apr_pool_t *pool);
 

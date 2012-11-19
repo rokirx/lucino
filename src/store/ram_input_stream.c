@@ -1,8 +1,8 @@
-#include "istream.h"
+#include "index_input.h"
 #include "lcn_store.h"
 
 static apr_status_t
-lcn_istream_ram_read_internal ( lcn_istream_t *in,
+lcn_index_input_ram_read_internal ( lcn_index_input_t *in,
                                 char *dest,
                                 apr_off_t offset,
                                 unsigned int len)
@@ -38,8 +38,8 @@ lcn_istream_ram_read_internal ( lcn_istream_t *in,
 }
 
 static apr_status_t
-lcn_istream_ram_clone( lcn_istream_t *istream,
-                       lcn_istream_t **clone_in,
+lcn_index_input_ram_clone( lcn_index_input_t *istream,
+                       lcn_index_input_t **clone_in,
                        apr_pool_t *pool )
 {
     apr_status_t s;
@@ -54,20 +54,20 @@ lcn_istream_ram_clone( lcn_istream_t *istream,
 }
 
 static apr_status_t
-lcn_istream_ram_close( lcn_istream_t *istream )
+lcn_index_input_ram_close( lcn_index_input_t *istream )
 {
     istream->is_open = LCN_FALSE;
     return APR_SUCCESS;
 }
 
 apr_status_t
-lcn_ram_input_stream_create( lcn_istream_t **new_in,
+lcn_ram_input_stream_create( lcn_index_input_t **new_in,
                              lcn_ram_file_t *file,
                              apr_pool_t *pool )
 {
     apr_status_t s;
 
-    LCNCR( lcn_istream_init_base( new_in, pool ) );
+    LCNCR( lcn_index_input_init_base( new_in, pool ) );
 
     (*new_in)->pointer = 0;
     (*new_in)->_file = file;
@@ -75,9 +75,9 @@ lcn_ram_input_stream_create( lcn_istream_t **new_in,
 
     /* overload implementation specific methods */
 
-    (*new_in)->_close         = lcn_istream_ram_close;
-    (*new_in)->_read_internal = lcn_istream_ram_read_internal;
-    (*new_in)->_clone         = lcn_istream_ram_clone;
+    (*new_in)->_close         = lcn_index_input_ram_close;
+    (*new_in)->_read_internal = lcn_index_input_ram_read_internal;
+    (*new_in)->_clone         = lcn_index_input_ram_clone;
 
     return s;
 }

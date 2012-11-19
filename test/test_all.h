@@ -59,8 +59,8 @@ apr_pool_t *main_pool;
 
 void
 compare_input_streams( CuTest* tc,
-                       lcn_istream_t *is_a,
-                       lcn_istream_t *is_b );
+                       lcn_index_input_t *is_a,
+                       lcn_index_input_t *is_b );
 
 void
 compare_directories(CuTest* tc,

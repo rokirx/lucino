@@ -205,7 +205,7 @@ typedef struct lcn_directory_fs_field_t {
     /**
      * Stream for lazy loading field values
      */
-    lcn_istream_t *istream;
+    lcn_index_input_t *istream;
 
 } lcn_directory_fs_field_t;
 
@@ -298,7 +298,7 @@ lcn_fs_field_default_val( const lcn_fs_field_t *field );
 apr_status_t
 lcn_directory_fs_field_read( lcn_directory_fs_field_t **field,
                              const char *name,
-                             lcn_istream_t *istream,
+                             lcn_index_input_t *istream,
                              apr_pool_t *pool );
 
 /**

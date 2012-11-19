@@ -75,7 +75,7 @@ struct lcn_directory_t {
 
     /**
      * Opens a segment file in the given directory ant returns a pointer to
-     * the corresponding lcn_istream_t. self is not marked as const, because
+     * the corresponding lcn_index_input_t. self is not marked as const, because
      * some implementation might need to save the name of the file in the
      * struct.
      *
@@ -83,13 +83,13 @@ struct lcn_directory_t {
      * @param ext      : the file extension including the point, e.g. ".f2"
      */
     apr_status_t (*open_segment_file) ( lcn_directory_t * directory,
-                                        lcn_istream_t **new_in,
+                                        lcn_index_input_t **new_in,
                                         const char* seg_name,
                                         const char* ext );
 
     apr_status_t
     (*open_input) ( lcn_directory_t *directory,
-                    lcn_istream_t **new_in,
+                    lcn_index_input_t **new_in,
                     const char  *file_name,
                     apr_pool_t *pool );
 

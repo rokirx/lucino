@@ -41,18 +41,18 @@ lcn_fields_reader_create( lcn_fields_reader_t **fields_reader,
                                                 pool ) );
         LCNCE( lcn_directory_segments_format( directory, &( (*fields_reader)->format )));
 
-        (*fields_reader)->size = (unsigned int) (lcn_istream_size( (*fields_reader)->index_stream ) / 8);
+        (*fields_reader)->size = (unsigned int) (lcn_index_input_size( (*fields_reader)->index_stream ) / 8);
     }
     while(0);
-    
+
     return s;
 }
 
 apr_status_t
 lcn_fields_reader_close( lcn_fields_reader_t *fields_reader )
 {
-    apr_status_t s1 = lcn_istream_close( fields_reader->fields_stream );
-    apr_status_t s2 = lcn_istream_close( fields_reader->index_stream );
+    apr_status_t s1 = lcn_index_input_close( fields_reader->fields_stream );
+    apr_status_t s2 = lcn_index_input_close( fields_reader->index_stream );
 
     if ( s1 )
     {
@@ -101,14 +101,14 @@ lcn_fields_reader_doc( lcn_fields_reader_t *fields_reader,
         unsigned int i, num_fields;
         unsigned int ui_num_fields;
 
-        lcn_istream_t *f_in = fields_reader->fields_stream;
-        lcn_istream_t *i_in = fields_reader->index_stream;
+        lcn_index_input_t *f_in = fields_reader->fields_stream;
+        lcn_index_input_t *i_in = fields_reader->index_stream;
 
-        LCNCE( lcn_istream_seek( i_in, ((apr_off_t) n) * 8L ) );
-        LCNCE( lcn_istream_read_long( i_in, &position ) );
-        LCNCE( lcn_istream_seek( f_in, (apr_off_t) position ));
+        LCNCE( lcn_index_input_seek( i_in, ((apr_off_t) n) * 8L ) );
+        LCNCE( lcn_index_input_read_long( i_in, &position ) );
+        LCNCE( lcn_index_input_seek( f_in, (apr_off_t) position ));
         LCNCE( lcn_document_create( document, pool ));
-        LCNCE( lcn_istream_read_vint( f_in, &ui_num_fields ) );
+        LCNCE( lcn_index_input_read_vint( f_in, &ui_num_fields ) );
 
         num_fields = ui_num_fields;
 
@@ -119,13 +119,13 @@ lcn_fields_reader_doc( lcn_fields_reader_t *fields_reader,
             unsigned char bits;
             lcn_field_t *field;
 
-            LCNCE( lcn_istream_read_vint( f_in,
+            LCNCE( lcn_index_input_read_vint( f_in,
                                           &field_number ) );
             LCNCE( lcn_field_infos_by_number( fields_reader->field_infos,
                                               &f_info,
                                               field_number ) );
 
-            LCNCE( lcn_istream_read_byte( f_in, &bits ) );
+            LCNCE( lcn_index_input_read_byte( f_in, &bits ) );
 
             if ( 0 == fields_reader->format )
             {
@@ -137,12 +137,12 @@ lcn_fields_reader_doc( lcn_fields_reader_t *fields_reader,
                 unsigned int binary_len;
                 char *buf;
 
-                LCNCE( lcn_istream_read_vint( f_in,
+                LCNCE( lcn_index_input_read_vint( f_in,
                                               &binary_len ) );
                 LCNPV( buf = (char*) apr_palloc( pool,
                                                  sizeof(char) * binary_len ),
                        APR_ENOMEM );
-                LCNCE( lcn_istream_read_bytes( f_in, buf, 0, &binary_len ) );
+                LCNCE( lcn_index_input_read_bytes( f_in, buf, 0, &binary_len ) );
                 LCNCE( lcn_field_create_binary( &field,
                                                 f_info->name,
                                                 buf,
@@ -181,7 +181,7 @@ lcn_fields_reader_doc( lcn_fields_reader_t *fields_reader,
                     bits |= LCN_FIELD_STORE_OFFSET_WITH_TV;
                 }
 
-                LCNCE( lcn_istream_read_string( f_in, &buf, &len, pool ) );
+                LCNCE( lcn_index_input_read_string( f_in, &buf, &len, pool ) );
 
                 LCNCE( lcn_field_create( &field,
                                          f_info->name,

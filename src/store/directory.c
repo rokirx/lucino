@@ -4,7 +4,7 @@
 
 #include "directory.h"
 #include "segment_infos.h"
-#include "istream.h"
+#include "index_input.h"
 #include "fs_field.h"
 #include "compound_file_reader.h"
 
@@ -51,7 +51,7 @@ lcn_fs_directory_list( const lcn_directory_t *directory,
  */
 static apr_status_t
 lcn_cfs_directory_open_file( lcn_directory_t *directory,
-                             lcn_istream_t **new_in,
+                             lcn_index_input_t **new_in,
                              const char *file_name,
                              apr_pool_t *pool );
 
@@ -177,7 +177,7 @@ lcn_directory_rename_file( lcn_directory_t *directory,
 
 apr_status_t
 lcn_directory_open_input( lcn_directory_t *directory,
-                          lcn_istream_t **new_in,
+                          lcn_index_input_t **new_in,
                           const char *file_name,
                           apr_pool_t *pool )
 {
@@ -282,14 +282,14 @@ lcn_directory_open_ostream ( const char *path,
 static apr_status_t
 lcn_directory_open_input_stream ( const char *path,
                                   const char *name,
-                                  lcn_istream_t **is,
+                                  lcn_index_input_t **is,
                                   apr_pool_t *pool )
 {
     apr_status_t s;
     char *fpath;
 
     LCNCR( apr_filepath_merge( &fpath, path, name, 0, pool ) );
-    LCNRM( lcn_istream_create( is, fpath, pool ), fpath );
+    LCNRM( lcn_index_input_create( is, fpath, pool ), fpath );
 
     return s;
 }
@@ -311,7 +311,7 @@ lcn_directory_close( lcn_directory_t *directory )
 
 static apr_status_t
 lcn_fs_directory_open_file( lcn_directory_t *directory,
-                            lcn_istream_t **new_in,
+                            lcn_index_input_t **new_in,
                             const char *file_name,
                             apr_pool_t *pool )
 {
@@ -326,7 +326,7 @@ lcn_fs_directory_open_file( lcn_directory_t *directory,
 
 static apr_status_t
 lcn_cfs_directory_open_file( lcn_directory_t *directory,
-                             lcn_istream_t **new_in,
+                             lcn_index_input_t **new_in,
                              const char *file_name,
                              apr_pool_t *pool )
 {
@@ -501,7 +501,7 @@ lcn_fs_directory_remove( lcn_directory_t *directory )
 
 apr_status_t
 lcn_directory_open_segment_file ( lcn_directory_t *directory,
-                                  lcn_istream_t **new_in,
+                                  lcn_index_input_t **new_in,
                                   const char *seg_name,
                                   const char *ext,
                                   apr_pool_t *pool )

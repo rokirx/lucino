@@ -326,7 +326,7 @@ typedef struct lcn_document_t lcn_document_t;
 typedef struct lcn_field_info_t lcn_field_info_t;
 typedef struct lcn_field_t lcn_field_t;
 typedef struct lcn_index_input_t lcn_index_input_t;
-typedef struct lcn_istream_t lcn_istream_t;
+typedef struct lcn_index_input_t lcn_index_input_t;
 typedef struct lcn_list_t lcn_list_t;
 typedef struct lcn_ostream_t lcn_ostream_t;
 typedef struct lcn_ram_file_t lcn_ram_file_t;
@@ -934,15 +934,15 @@ lcn_directory_delete_files( lcn_directory_t *directory,
 
 /**
  * Opens a file in the given directory and initializes the pointer
- * to the corresponding lcn_istream_t
+ * to the corresponding lcn_index_input_t
  *
- * @param new_in lcn_istream_t to initialize
- * @param self   Directory where to create new lcn_istream_t
+ * @param new_in lcn_index_input_t to initialize
+ * @param self   Directory where to create new lcn_index_input_t
  * @param file_name Name of the file in the directory
  */
 apr_status_t
 lcn_directory_open_input( lcn_directory_t *directory,
-                          lcn_istream_t **new_in,
+                          lcn_index_input_t **new_in,
                           const char  *file_name,
                           apr_pool_t *pool );
 
@@ -978,7 +978,7 @@ lcn_directory_create_output( lcn_directory_t *directory,
 
 apr_status_t
 lcn_directory_open_segment_file ( lcn_directory_t *directory,
-                                  lcn_istream_t **new_in,
+                                  lcn_index_input_t **new_in,
                                   const char *segment,
                                   const char *ext,
                                   apr_pool_t *pool );

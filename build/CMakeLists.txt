@@ -88,7 +88,7 @@ ADD_LIBRARY( lucino
              ../src/search/top_docs
              ../src/search/weight
              ../src/store/directory
-             ../src/store/istream
+             ../src/store/index_input
              ../src/store/ostream
              ../src/store/compound_file_reader
              ../src/store/compound_file_writer

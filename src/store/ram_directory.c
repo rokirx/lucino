@@ -1,5 +1,5 @@
 #include "directory.h"
-#include "istream.h"
+#include "index_input.h"
 
 static char *NAME = "RAM_DIR";
 
@@ -140,7 +140,7 @@ lcn_ram_directory_rename_file( lcn_directory_t *directory,
 
 static apr_status_t
 lcn_ram_directory_open_input( lcn_directory_t *directory,
-                              lcn_istream_t **new_in,
+                              lcn_index_input_t **new_in,
                               const char *file_name,
                               apr_pool_t *pool )
 {

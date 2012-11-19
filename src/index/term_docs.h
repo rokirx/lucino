@@ -20,8 +20,8 @@ struct lcn_term_docs_t {
     lcn_term_docs_private_t* priv;
 
     lcn_index_reader_t *parent;
-    lcn_istream_t *freq_stream;
-    lcn_istream_t *skip_stream;
+    lcn_index_input_t *freq_stream;
+    lcn_index_input_t *skip_stream;
     lcn_bitvector_t *deleted_docs;
     unsigned int skip_interval;
     unsigned int count;
@@ -71,7 +71,7 @@ struct lcn_term_docs_t {
     unsigned int (*get_freq) ( lcn_term_docs_t *term_docs );
 
     /* TermPositions */
-    lcn_istream_t *prox_stream;
+    lcn_index_input_t *prox_stream;
     int prox_count;
     unsigned int position;
 

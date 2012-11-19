@@ -69,9 +69,9 @@ lcn_term_enum_clone( lcn_term_enum_t *term_enum,
 
     do
     {
-        lcn_istream_t *istream;
+        lcn_index_input_t *istream;
 
-        LCNCE( lcn_istream_clone( term_enum->istream, &istream, pool ) );
+        LCNCE( lcn_index_input_clone( term_enum->istream, &istream, pool ) );
 
         LCNCE( lcn_segment_term_enum_create( clone, istream, term_enum->field_infos,
                                              term_enum->is_index, pool ) );
@@ -89,7 +89,7 @@ lcn_term_enum_clone( lcn_term_enum_t *term_enum,
         (*clone)->is_clone = LCN_TRUE;
         (*clone)->position = term_enum->position;
 
-        LCNCE( lcn_term_enum_seek( *clone, lcn_istream_file_pointer( term_enum->istream ),
+        LCNCE( lcn_term_enum_seek( *clone, lcn_index_input_file_pointer( term_enum->istream ),
                                    (*clone)->position, term_enum->term, term_enum->term_info ) );
     }
     while(0);
@@ -109,7 +109,7 @@ lcn_term_enum_seek( lcn_term_enum_t *term_enum,
 
     do
     {
-        LCNCE( lcn_istream_seek( term_enum->istream, pointer ) );
+        LCNCE( lcn_index_input_seek( term_enum->istream, pointer ) );
         term_enum->position = p;
 
         LCNCE( lcn_term_enum_grow_buffer( term_enum, strlen( term->text ) + 1 ));
@@ -154,7 +154,7 @@ lcn_segment_term_enum_close( lcn_term_enum_t *term_enum )
         apr_pool_destroy( term_enum->buffer_pool );
     }
 
-    return lcn_istream_close( term_enum->istream );
+    return lcn_index_input_close( term_enum->istream );
 }
 
 const lcn_term_t *
@@ -175,8 +175,8 @@ lcn_term_enum_read_term( lcn_term_enum_t *term_enum )
         unsigned int total_length;
         unsigned int field_number;
 
-        LCNCE( lcn_istream_read_vint( term_enum->istream, &start ) );
-        LCNCE( lcn_istream_read_vint( term_enum->istream, &length ) );
+        LCNCE( lcn_index_input_read_vint( term_enum->istream, &start ) );
+        LCNCE( lcn_index_input_read_vint( term_enum->istream, &length ) );
         total_length = start + length;
 
         if ( term_enum->buffer_size < total_length + 1 )
@@ -184,10 +184,10 @@ lcn_term_enum_read_term( lcn_term_enum_t *term_enum )
             LCNCE( lcn_term_enum_grow_buffer( term_enum, total_length + 1 ) );
         }
 
-        LCNCE( lcn_istream_read_chars( term_enum->istream, term_enum->term_text, start, length ) );
+        LCNCE( lcn_index_input_read_chars( term_enum->istream, term_enum->term_text, start, length ) );
         term_enum->term_text[total_length] = '\0';
 
-        LCNCE( lcn_istream_read_vint( term_enum->istream, &field_number ) );
+        LCNCE( lcn_index_input_read_vint( term_enum->istream, &field_number ) );
 
         /* first term info in index term infos file has field number -1              */
         /* we check this here instead of letting lcn_field_infos_name_by_number      */
@@ -237,27 +237,27 @@ lcn_segment_term_enum_next( lcn_term_enum_t *term_enum )
         LCNCE( lcn_term_enum_read_term( term_enum ) );
 
         /* read doc freq     */
-        LCNCE( lcn_istream_read_vint( term_enum->istream, &(term_enum->term_info->doc_freq)  ));
+        LCNCE( lcn_index_input_read_vint( term_enum->istream, &(term_enum->term_info->doc_freq)  ));
 
         /* read freq pointer */
-        LCNCE( lcn_istream_read_vint( term_enum->istream, &i ) );
+        LCNCE( lcn_index_input_read_vint( term_enum->istream, &i ) );
         term_enum->term_info->freq_pointer += i;
 
         /* read prox pointer */
-        LCNCE( lcn_istream_read_vint( term_enum->istream, &i ) );
+        LCNCE( lcn_index_input_read_vint( term_enum->istream, &i ) );
         term_enum->term_info->prox_pointer += i;
 
         if ( term_enum->term_info->doc_freq >= term_enum->skip_interval )
         {
             unsigned int skip_offset;
-            LCNCE( lcn_istream_read_vint( term_enum->istream, &skip_offset ) );
+            LCNCE( lcn_index_input_read_vint( term_enum->istream, &skip_offset ) );
             term_enum->term_info->skip_offset = (apr_off_t) skip_offset;
         }
 
         /* read index ponter */
         if ( term_enum->is_index )
         {
-            LCNCE( lcn_istream_read_vint( term_enum->istream, &i ) );
+            LCNCE( lcn_index_input_read_vint( term_enum->istream, &i ) );
             term_enum->index_pointer += i;
         }
     }
@@ -304,7 +304,7 @@ lcn_base_term_enum_create( lcn_term_enum_t **term_enum, apr_pool_t *pool )
 
 apr_status_t
 lcn_segment_term_enum_create( lcn_term_enum_t **term_enum,
-                              lcn_istream_t *istream,
+                              lcn_index_input_t *istream,
                               lcn_field_infos_t *field_infos,
                               lcn_bool_t is_index,
                               apr_pool_t *pool )
@@ -324,7 +324,7 @@ lcn_segment_term_enum_create( lcn_term_enum_t **term_enum,
         (*term_enum)->is_index = is_index;
         (*term_enum)->position = -1;
 
-        LCNCE( lcn_istream_read_int( istream, &format ) );
+        LCNCE( lcn_index_input_read_int( istream, &format ) );
 
         if ( format > 0 ) /* original-format file, without explicit format version number */
         {
@@ -342,10 +342,10 @@ lcn_segment_term_enum_create( lcn_term_enum_t **term_enum,
 
             LCNASSERT( format == LCN_TERM_INFOS_FILE_FORMAT, LCN_ERR_SEGMENT_INFOS_UNKNOWN_FILE_FORMAT );
 
-            LCNCE( lcn_istream_read_ulong( istream, &((*term_enum)->size) ) );
-            LCNCE( lcn_istream_read_int( istream, &index_interval) );
+            LCNCE( lcn_index_input_read_ulong( istream, &((*term_enum)->size) ) );
+            LCNCE( lcn_index_input_read_int( istream, &index_interval) );
 	    (*term_enum)->index_interval = index_interval;
-            LCNCE( lcn_istream_read_int( istream, &skip_interval ) );
+            LCNCE( lcn_index_input_read_int( istream, &skip_interval ) );
 	    (*term_enum)->skip_interval = skip_interval;
         }
 

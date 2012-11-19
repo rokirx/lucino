@@ -459,7 +459,7 @@ lcn_field_infos_add_document( lcn_field_infos_t *field_infos,
 
 apr_status_t
 lcn_field_infos_read( lcn_field_infos_t *field_infos,
-                      lcn_istream_t *in,
+                      lcn_index_input_t *in,
                       apr_pool_t *pool )
 {
     apr_status_t s;
@@ -468,7 +468,7 @@ lcn_field_infos_read( lcn_field_infos_t *field_infos,
     {
         unsigned int size, i;
 
-        LCNCE( lcn_istream_read_vint( in, &size ) );
+        LCNCE( lcn_index_input_read_vint( in, &size ) );
 
         for( i = 0; i < size; i++ )
         {
@@ -478,8 +478,8 @@ lcn_field_infos_read( lcn_field_infos_t *field_infos,
             unsigned int fixed_size = 0;
             char *default_value = NULL;
 
-            LCNCE( lcn_istream_read_string( in, &name, &len, pool ) );
-            LCNCE( lcn_istream_read_byte( in, &bits ) );
+            LCNCE( lcn_index_input_read_string( in, &name, &len, pool ) );
+            LCNCE( lcn_index_input_read_byte( in, &bits ) );
 
             if ( 0 == field_infos->format )
             {
@@ -511,14 +511,14 @@ lcn_field_infos_read( lcn_field_infos_t *field_infos,
             {
                 unsigned int flen;
 
-                LCNCE( lcn_istream_read_vint( in, &fixed_size ));
+                LCNCE( lcn_index_input_read_vint( in, &fixed_size ));
 
                 flen = 1 + (fixed_size/8);
 
                 LCNPV( default_value = apr_pcalloc( pool, flen ),
                        APR_ENOMEM );
 
-                LCNCE( lcn_istream_read_bytes( in, default_value, 0, &flen ));
+                LCNCE( lcn_index_input_read_bytes( in, default_value, 0, &flen ));
             }
 
             LCNCE( lcn_field_infos_add_field_info( field_infos, name, bits ));
@@ -542,12 +542,12 @@ lcn_field_infos_create_from_dir( lcn_field_infos_t **field_infos,
 
     do
     {
-        lcn_istream_t *in;
+        lcn_index_input_t *in;
         LCNCE( lcn_directory_open_segment_file( directory, &in, segment, ".fnm", p ) );
         LCNCE( lcn_field_infos_create( field_infos, pool ));
         LCNCE( lcn_directory_segments_format( directory, &( (*field_infos)->format ) ));
         LCNCE( lcn_field_infos_read( *field_infos, in, pool ) );
-        LCNCE( lcn_istream_close( in ) );
+        LCNCE( lcn_index_input_close( in ) );
     }
     while(0);
 

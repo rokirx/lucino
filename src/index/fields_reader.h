@@ -12,8 +12,8 @@ struct lcn_fields_reader_t {
     unsigned char flags;
 
     lcn_field_infos_t *field_infos;
-    lcn_istream_t *fields_stream;
-    lcn_istream_t *index_stream;
+    lcn_index_input_t *fields_stream;
+    lcn_index_input_t *index_stream;
 
     int format;
 

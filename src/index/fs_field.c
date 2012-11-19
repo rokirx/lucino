@@ -140,7 +140,7 @@ lcn_fs_field_open_input( lcn_directory_fs_field_t *field,
 
 static apr_status_t
 lcn_fs_field_init_field_info_from_stream( lcn_directory_fs_field_t *field,
-                                          lcn_istream_t *is,
+                                          lcn_index_input_t *is,
                                           apr_pool_t *pool )
 {
     apr_status_t s;
@@ -154,18 +154,18 @@ lcn_fs_field_init_field_info_from_stream( lcn_directory_fs_field_t *field,
         int data_size;
         char *default_value;
 
-        LCNCE( lcn_istream_read_int( is, &version ));
+        LCNCE( lcn_index_input_read_int( is, &version ));
         LCNASSERT( 1 == version, LCN_ERR_INVALID_FILE_VERSION_NUMBER);
 
-        LCNCE( lcn_istream_read_string( is, &field_name, &fname_len, pool ));
-        LCNCE( lcn_istream_read_int( is, &docs_count ));
-        LCNCE( lcn_istream_read_int( is, &data_size));
+        LCNCE( lcn_index_input_read_string( is, &field_name, &fname_len, pool ));
+        LCNCE( lcn_index_input_read_int( is, &docs_count ));
+        LCNCE( lcn_index_input_read_int( is, &data_size));
 
         /* read default value */
 
         dlen = BITS2BYTE( data_size );
         LCNPV( default_value = apr_pcalloc( pool, dlen ), APR_ENOMEM );
-        LCNCE( lcn_istream_read_bytes( is, default_value, 0, &dlen ));
+        LCNCE( lcn_index_input_read_bytes( is, default_value, 0, &dlen ));
 
         /* this function is used to skip first entries of the */
         /* fs field file, then it is ok for field to be NULL  */
@@ -234,15 +234,15 @@ lcn_directory_fs_field_int_value( lcn_fs_field_t *base_field,
             {
                 LCNCE( lcn_fs_field_open_input( field, LCN_FALSE /* create file */ ));
                 LCNCE( lcn_fs_field_init_field_info_from_stream( NULL, field->istream, field->parent.pool ));
-                field->base_offset = lcn_istream_file_pointer( field->istream );
+                field->base_offset = lcn_index_input_file_pointer( field->istream );
             }
 
             /* position the stream and read value */
 
             if ( 1 == field->parent.data_size )
             {
-                LCNCE( lcn_istream_seek( field->istream, field->base_offset + (doc_id>>3) ));
-                LCNCE( lcn_istream_read_byte( field->istream, ((unsigned char*)field->parent.tmp_value) ));
+                LCNCE( lcn_index_input_seek( field->istream, field->base_offset + (doc_id>>3) ));
+                LCNCE( lcn_index_input_read_byte( field->istream, ((unsigned char*)field->parent.tmp_value) ));
 
                 *val = (0 != (field->parent.tmp_value[0] & (1<<(doc_id & 7))));
             }
@@ -252,8 +252,8 @@ lcn_directory_fs_field_int_value( lcn_fs_field_t *base_field,
                 unsigned int len = field->parent.data_size >> 3;
                 unsigned int i;
 
-                LCNCE( lcn_istream_seek( field->istream, field->base_offset + offset ));
-                LCNCE( lcn_istream_read_bytes( field->istream,
+                LCNCE( lcn_index_input_seek( field->istream, field->base_offset + offset ));
+                LCNCE( lcn_index_input_read_bytes( field->istream,
                                                field->parent.tmp_value,
                                                0,
                                                &len ));
@@ -273,8 +273,8 @@ lcn_directory_fs_field_int_value( lcn_fs_field_t *base_field,
                 unsigned int start_bit;
                 apr_status_t stat;
 
-                LCNCE( lcn_istream_seek( field->istream, field->base_offset + offset ));
-                LCNCE( lcn_istream_read_bytes( field->istream,
+                LCNCE( lcn_index_input_seek( field->istream, field->base_offset + offset ));
+                LCNCE( lcn_index_input_read_bytes( field->istream,
                                                field->parent.tmp_value,
                                                0,
                                                &len ));
@@ -282,7 +282,7 @@ lcn_directory_fs_field_int_value( lcn_fs_field_t *base_field,
                 /* we need one more byte to be sure we have read enough of them */
                 /* except we've already read them all                           */
 
-                stat = lcn_istream_read_byte( field->istream, ((unsigned char*)field->parent.tmp_value) + len );
+                stat = lcn_index_input_read_byte( field->istream, ((unsigned char*)field->parent.tmp_value) + len );
 
                 if ( !(LCN_ERR_READ_PAST_EOF == stat || APR_SUCCESS == stat) )
                 {
@@ -382,7 +382,7 @@ lcn_directory_fs_field_init( lcn_directory_fs_field_t *field,
  */
 static apr_status_t
 lcn_fs_field_fill_buffer( lcn_directory_fs_field_t *field,
-                          lcn_istream_t *istream )
+                          lcn_index_input_t *istream )
 {
     apr_status_t s;
 
@@ -394,7 +394,7 @@ lcn_fs_field_fill_buffer( lcn_directory_fs_field_t *field,
 
         field->buf_size = len;
 
-        LCNCE( lcn_istream_read_bytes( istream,
+        LCNCE( lcn_index_input_read_bytes( istream,
                                        field->buf,
                                        0, /* offset */
                                        &len ));
@@ -530,7 +530,7 @@ lcn_directory_fs_field_read_field_infos( apr_hash_t *hash,
                                          apr_pool_t *pool )
 {
     apr_status_t s = APR_SUCCESS;
-    lcn_istream_t *is = NULL;
+    lcn_index_input_t *is = NULL;
 
     do
     {
@@ -549,7 +549,7 @@ lcn_directory_fs_field_read_field_infos( apr_hash_t *hash,
                                          LCN_INDEX_WRITER_FIXED_SIZE_FIELD_DEF,
                                          pool ));
 
-        LCNCE( lcn_istream_read_int( is, &field_count ));
+        LCNCE( lcn_index_input_read_int( is, &field_count ));
 
         for( i = 0; i < field_count; i++ )
         {
@@ -565,7 +565,7 @@ lcn_directory_fs_field_read_field_infos( apr_hash_t *hash,
 
     if ( NULL != is )
     {
-        apr_status_t stat = lcn_istream_close( is );
+        apr_status_t stat = lcn_index_input_close( is );
         s = s ? s : stat;
     }
 
@@ -718,15 +718,15 @@ lcn_directory_fs_field_value( lcn_fs_field_t *base_field,
             {
                 LCNCE( lcn_fs_field_open_input( (lcn_directory_fs_field_t*)field, LCN_FALSE ));
                 LCNCE( lcn_fs_field_init_field_info_from_stream( NULL, field->istream, field->parent.pool ));
-                field->base_offset = lcn_istream_file_pointer( field->istream );
+                field->base_offset = lcn_index_input_file_pointer( field->istream );
             }
 
             /* position the stream and read value */
 
             if ( 1 == field->parent.data_size )
             {
-                LCNCE( lcn_istream_seek( field->istream, field->base_offset + (doc_id>>3) ));
-                LCNCE( lcn_istream_read_byte( field->istream, ((unsigned char*)field->parent.tmp_value) ));
+                LCNCE( lcn_index_input_seek( field->istream, field->base_offset + (doc_id>>3) ));
+                LCNCE( lcn_index_input_read_byte( field->istream, ((unsigned char*)field->parent.tmp_value) ));
 
                 val[0] = (0 != (field->parent.tmp_value[0] & (1<<(doc_id & 7))));
             }
@@ -735,8 +735,8 @@ lcn_directory_fs_field_value( lcn_fs_field_t *base_field,
                 apr_off_t offset = doc_id * (field->parent.data_size>>3);
                 unsigned int len = field->parent.data_size >> 3;
 
-                LCNCE( lcn_istream_seek( field->istream, field->base_offset + offset ));
-                LCNCE( lcn_istream_read_bytes( field->istream,
+                LCNCE( lcn_index_input_seek( field->istream, field->base_offset + offset ));
+                LCNCE( lcn_index_input_read_bytes( field->istream,
                                                val,
                                                0,
                                                &len ));
@@ -749,8 +749,8 @@ lcn_directory_fs_field_value( lcn_fs_field_t *base_field,
                 unsigned int start_bit;
                 apr_status_t stat;
 
-                LCNCE( lcn_istream_seek( field->istream, field->base_offset + offset ));
-                LCNCE( lcn_istream_read_bytes( field->istream,
+                LCNCE( lcn_index_input_seek( field->istream, field->base_offset + offset ));
+                LCNCE( lcn_index_input_read_bytes( field->istream,
                                                field->parent.tmp_value,
                                                0,
                                                &len ));
@@ -758,7 +758,7 @@ lcn_directory_fs_field_value( lcn_fs_field_t *base_field,
                 /* we need one more byte to be sure we have read enough of them */
                 /* except we've already read them all                           */
 
-                stat = lcn_istream_read_byte( field->istream, ((unsigned char*)field->parent.tmp_value) + len );
+                stat = lcn_index_input_read_byte( field->istream, ((unsigned char*)field->parent.tmp_value) + len );
 
                 if ( !(LCN_ERR_READ_PAST_EOF == stat || APR_SUCCESS == stat) )
                 {
@@ -844,7 +844,7 @@ lcn_directory_fs_field_set_value_impl( lcn_directory_fs_field_t *field, unsigned
 
             if ( NULL != field->istream )
             {
-                if ( 0 == lcn_istream_file_pointer( field->istream ))
+                if ( 0 == lcn_index_input_file_pointer( field->istream ))
                 {
                     LCNCE( lcn_fs_field_init_field_info_from_stream( NULL, field->istream, field->parent.pool ));
                     LCNCE( lcn_fs_field_fill_buffer( field, field->istream ));
@@ -852,7 +852,7 @@ lcn_directory_fs_field_set_value_impl( lcn_directory_fs_field_t *field, unsigned
                 else
                 {
                     /* assume here field is initialized! */
-                    LCNCE( lcn_istream_seek( field->istream, field->base_offset ));
+                    LCNCE( lcn_index_input_seek( field->istream, field->base_offset ));
                     LCNCE( lcn_fs_field_fill_buffer( field, field->istream ));
                 }
             }
@@ -1049,7 +1049,7 @@ lcn_directory_fs_field_close( lcn_fs_field_t *base_field,
 
         if ( NULL != field->istream )
         {
-            LCNCE( lcn_istream_close( field->istream ));
+            LCNCE( lcn_index_input_close( field->istream ));
         }
 
         if ( NULL != field->directory )
@@ -1124,7 +1124,7 @@ lcn_directory_fs_field_init_buffer( lcn_directory_fs_field_t *field )
         {
             LCNCE( lcn_fs_field_open_input( field, LCN_FALSE /* create file */ ));
             LCNCE( lcn_fs_field_init_field_info_from_stream( NULL, field->istream, field->parent.pool ));
-            field->base_offset = lcn_istream_file_pointer( field->istream );
+            field->base_offset = lcn_index_input_file_pointer( field->istream );
         }
 
         LCNCE( lcn_fs_field_fill_buffer( field, field->istream ));
@@ -1137,7 +1137,7 @@ lcn_directory_fs_field_init_buffer( lcn_directory_fs_field_t *field )
 apr_status_t
 lcn_directory_fs_field_read( lcn_directory_fs_field_t **field,
                              const char *name,
-                             lcn_istream_t *istream,
+                             lcn_index_input_t *istream,
                              apr_pool_t *pool )
 {
     apr_status_t s;

@@ -93,12 +93,12 @@ lcn_field_infos_write_to_ostream( lcn_field_infos_t *field_infos,
 
 apr_status_t
 lcn_field_infos_read( lcn_field_infos_t *field_infos,
-                      lcn_istream_t *in,
+                      lcn_index_input_t *in,
                       apr_pool_t *pool );
 
 apr_status_t
 lcn_field_infos_read_from_input_stream( lcn_field_infos_t **field_infos,
-                                        lcn_istream_t *input_stream );
+                                        lcn_index_input_t *input_stream );
 
 lcn_bool_t
 lcn_field_info_omit_norms( lcn_field_info_t *field_info );

@@ -30,7 +30,7 @@ test_segment_term_enum(CuTest* tc)
         apr_pool_t *fi_pool;
 
         lcn_term_enum_t *term_enum;
-        lcn_istream_t *istream;
+        lcn_index_input_t *istream;
         lcn_field_infos_t *field_infos;
         apr_status_t next_status;
 

@@ -28,7 +28,7 @@ do_tests( CuTest* tc, lcn_directory_t *t_dir, apr_pool_t *pool )
     apr_pool_t *child_pool;
     apr_pool_t *str_pool;
     lcn_ostream_t *out;
-    lcn_istream_t *in;
+    lcn_index_input_t *in;
     char *str = NULL;
     unsigned int len;
     lcn_bool_t file_exists;
@@ -49,18 +49,18 @@ do_tests( CuTest* tc, lcn_directory_t *t_dir, apr_pool_t *pool )
     lcn_ostream_write_string( out, "TEST" );
     LCN_TEST( lcn_ostream_close( out ) );
     LCN_TEST( lcn_directory_open_input( t_dir, &in, "segments", pool ) );
-    LCN_TEST( lcn_istream_read_string( in, &str, &len, pool ) );
+    LCN_TEST( lcn_index_input_read_string( in, &str, &len, pool ) );
     CuAssertStrEquals(tc, str, "TEST" );
-    LCN_TEST( lcn_istream_close( in ) );
+    LCN_TEST( lcn_index_input_close( in ) );
     CuAssertTrue(tc, APR_SUCCESS != lcn_directory_open_input( t_dir, &in, "xxx", pool ));
 
     LCN_TEST( lcn_directory_create_segment_file( t_dir, &out, "segments", ".abc", pool ));
     LCN_TEST( lcn_ostream_write_string( out, "TEST abc" ) );
     LCN_TEST( lcn_ostream_close( out ) );
     LCN_TEST( lcn_directory_open_segment_file( t_dir, &in, "segments", ".abc", pool ) );
-    LCN_TEST( lcn_istream_read_string( in, &str, &len, pool ) );
+    LCN_TEST( lcn_index_input_read_string( in, &str, &len, pool ) );
     CuAssertStrEquals(tc, str, "TEST abc" );
-    LCN_TEST( lcn_istream_close( in ) );
+    LCN_TEST( lcn_index_input_close( in ) );
 
     LCN_TEST( lcn_directory_file_exists( t_dir, "segments.abc", &file_exists ) );
     CuAssertIntEquals(tc, file_exists, LCN_TRUE );
@@ -87,8 +87,8 @@ do_tests( CuTest* tc, lcn_directory_t *t_dir, apr_pool_t *pool )
     /* now check whether the data is still available */
     LCN_TEST( apr_pool_create(&child_pool, pool ) );
     LCN_TEST( lcn_directory_open_input( t_dir, &in, "afile", child_pool ));
-    LCN_TEST( lcn_istream_read_string( in, &str, &len, str_pool ) );
-    LCN_TEST( lcn_istream_close( in ) );
+    LCN_TEST( lcn_index_input_read_string( in, &str, &len, str_pool ) );
+    LCN_TEST( lcn_index_input_close( in ) );
     apr_pool_destroy( child_pool );
     CuAssertStrEquals(tc, "some test data", str );
 
@@ -120,16 +120,16 @@ do_tests( CuTest* tc, lcn_directory_t *t_dir, apr_pool_t *pool )
     for( i = 0; i < 60; i++ )
     {
         unsigned int j;
-        LCN_TEST( lcn_istream_read_vint( in,
+        LCN_TEST( lcn_index_input_read_vint( in,
                                          (unsigned int*)&j ) );
         CuAssertIntEquals(tc, i, j );
-        LCN_TEST( lcn_istream_read_string( in, &str, &len, child_pool ) );
+        LCN_TEST( lcn_index_input_read_string( in, &str, &len, child_pool ) );
         CuAssertStrEquals(tc, str, long_string );
     }
 
     LCN_TEST( lcn_directory_delete_file( t_dir, "thefile" ) );
 
-    LCN_TEST( lcn_istream_close( in ) );
+    LCN_TEST( lcn_index_input_close( in ) );
     apr_pool_destroy( child_pool );
 
     LCN_TEST( lcn_directory_close( t_dir ) );

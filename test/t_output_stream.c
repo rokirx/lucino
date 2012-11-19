@@ -1,7 +1,7 @@
 #include "test_all.h"
 #include "lcn_store.h"
 
-#include "istream.h"
+#include "index_input.h"
 #include "ostream.h"
 
 static void
@@ -49,7 +49,7 @@ TestCuCreateOutputStream(CuTest* tc)
 static void
 TestCuWriteByte(CuTest* tc)
 {
-    lcn_istream_t *in;
+    lcn_index_input_t *in;
     lcn_ram_file_t *file;
     lcn_ostream_t *out;
     apr_pool_t *pool;
@@ -65,10 +65,10 @@ TestCuWriteByte(CuTest* tc)
 
     {
         LCN_TEST( apr_pool_create( &pool, main_pool ) );
-        LCN_TEST( lcn_istream_create( &in, "test_file", pool ) );
-        LCN_TEST( lcn_istream_read_byte( in, &byte ) );
+        LCN_TEST( lcn_index_input_create( &in, "test_file", pool ) );
+        LCN_TEST( lcn_index_input_read_byte( in, &byte ) );
         CuAssertIntEquals(tc, byte, 250 );
-        LCN_TEST( lcn_istream_close( in ) );
+        LCN_TEST( lcn_index_input_close( in ) );
         LCN_TEST( apr_file_remove( "test_file", pool ) );
         apr_pool_destroy( pool );
     }
@@ -91,9 +91,9 @@ TestCuWriteByte(CuTest* tc)
             apr_pool_t *is_pool;
             LCN_TEST( apr_pool_create( &is_pool, main_pool ) );
             LCN_TEST( lcn_ram_input_stream_create( &in, file, is_pool ) );
-            LCN_TEST( lcn_istream_read_byte(in, &byte ) );
+            LCN_TEST( lcn_index_input_read_byte(in, &byte ) );
             CuAssertIntEquals(tc, byte, 250 );
-            LCN_TEST( lcn_istream_close( in ) );
+            LCN_TEST( lcn_index_input_close( in ) );
             apr_pool_destroy( is_pool );
         }
 
@@ -109,7 +109,7 @@ TestCuWriteBytes(CuTest* tc)
     lcn_ostream_t *out;
     lcn_ram_file_t *file;
     unsigned int len;
-    lcn_istream_t *in;
+    lcn_index_input_t *in;
     char t[2000];
     int i = 2000;
 
@@ -129,11 +129,11 @@ TestCuWriteBytes(CuTest* tc)
         apr_pool_t *pool;
         LCN_TEST( apr_pool_create( &pool, main_pool ) );
         buf[16] = 0;
-        LCN_TEST( lcn_istream_create( &in, "test_file", pool ) );
+        LCN_TEST( lcn_index_input_create( &in, "test_file", pool ) );
         len = 16;
-        LCN_TEST( lcn_istream_read_bytes( in, buf, 0, &len ) );
+        LCN_TEST( lcn_index_input_read_bytes( in, buf, 0, &len ) );
         CuAssertStrEquals(tc, s, buf );
-        LCN_TEST( lcn_istream_close( in ) );
+        LCN_TEST( lcn_index_input_close( in ) );
         LCN_TEST( apr_file_remove( "test_file", pool ) );
         apr_pool_destroy( pool );
     }
@@ -162,9 +162,9 @@ TestCuWriteBytes(CuTest* tc)
             LCN_TEST( apr_pool_create( &is_pool, main_pool ) );
             LCN_TEST( lcn_ram_input_stream_create( &in, file, is_pool ) );
             len = 16;
-            LCN_TEST( lcn_istream_read_bytes( in, buf, 0, &len ) );
+            LCN_TEST( lcn_index_input_read_bytes( in, buf, 0, &len ) );
             CuAssertStrEquals(tc, s, buf );
-            LCN_TEST( lcn_istream_close( in ) );
+            LCN_TEST( lcn_index_input_close( in ) );
             apr_pool_destroy( is_pool );
         }
 
@@ -224,7 +224,7 @@ test_write_vlong_write_impl ( CuTest* tc, apr_status_t (*write) (lcn_ostream_t *
 
 
 static void
-test_write_int_read_impl ( CuTest* tc, apr_status_t (*read) (lcn_istream_t *, int*), lcn_istream_t *in )
+test_write_int_read_impl ( CuTest* tc, apr_status_t (*read) (lcn_index_input_t *, int*), lcn_index_input_t *in )
 {
     int result;
 
@@ -240,7 +240,7 @@ test_write_int_read_impl ( CuTest* tc, apr_status_t (*read) (lcn_istream_t *, in
 }
 
 static void
-test_write_vlong_read_impl( CuTest* tc, apr_status_t (*read) (lcn_istream_t *, apr_uint64_t*), lcn_istream_t *in )
+test_write_vlong_read_impl( CuTest* tc, apr_status_t (*read) (lcn_index_input_t *, apr_uint64_t*), lcn_index_input_t *in )
 {
     apr_uint64_t result;
 
@@ -256,7 +256,7 @@ test_write_vlong_read_impl( CuTest* tc, apr_status_t (*read) (lcn_istream_t *, a
 }
 
 static void
-test_write_vint_read_impl ( CuTest* tc, apr_status_t (*read) (lcn_istream_t *, unsigned int*), lcn_istream_t *in )
+test_write_vint_read_impl ( CuTest* tc, apr_status_t (*read) (lcn_index_input_t *, unsigned int*), lcn_index_input_t *in )
 {
     unsigned int result;
 
@@ -276,7 +276,7 @@ TestCuWriteInt(CuTest* tc)
 {
     lcn_ostream_t *out;
     lcn_ram_file_t *file;
-    lcn_istream_t *in;
+    lcn_index_input_t *in;
 
     {
         apr_pool_t *pool;
@@ -290,9 +290,9 @@ TestCuWriteInt(CuTest* tc)
     {
         apr_pool_t *pool;
         LCN_TEST( apr_pool_create( &pool, main_pool ) );
-        LCN_TEST( lcn_istream_create( &in, "test_file", pool ) );
-        test_write_int_read_impl( tc, lcn_istream_read_int, in );
-        LCN_TEST( lcn_istream_close( in ) );
+        LCN_TEST( lcn_index_input_create( &in, "test_file", pool ) );
+        test_write_int_read_impl( tc, lcn_index_input_read_int, in );
+        LCN_TEST( lcn_index_input_close( in ) );
         LCN_TEST( apr_file_remove( "test_file", pool ) );
         apr_pool_destroy( pool );
     }
@@ -315,8 +315,8 @@ TestCuWriteInt(CuTest* tc)
             apr_pool_t *is_pool;
             LCN_TEST( apr_pool_create( &is_pool, main_pool ) );
             LCN_TEST( lcn_ram_input_stream_create( &in, file, is_pool ) );
-            test_write_int_read_impl( tc, lcn_istream_read_int, in );
-            LCN_TEST( lcn_istream_close( in ) );
+            test_write_int_read_impl( tc, lcn_index_input_read_int, in );
+            LCN_TEST( lcn_index_input_close( in ) );
             apr_pool_destroy( is_pool );
         }
 
@@ -328,7 +328,7 @@ static void
 TestCuWriteLong(CuTest* tc)
 {
     lcn_ostream_t *out;
-    lcn_istream_t *in;
+    lcn_index_input_t *in;
 
     {
         apr_pool_t *pool;
@@ -342,9 +342,9 @@ TestCuWriteLong(CuTest* tc)
     {
         apr_pool_t *pool;
         LCN_TEST( apr_pool_create( &pool, main_pool ) );
-        LCN_TEST( lcn_istream_create( &in, "test_file_long", pool ) );
-        test_write_vlong_read_impl( tc, lcn_istream_read_vlong, in );
-        LCN_TEST( lcn_istream_close( in ) );
+        LCN_TEST( lcn_index_input_create( &in, "test_file_long", pool ) );
+        test_write_vlong_read_impl( tc, lcn_index_input_read_vlong, in );
+        LCN_TEST( lcn_index_input_close( in ) );
         LCN_TEST( apr_file_remove( "test_file_long", pool ) );
         apr_pool_destroy( pool );
     }
@@ -368,8 +368,8 @@ TestCuWriteLong(CuTest* tc)
             apr_pool_t *is_pool;
             LCN_TEST( apr_pool_create( &is_pool, main_pool ) );
             LCN_TEST( lcn_ram_input_stream_create( &in, file, is_pool ) );
-            test_write_int_read_impl( lcn_istream_read_int, in );
-            LCN_TEST( lcn_istream_close( in ) );
+            test_write_int_read_impl( lcn_index_input_read_int, in );
+            LCN_TEST( lcn_index_input_close( in ) );
             apr_pool_destroy( is_pool );
         }
 
@@ -383,7 +383,7 @@ static void
 TestCuWriteVint(CuTest* tc)
 {
     lcn_ostream_t *out;
-    lcn_istream_t *in;
+    lcn_index_input_t *in;
     lcn_ram_file_t *file;
 
     {
@@ -398,9 +398,9 @@ TestCuWriteVint(CuTest* tc)
     {
         apr_pool_t *pool;
         LCN_TEST( apr_pool_create( &pool, main_pool ) );
-        LCN_TEST( lcn_istream_create( &in, "test_file", pool ) );
-        test_write_vint_read_impl( tc, lcn_istream_read_vint, in );
-        LCN_TEST( lcn_istream_close( in ) );
+        LCN_TEST( lcn_index_input_create( &in, "test_file", pool ) );
+        test_write_vint_read_impl( tc, lcn_index_input_read_vint, in );
+        LCN_TEST( lcn_index_input_close( in ) );
         LCN_TEST( apr_file_remove( "test_file", pool ) );
         apr_pool_destroy( pool );
     }
@@ -423,8 +423,8 @@ TestCuWriteVint(CuTest* tc)
             apr_pool_t *is_pool;
             LCN_TEST( apr_pool_create( &is_pool, main_pool ) );
             LCN_TEST( lcn_ram_input_stream_create( &in, file, is_pool ) );
-            test_write_vint_read_impl( tc, lcn_istream_read_vint, in );
-            LCN_TEST( lcn_istream_close( in ) );
+            test_write_vint_read_impl( tc, lcn_index_input_read_vint, in );
+            LCN_TEST( lcn_index_input_close( in ) );
             apr_pool_destroy( is_pool );
         }
 
@@ -439,7 +439,7 @@ TestCuWriteString(CuTest* tc)
     unsigned int len;
 
     lcn_ostream_t *out;
-    lcn_istream_t *in;
+    lcn_index_input_t *in;
     lcn_ram_file_t *file;
 
     {
@@ -457,10 +457,10 @@ TestCuWriteString(CuTest* tc)
         LCN_TEST( apr_pool_create( &pool, main_pool ) );
         LCN_TEST( apr_pool_create( &str_pool, main_pool ) );
 
-        LCN_TEST( lcn_istream_create( &in, "test_file", pool ) );
-        LCN_TEST( lcn_istream_read_string( in, &buf, &len, str_pool ) );
+        LCN_TEST( lcn_index_input_create( &in, "test_file", pool ) );
+        LCN_TEST( lcn_index_input_read_string( in, &buf, &len, str_pool ) );
         LCN_TEST( apr_file_remove( "test_file", pool ) );
-        LCN_TEST( lcn_istream_close( in ) );
+        LCN_TEST( lcn_index_input_close( in ) );
         apr_pool_destroy( pool );
 
         CuAssertStrEquals(tc, buf, "Teste Sonderzeichen: ouml: ö, auml: ä,"
@@ -489,8 +489,8 @@ TestCuWriteString(CuTest* tc)
             LCN_TEST( apr_pool_create( &str_pool, main_pool ) );
 
             LCN_TEST( lcn_ram_input_stream_create( &in, file, is_pool ) );
-            LCN_TEST( lcn_istream_read_string( in, &buf, &len, str_pool ) );
-            LCN_TEST( lcn_istream_close( in ) );
+            LCN_TEST( lcn_index_input_read_string( in, &buf, &len, str_pool ) );
+            LCN_TEST( lcn_index_input_close( in ) );
             apr_pool_destroy( is_pool );
 
             CuAssertStrEquals(tc, buf, "Teste Sonderzeichen: ouml: ö, auml: ä, uuml: ü,"
@@ -506,7 +506,7 @@ static void
 TestCuSeek(CuTest* tc)
 {
     char bytes[20];
-    lcn_istream_t *in;
+    lcn_index_input_t *in;
     lcn_directory_t *t_dir;
     unsigned int len = 10;
     apr_pool_t *pool;
@@ -516,22 +516,22 @@ TestCuSeek(CuTest* tc)
     LCN_TEST( lcn_fs_directory_create( &t_dir, TEST_DIR, LCN_FALSE, pool ) );
 
     LCN_TEST( lcn_directory_open_input( t_dir, &in, "string.dat", pool ) );
-    LCN_TEST( lcn_istream_seek(in, 10) );
-    LCN_TEST( lcn_istream_read_bytes( in, bytes, 0, &len ) );
+    LCN_TEST( lcn_index_input_seek(in, 10) );
+    LCN_TEST( lcn_index_input_read_bytes( in, bytes, 0, &len ) );
     bytes[10] = 0;
     CuAssertStrEquals(tc, bytes, "ftware Fou" );
-    LCN_TEST( lcn_istream_close( in ) );
+    LCN_TEST( lcn_index_input_close( in ) );
     LCN_TEST( lcn_directory_close( t_dir ) );
 }
 
 static void
-test_istream_clone(CuTest* tc)
+test_index_input_clone(CuTest* tc)
 {
-    lcn_istream_t *clone;
+    lcn_index_input_t *clone;
     char *buf;
     unsigned int len;
 
-    lcn_istream_t *in;
+    lcn_index_input_t *in;
     lcn_directory_t *t_dir;
     apr_pool_t *pool;
 
@@ -540,48 +540,48 @@ test_istream_clone(CuTest* tc)
     LCN_TEST( lcn_directory_open_input( t_dir, &in, "string.dat", pool ) );
     CuAssertTrue(tc, in != NULL);
 
-    LCN_TEST( lcn_istream_read_string( in, &buf, &len, pool ) );
+    LCN_TEST( lcn_index_input_read_string( in, &buf, &len, pool ) );
     CuAssertIntEquals(tc, len, 26);
     CuAssertStrEquals(tc, buf, "Apache Software Foundation" );
 
-    LCN_TEST( lcn_istream_clone( in, &clone, pool ) );
+    LCN_TEST( lcn_index_input_clone( in, &clone, pool ) );
 
-    LCN_TEST( lcn_istream_read_string( in, &buf, &len, pool ) );
+    LCN_TEST( lcn_index_input_read_string( in, &buf, &len, pool ) );
     CuAssertStrEquals(tc, buf, "Teste Sonderzeichen: ouml: "
                                "ö, auml: ä, uuml: ü, Ouml: "
                                "Ö, Auml: Ä, Uuml: Ü, szlig: ß");
 
-    LCN_TEST( lcn_istream_read_string( clone, &buf, &len, pool ) );
+    LCN_TEST( lcn_index_input_read_string( clone, &buf, &len, pool ) );
     CuAssertIntEquals(tc, len, 26);
     CuAssertStrEquals(tc, buf, "Apache Software Foundation" );
 
-    LCN_TEST( lcn_istream_seek( in, 0 ));
-    LCN_TEST( lcn_istream_read_string( in, &buf, &len, pool ) );
+    LCN_TEST( lcn_index_input_seek( in, 0 ));
+    LCN_TEST( lcn_index_input_read_string( in, &buf, &len, pool ) );
     CuAssertIntEquals(tc, len, 26);
     CuAssertStrEquals(tc, buf, "Apache Software Foundation" );
 
-    LCN_TEST( lcn_istream_seek( clone, 0 ));
+    LCN_TEST( lcn_index_input_seek( clone, 0 ));
 
-    LCN_TEST( lcn_istream_read_string( in, &buf, &len, pool ) );
+    LCN_TEST( lcn_index_input_read_string( in, &buf, &len, pool ) );
     CuAssertStrEquals(tc, buf, "Teste Sonderzeichen: ouml: "
                                "ö, auml: ä, uuml: ü, Ouml: "
                                "Ö, Auml: Ä, Uuml: Ü, szlig: ß");
 
-    LCN_TEST( lcn_istream_seek( in, 0 ));
-    LCN_TEST( lcn_istream_read_string( clone, &buf, &len, pool ) );
+    LCN_TEST( lcn_index_input_seek( in, 0 ));
+    LCN_TEST( lcn_index_input_read_string( clone, &buf, &len, pool ) );
     CuAssertStrEquals(tc, buf, "Apache Software Foundation" );
 
-    LCN_TEST( lcn_istream_read_string( clone, &buf, &len, pool ) );
+    LCN_TEST( lcn_index_input_read_string( clone, &buf, &len, pool ) );
     CuAssertStrEquals(tc, buf, "Teste Sonderzeichen: ouml: "
                                "ö, auml: ä, uuml: ü, Ouml: "
                                "Ö, Auml: Ä, Uuml: Ü, szlig: ß");
 
-    LCN_TEST( lcn_istream_read_string( in, &buf, &len, pool ) );
+    LCN_TEST( lcn_index_input_read_string( in, &buf, &len, pool ) );
     CuAssertIntEquals(tc, len, 26);
     CuAssertStrEquals(tc, buf, "Apache Software Foundation" );
 
-    LCN_TEST( lcn_istream_close( clone ) );
-    LCN_TEST( lcn_istream_close( in ) );
+    LCN_TEST( lcn_index_input_close( clone ) );
+    LCN_TEST( lcn_index_input_close( in ) );
     LCN_TEST( lcn_directory_close( t_dir ) );
 
     apr_pool_destroy( pool );
@@ -600,7 +600,7 @@ make_ostream_suite (void)
     SUITE_ADD_TEST(s, TestCuWriteVint);
     SUITE_ADD_TEST(s, TestCuWriteString);
     SUITE_ADD_TEST(s, TestCuSeek);
-    SUITE_ADD_TEST(s, test_istream_clone);
+    SUITE_ADD_TEST(s, test_index_input_clone);
     SUITE_ADD_TEST(s, TestCuWriteLong);
 
     return s;

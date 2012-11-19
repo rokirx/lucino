@@ -388,18 +388,18 @@ lcn_bitvector_create_from_file ( lcn_bitvector_t** bitvector,
                                  apr_pool_t* pool )
 {
     apr_status_t s;
-    lcn_istream_t *in = NULL;
+    lcn_index_input_t *in = NULL;
 
     do
     {
-        LCNCE( lcn_istream_create( &in, file_name, pool ));
+        LCNCE( lcn_index_input_create( &in, file_name, pool ));
         LCNCE( lcn_bitvector_from_stream( bitvector, in, pool ) );
     }
     while(0);
 
     if ( NULL != in )
     {
-        apr_status_t stat = lcn_istream_close( in );
+        apr_status_t stat = lcn_index_input_close( in );
         s = s ? s : stat;
     }
 
@@ -408,7 +408,7 @@ lcn_bitvector_create_from_file ( lcn_bitvector_t** bitvector,
 
 apr_status_t
 lcn_bitvector_from_stream ( lcn_bitvector_t **bv,
-                            lcn_istream_t *in,
+                            lcn_index_input_t *in,
                             apr_pool_t* pool )
 {
     apr_status_t s;
@@ -418,14 +418,14 @@ lcn_bitvector_from_stream ( lcn_bitvector_t **bv,
         unsigned int len;
         int size, count;
 
-        LCNCE(lcn_istream_read_int( in, &size ) );
+        LCNCE(lcn_index_input_read_int( in, &size ) );
 
         if ( size == 0 )
         {
             LCNCE( LCN_ERR_INVALID_BV_SIZE );
         }
 
-        LCNCE( lcn_istream_read_int( in, &count ) );
+        LCNCE( lcn_index_input_read_int( in, &count ) );
 
         if ( count <= size ) /* old style file */
         {
@@ -435,10 +435,10 @@ lcn_bitvector_from_stream ( lcn_bitvector_t **bv,
             /* read bits */
             len = ((*bv)->size>>3) + 1;
 
-            if ( ( s = lcn_istream_read_bytes( in, (*bv)->bits, 0, &len )))
+            if ( ( s = lcn_index_input_read_bytes( in, (*bv)->bits, 0, &len )))
             {
                 /* ignore return values, as we're leaving on error */
-                (void) lcn_istream_close( in );
+                (void) lcn_index_input_close( in );
                 break;
             }
         }
@@ -447,7 +447,7 @@ lcn_bitvector_from_stream ( lcn_bitvector_t **bv,
             int read_bits = 0;
             int bit = 0;
 
-            LCNCE(lcn_istream_read_int( in, &size ) );
+            LCNCE(lcn_index_input_read_int( in, &size ) );
 
             if ( size == 0 )
             {
@@ -455,13 +455,13 @@ lcn_bitvector_from_stream ( lcn_bitvector_t **bv,
             }
 
             LCNCE( lcn_bitvector_create( bv, size, pool ) );
-            LCNCE( lcn_istream_read_int( in, &((*bv)->count) ) );
+            LCNCE( lcn_index_input_read_int( in, &((*bv)->count) ) );
 
             while( read_bits < size )
             {
                 unsigned int gap;
 
-                LCNCE( lcn_istream_read_vint( in, &gap ) );
+                LCNCE( lcn_index_input_read_vint( in, &gap ) );
 
                 if ( 1 == bit )
                 {
@@ -493,7 +493,7 @@ lcn_bitvector_from_dir( lcn_bitvector_t** bitvector,
                         apr_pool_t* pool )
 {
     apr_status_t s;
-    lcn_istream_t* is;
+    lcn_index_input_t* is;
 
     do
     {
@@ -508,7 +508,7 @@ lcn_bitvector_from_dir( lcn_bitvector_t** bitvector,
 
     if ( NULL != is )
     {
-        apr_status_t stat = lcn_istream_close( is );
+        apr_status_t stat = lcn_index_input_close( is );
         s = s ? s : stat;
     }
 

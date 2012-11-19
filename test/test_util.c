@@ -8,18 +8,18 @@
 #define OPTIMIZE_SKIP (3)
 
 void
-compare_input_streams( CuTest* tc, lcn_istream_t *is_a, lcn_istream_t *is_b )
+compare_input_streams( CuTest* tc, lcn_index_input_t *is_a, lcn_index_input_t *is_b )
 {
     unsigned char a;
     unsigned char b;
 
-    while( APR_SUCCESS == lcn_istream_read_byte( is_a, &a ) )
+    while( APR_SUCCESS == lcn_index_input_read_byte( is_a, &a ) )
     {
-        LCN_TEST( lcn_istream_read_byte( is_b, &b ) );
+        LCN_TEST( lcn_index_input_read_byte( is_b, &b ) );
         CuAssertTrue(tc, a == b );
     }
 
-    CuAssertTrue( tc, APR_SUCCESS != lcn_istream_read_byte( is_b, &b ) );
+    CuAssertTrue( tc, APR_SUCCESS != lcn_index_input_read_byte( is_b, &b ) );
 }
 
 void
@@ -41,8 +41,8 @@ compare_directories(CuTest* tc, const char* path_a, const char* path_b )
     for ( i = 0; i < lcn_list_size( file_list_a ); i++ )
     {
         char *s;
-        lcn_istream_t *is_a;
-        lcn_istream_t *is_b;
+        lcn_index_input_t *is_a;
+        lcn_index_input_t *is_b;
 
         s = lcn_list_get( file_list_a, i );
 
@@ -51,8 +51,8 @@ compare_directories(CuTest* tc, const char* path_a, const char* path_b )
 
         compare_input_streams( tc, is_a, is_b );
 
-        LCN_TEST( lcn_istream_close( is_a ) );
-        LCN_TEST( lcn_istream_close( is_b ) );
+        LCN_TEST( lcn_index_input_close( is_a ) );
+        LCN_TEST( lcn_index_input_close( is_b ) );
     }
     LCN_TEST( lcn_directory_close( dir_a ) );
     LCN_TEST( lcn_directory_close( dir_b ) );

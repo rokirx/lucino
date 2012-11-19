@@ -1,7 +1,7 @@
 #include "lcn_util.h"
 #include "lcn_store.h"
 
-#include "istream.h"
+#include "index_input.h"
 
 
 apr_off_t

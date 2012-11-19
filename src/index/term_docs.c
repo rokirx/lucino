@@ -27,7 +27,7 @@ lcn_segment_term_docs_seek_term_info( lcn_term_docs_t *term_docs,
         term_docs->prox_pointer = term_info->prox_pointer;
         term_docs->skip_pointer = term_info->freq_pointer + term_info->skip_offset;
 
-        LCNCE( lcn_istream_seek( term_docs->freq_stream, term_docs->freq_pointer ));
+        LCNCE( lcn_index_input_seek( term_docs->freq_stream, term_docs->freq_pointer ));
 
         term_docs->have_skipped = LCN_FALSE;
     }
@@ -96,11 +96,11 @@ lcn_segment_term_docs_close( lcn_term_docs_t *term_docs )
 {
     apr_status_t s;
 
-    LCNCR( lcn_istream_close( term_docs->freq_stream ));
+    LCNCR( lcn_index_input_close( term_docs->freq_stream ));
 
     if ( NULL != term_docs->skip_stream )
     {
-        LCNCR( lcn_istream_close( term_docs->skip_stream ) );
+        LCNCR( lcn_index_input_close( term_docs->skip_stream ) );
     }
 
     return s;
@@ -150,7 +150,7 @@ lcn_segment_term_positions_skipping_doc( lcn_term_docs_t *term_positions )
 
     for ( f = term_positions->freq; f > 0; f-- ) /* skip all positions */
     {
-        LCNCE( lcn_istream_read_vint( term_positions->prox_stream, &pos ) );
+        LCNCE( lcn_index_input_read_vint( term_positions->prox_stream, &pos ) );
     }
 
     return s;
@@ -184,7 +184,7 @@ lcn_segment_term_docs_next( lcn_term_docs_t *term_docs )
             return LCN_ERR_ITERATOR_NO_NEXT;
         }
 
-        LCNCE( lcn_istream_read_vint( term_docs->freq_stream, &doc_code ));
+        LCNCE( lcn_index_input_read_vint( term_docs->freq_stream, &doc_code ));
 
         term_docs->doc += ( doc_code >> 1);  /* shift off low bit */
 
@@ -193,9 +193,9 @@ lcn_segment_term_docs_next( lcn_term_docs_t *term_docs )
             term_docs->freq = 1;             /* freq is one       */
         }
         else
-        {                               
-	    /* else read freq    */
-            LCNCE( lcn_istream_read_vint( term_docs->freq_stream,
+        {
+            /* else read freq    */
+            LCNCE( lcn_index_input_read_vint( term_docs->freq_stream,
                                           (unsigned int*)&(term_docs->freq) ));
         }
 
@@ -226,7 +226,7 @@ lcn_segment_term_positions_next( lcn_term_docs_t *term_positions )
 
     for( f = term_positions->prox_count; f > 0; f-- ) /* skip unread positions */
     {
-        LCNCE( lcn_istream_read_vint( term_positions->prox_stream, &position ));
+        LCNCE( lcn_index_input_read_vint( term_positions->prox_stream, &position ));
     }
 
     if ( s )
@@ -263,7 +263,7 @@ lcn_segment_term_docs_read( lcn_term_docs_t *term_docs,
     {
         unsigned int doc_code;
 
-        LCNCE( lcn_istream_read_vint( term_docs->freq_stream, &doc_code ));
+        LCNCE( lcn_index_input_read_vint( term_docs->freq_stream, &doc_code ));
 
         term_docs->doc += ( doc_code >> 1);  /* shift off low bit */
 
@@ -273,7 +273,7 @@ lcn_segment_term_docs_read( lcn_term_docs_t *term_docs,
         }
         else                                 /* else read freq    */
         {
-            LCNCE( lcn_istream_read_vint( term_docs->freq_stream,
+            LCNCE( lcn_index_input_read_vint( term_docs->freq_stream,
                                           (unsigned int*)&(term_docs->freq) ));
         }
 
@@ -311,7 +311,7 @@ lcn_segment_term_docs_skip_to( lcn_term_docs_t *term_docs, unsigned int target )
             /* lazily clone   */
             if ( NULL == term_docs->skip_stream )
             {
-                LCNCE( lcn_istream_clone( term_docs->freq_stream,
+                LCNCE( lcn_index_input_clone( term_docs->freq_stream,
                                           &(term_docs->skip_stream),
                                           term_docs->pool ) );
             }
@@ -320,7 +320,7 @@ lcn_segment_term_docs_skip_to( lcn_term_docs_t *term_docs, unsigned int target )
 
             if ( ! term_docs->have_skipped )
             {
-                LCNCE( lcn_istream_seek( term_docs->skip_stream,
+                LCNCE( lcn_index_input_seek( term_docs->skip_stream,
                                          term_docs->skip_pointer ) );
 
                 term_docs->have_skipped = LCN_TRUE;
@@ -329,7 +329,7 @@ lcn_segment_term_docs_skip_to( lcn_term_docs_t *term_docs, unsigned int target )
             /* scan skip data */
             {
                 int last_skip_doc = term_docs->skip_doc;
-                apr_off_t last_freq_pointer = lcn_istream_file_pointer( term_docs->freq_stream );
+                apr_off_t last_freq_pointer = lcn_index_input_file_pointer( term_docs->freq_stream );
                 apr_off_t last_prox_pointer = -1;
                 int num_skipped = -1 - (term_docs->count % term_docs->skip_interval);
 
@@ -352,13 +352,13 @@ lcn_segment_term_docs_skip_to( lcn_term_docs_t *term_docs, unsigned int target )
                         break;
                     }
 
-                    LCNCE( lcn_istream_read_vint( term_docs->skip_stream, &vint ));
+                    LCNCE( lcn_index_input_read_vint( term_docs->skip_stream, &vint ));
                     term_docs->skip_doc += vint;
 
-                    LCNCE( lcn_istream_read_vint( term_docs->skip_stream, &vint ));
+                    LCNCE( lcn_index_input_read_vint( term_docs->skip_stream, &vint ));
                     term_docs->freq_pointer += vint;
 
-                    LCNCE( lcn_istream_read_vint( term_docs->skip_stream, &vint ));
+                    LCNCE( lcn_index_input_read_vint( term_docs->skip_stream, &vint ));
                     term_docs->prox_pointer += vint;
 
                     term_docs->skip_count++;
@@ -371,9 +371,9 @@ lcn_segment_term_docs_skip_to( lcn_term_docs_t *term_docs, unsigned int target )
 
                 /* if we found something to skip, then skip it */
 
-                if ( last_freq_pointer > lcn_istream_file_pointer( term_docs->freq_stream ) )
+                if ( last_freq_pointer > lcn_index_input_file_pointer( term_docs->freq_stream ) )
                 {
-                    LCNCE( lcn_istream_seek( term_docs->freq_stream, last_freq_pointer ));
+                    LCNCE( lcn_index_input_seek( term_docs->freq_stream, last_freq_pointer ));
                     LCNCE( term_docs->skip_prox( term_docs, last_prox_pointer ) );
 
                     term_docs->doc = last_skip_doc;
@@ -432,7 +432,7 @@ lcn_segment_term_positions_next_position( lcn_term_docs_t *term_positions,
     unsigned int pos;
 
     term_positions->prox_count--;
-    LCNCR( lcn_istream_read_vint( term_positions->prox_stream,
+    LCNCR( lcn_index_input_read_vint( term_positions->prox_stream,
                                   (unsigned int*)&pos ) );
 
     term_positions->position += pos;
@@ -465,7 +465,7 @@ lcn_segment_term_docs_create( lcn_index_reader_t *index_reader,
         (*term_docs)->parent = index_reader;
         (*term_docs)->pool   = pool;
 
-        LCNCE( lcn_istream_clone( segment_reader->freq_stream,
+        LCNCE( lcn_index_input_clone( segment_reader->freq_stream,
                                   &((*term_docs)->freq_stream),
                                   pool ));
         (*term_docs)->deleted_docs   = segment_reader->deleted_docs;
@@ -585,7 +585,7 @@ lcn_segment_term_positions_seek_term_info( lcn_term_docs_t *term_positions, lcn_
     apr_status_t s;
 
     LCNCR( lcn_segment_term_docs_seek_term_info( term_positions, term_info ) );
-    LCNCR( lcn_istream_seek( term_positions->prox_stream, term_info->prox_pointer ) );
+    LCNCR( lcn_index_input_seek( term_positions->prox_stream, term_info->prox_pointer ) );
     term_positions->prox_count = 0;
 
     return s;
@@ -601,7 +601,7 @@ lcn_segment_term_positions_close( lcn_term_docs_t *term_positions )
     apr_status_t s;
 
     LCNCR( lcn_segment_term_docs_close( term_positions ) );
-    LCNCR( lcn_istream_close( term_positions->prox_stream ) );
+    LCNCR( lcn_index_input_close( term_positions->prox_stream ) );
 
     return s;
 }
@@ -628,7 +628,7 @@ lcn_segment_term_positions_skip_prox (lcn_term_docs_t *term_positions, apr_off_t
 
     do
     {
-        LCNCE( lcn_istream_seek( term_positions->prox_stream, prox_pointer ) );
+        LCNCE( lcn_index_input_seek( term_positions->prox_stream, prox_pointer ) );
         term_positions->prox_count = 0;
     }
     while(0);
@@ -664,7 +664,7 @@ lcn_segment_term_positions_create( lcn_index_reader_t *index_reader,
     apr_status_t s;
 
     LCNCR( lcn_segment_term_docs_create( index_reader, term_positions, pool ) );
-    LCNCR( lcn_istream_clone( ((lcn_segment_reader_t*)index_reader)->prox_stream,
+    LCNCR( lcn_index_input_clone( ((lcn_segment_reader_t*)index_reader)->prox_stream,
                               &((*term_positions)->prox_stream),
                               pool ));
 

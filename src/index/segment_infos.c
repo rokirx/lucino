@@ -432,7 +432,7 @@ lcn_segment_infos_read_directory( lcn_segment_infos_t *segment_infos,
 {
     apr_status_t s = APR_SUCCESS;
     apr_pool_t *cp = NULL;
-    lcn_istream_t *is = NULL;
+    lcn_index_input_t *is = NULL;
 
     do
     {
@@ -460,19 +460,19 @@ lcn_segment_infos_read_directory( lcn_segment_infos_t *segment_infos,
                 break;
             }
 
-            LCNCE( lcn_istream_read_int( is, &format ) );
+            LCNCE( lcn_index_input_read_int( is, &format ) );
 
             if ( format < 0 )  /* file contains explicit format info */
             {
                 int counter;
                 LCNASSERT( format >= LCN_SEGMENT_INFOS_FORMAT, LCN_ERR_SEGMENT_INFOS_UNKNOWN_FILE_FORMAT );
-                LCNCE( lcn_istream_read_ulong( is, &(segment_infos->version) ));
-                LCNCE( lcn_istream_read_int( is, &counter ) );
+                LCNCE( lcn_index_input_read_ulong( is, &(segment_infos->version) ));
+                LCNCE( lcn_index_input_read_int( is, &counter ) );
                 segment_infos->counter = counter;
                 segment_infos->format = format;
             }
 
-            LCNCE( lcn_istream_read_int( is, (int*)&size ));
+            LCNCE( lcn_index_input_read_int( is, (int*)&size ));
 
             for( i = 0; i < size; i++ )
             {
@@ -480,8 +480,8 @@ lcn_segment_infos_read_directory( lcn_segment_infos_t *segment_infos,
                 int doc_count;
                 unsigned int len;
 
-                LCNCE( lcn_istream_read_string( is, &name, &len, lcn_list_pool( segment_infos->list )));
-                LCNCE( lcn_istream_read_int( is, (int*)&doc_count ) );
+                LCNCE( lcn_index_input_read_string( is, &name, &len, lcn_list_pool( segment_infos->list )));
+                LCNCE( lcn_index_input_read_int( is, (int*)&doc_count ) );
                 LCNCE( lcn_segment_infos_add_info( segment_infos, dir, name, doc_count ));
             }
 
@@ -497,7 +497,7 @@ lcn_segment_infos_read_directory( lcn_segment_infos_t *segment_infos,
 
     if ( NULL != is )
     {
-        apr_status_t stat = lcn_istream_close( is );
+        apr_status_t stat = lcn_index_input_close( is );
         s = ( s ? s : stat );
     }
 

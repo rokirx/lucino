@@ -131,7 +131,7 @@ lcn_term_infos_reader_ensure_index_is_read( lcn_term_infos_reader_t *ti_reader )
         unsigned int i = 0;
 
         char *file_name;
-        lcn_istream_t *istream;
+        lcn_index_input_t *istream;
 
         LCNPV( file_name = apr_pstrcat( pool, ti_reader->segment, ".tii", NULL ), APR_ENOMEM );
         LCNCE( lcn_directory_open_input( ti_reader->dir, &istream, file_name, pool ) );
@@ -321,7 +321,7 @@ lcn_term_infos_reader_create( lcn_term_infos_reader_t **term_infos_reader,
     do
     {
         char *file_name;
-        lcn_istream_t *istream;
+        lcn_index_input_t *istream;
 
         LCNPV( *term_infos_reader = (lcn_term_infos_reader_t*) apr_pcalloc( pool, sizeof( lcn_term_infos_reader_t )),
                APR_ENOMEM );

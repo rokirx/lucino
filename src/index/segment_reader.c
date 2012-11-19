@@ -13,7 +13,7 @@
 
 struct lcn_norm_t {
 
-    lcn_istream_t *istream;
+    lcn_index_input_t *istream;
     lcn_byte_array_t *bytes;
     lcn_bool_t dirty;
     int number;
@@ -21,7 +21,7 @@ struct lcn_norm_t {
 
 static apr_status_t
 lcn_norm_create( lcn_norm_t **norm,
-                 lcn_istream_t *istream,
+                 lcn_index_input_t *istream,
                  int number,
                  apr_pool_t *pool )
 {
@@ -109,7 +109,7 @@ lcn_segment_reader_files( lcn_index_reader_t *reader,
                 lcn_bool_t file_exists;
                 char *name = apr_pstrcat( pool, segment_reader->segment,
                                           ".f", apr_itoa( pool, i ), NULL );
-                
+
                 LCNCE( lcn_directory_file_exists( segment_reader->parent.directory,
                                                   name,
                                                   &file_exists ));
@@ -211,7 +211,7 @@ lcn_segment_reader_get_field_infos( lcn_index_reader_t *index_reader,
 
 static apr_status_t
 lcn_segment_reader_init_stream( lcn_segment_reader_t *segment_reader,
-                                lcn_istream_t **stream,
+                                lcn_index_input_t **stream,
                                 const char *segment_name,
                                 const char *extension )
 {
@@ -270,10 +270,10 @@ lcn_segment_reader_open_norms( lcn_segment_reader_t *segment_reader )
                  ! lcn_field_info_omit_norms( field_info ) )
             {
                 lcn_norm_t *norm;
-                lcn_istream_t *istream;
+                lcn_index_input_t *istream;
                 char *file_name = NULL;
                 char *ext = apr_itoa( pool, field_info->number );
-                
+
                 LCNPV( ext, APR_ENOMEM );
                 LCNPV( file_name = apr_pstrcat( pool, segment_reader->segment, ".f", ext, NULL ), APR_ENOMEM );
 #if 0
@@ -309,35 +309,35 @@ lcn_segment_reader_initialize( lcn_segment_reader_t *segment_reader,
 {
     apr_status_t s;
     apr_pool_t* child_pool = NULL;
-    
+
     do
     {
         LCNCE( apr_pool_create( &child_pool, pool ));
-        
+
         lcn_bool_t has_deletions;
         lcn_bool_t cf_segment_exists = LCN_FALSE;
         char* cf_segment_file_name= NULL;
-        
-        segment_reader->segment = segment_info->name; 
-        LCNPV( cf_segment_file_name = apr_pstrcat( child_pool, 
+
+        segment_reader->segment = segment_info->name;
+        LCNPV( cf_segment_file_name = apr_pstrcat( child_pool,
                                                    segment_reader->segment,
                                                    ".cfs", NULL ), APR_ENOMEM );
-        
-        LCNCE(lcn_directory_file_exists(segment_reader->parent.directory, 
-                                        cf_segment_file_name, 
+
+        LCNCE(lcn_directory_file_exists(segment_reader->parent.directory,
+                                        cf_segment_file_name,
                                         &cf_segment_exists ));
-        
+
         if ( cf_segment_exists == LCN_TRUE )
-        {              
+        {
             lcn_directory_t *cf_dir = NULL;
-            LCNCE(lcn_cfs_directory_create( &cf_dir, 
+            LCNCE(lcn_cfs_directory_create( &cf_dir,
                                             segment_reader->parent.directory,
-                                            cf_segment_file_name, 
+                                            cf_segment_file_name,
                                             child_pool) );
-            
+
             segment_reader->parent.directory = cf_dir;
         }
-        
+
 #if 0
         TODO Compound file support
             // Use compound file directory for some files, if it exists
@@ -373,7 +373,7 @@ lcn_segment_reader_initialize( lcn_segment_reader_t *segment_reader,
             segment_reader->tis = NULL;
             s = APR_SUCCESS;
         }
-        
+
         if ( s )
         {
             break;
@@ -562,7 +562,7 @@ lcn_segment_reader_close_norms( lcn_index_reader_t *index_reader )
         {
             apr_hash_this( hi, NULL, NULL, &val );
             norm = (lcn_norm_t*) val;
-            status = lcn_istream_close( norm->istream );
+            status = lcn_index_input_close( norm->istream );
 
             /* on error try to close all norms */
 
@@ -597,12 +597,12 @@ lcn_segment_reader_do_close( lcn_index_reader_t *index_reader )
 
         if ( NULL != segment_reader->freq_stream )
         {
-            LCNCE( lcn_istream_close( segment_reader->freq_stream ) );
+            LCNCE( lcn_index_input_close( segment_reader->freq_stream ) );
         }
 
         if ( NULL != segment_reader->prox_stream )
         {
-            LCNCE( lcn_istream_close( segment_reader->prox_stream ) );
+            LCNCE( lcn_index_input_close( segment_reader->prox_stream ) );
         }
 
         LCNCE( lcn_segment_reader_close_norms( index_reader ) );
@@ -616,7 +616,7 @@ lcn_segment_reader_do_close( lcn_index_reader_t *index_reader )
             termVectorsReaderOrig.close();
 
 #endif
-        
+
     }
     while(0);
 
@@ -797,7 +797,7 @@ lcn_segment_reader_read_norms_to_array( lcn_index_reader_t *index_reader,
 {
     apr_status_t s = APR_SUCCESS;
     apr_pool_t *p = NULL;
-    lcn_istream_t *norms_stream = NULL;
+    lcn_index_input_t *norms_stream = NULL;
 
     do
     {
@@ -819,17 +819,17 @@ lcn_segment_reader_read_norms_to_array( lcn_index_reader_t *index_reader,
             unsigned int max_doc = lcn_index_reader_max_doc( index_reader );
 
             LCNCE( apr_pool_create( &p, index_reader->pool ) );
-            LCNCE( lcn_istream_clone( norm->istream, &norms_stream, p ) );
-            LCNCE( lcn_istream_seek( norms_stream, 0 ) );
-            LCNCE( lcn_istream_read_bytes( norms_stream, result_norms->arr + offset, 0, &max_doc ) );
-            LCNCE( lcn_istream_close( norms_stream ) );
+            LCNCE( lcn_index_input_clone( norm->istream, &norms_stream, p ) );
+            LCNCE( lcn_index_input_seek( norms_stream, 0 ) );
+            LCNCE( lcn_index_input_read_bytes( norms_stream, result_norms->arr + offset, 0, &max_doc ) );
+            LCNCE( lcn_index_input_close( norms_stream ) );
         }
     }
     while(0);
 
     if ( NULL != norms_stream )
     {
-        apr_status_t stat = lcn_istream_close( norms_stream );
+        apr_status_t stat = lcn_index_input_close( norms_stream );
         s = (s ? s : stat );
     }
 
@@ -1153,6 +1153,6 @@ lcn_segment_reader_create( lcn_index_reader_t **index_reader,
         *index_reader = lcn_cast_index_reader( reader );
     }
     while(0);
-    
+
     return s;
 }
