@@ -157,7 +157,7 @@ lcn_ram_directory_open_input( lcn_directory_t *directory,
         }
 
         LCNPV( file, LCN_ERR_RAM_FILE_NOT_FOUND );
-        LCNCM( lcn_ram_input_stream_create( new_in, file, pool ), file_name );
+        LCNCM( lcn_ram_input_stream_create( new_in, file_name, file, pool ), file_name );
     }
     while(0);
 

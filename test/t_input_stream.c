@@ -53,7 +53,7 @@ TestCuReadInt(CuTest* tc)
     LCN_TEST( lcn_index_input_close( in ) );
 
     f = make_ram_file( "segments", tc, pool );
-    LCN_TEST( lcn_ram_input_stream_create( &in, f, pool ) );
+    LCN_TEST( lcn_ram_input_stream_create( &in, "segments", f, pool ) );
 
     CuAssertTrue(tc, len == lcn_index_input_size( in ) );
     CuAssertTrue(tc, in != NULL);
@@ -104,7 +104,7 @@ TestCuReadVint(CuTest* tc)
     test_read_vint_impl(tc, in );
     LCN_TEST( lcn_index_input_close( in ) );
     f = make_ram_file( "vint.dat", tc, p );
-    LCN_TEST( lcn_ram_input_stream_create( &in, f, p ) );
+    LCN_TEST( lcn_ram_input_stream_create( &in, "vint.dat", f, p ) );
     test_read_vint_impl(tc, in );
     LCN_TEST( lcn_index_input_close( in ) );
     LCN_TEST( lcn_directory_close( t_dir ) );
@@ -141,7 +141,7 @@ TestCuReadLong(CuTest* tc)
     test_read_long_impl (tc, in );
     LCN_TEST( lcn_index_input_close( in ) );
     f = make_ram_file( "long.dat", tc, p );
-    LCN_TEST( lcn_ram_input_stream_create( &in, f, p ) );
+    LCN_TEST( lcn_ram_input_stream_create( &in, "long.dat", f, p ) );
     test_read_long_impl ( tc, in );
     LCN_TEST( lcn_index_input_close( in ) );
     LCN_TEST( lcn_directory_close( t_dir ) );
@@ -170,7 +170,7 @@ TestCuReadString(CuTest* tc)
     LCN_TEST( lcn_index_input_close( in ) );
 
     f = make_ram_file( "string.dat", tc, p );
-    LCN_TEST( lcn_ram_input_stream_create( &in, f, p ) );
+    LCN_TEST( lcn_ram_input_stream_create( &in, "string.dat", f, p ) );
     LCN_TEST( lcn_index_input_read_string( in, &buf, &len, p ) );
     CuAssertTrue(tc, len == 26);
     CuAssertStrEquals(tc, buf, "Apache Software Foundation" );
@@ -213,7 +213,7 @@ TestCuReadBytes(CuTest* tc)
     LCN_TEST( lcn_index_input_close( in ) );
 
     f = make_ram_file( "string.dat", tc, p );
-    LCN_TEST( lcn_ram_input_stream_create( &in, f, p ) );
+    LCN_TEST( lcn_ram_input_stream_create( &in, "string.dat", f, p ) );
     LCN_TEST( lcn_index_input_read_byte( in, &byte ) );
 
     len = 26;
@@ -254,7 +254,7 @@ TestCuSeek(CuTest* tc)
     LCN_TEST( lcn_index_input_close( in ) );
 
     f = make_ram_file( "string.dat", tc, p );
-    LCN_TEST( lcn_ram_input_stream_create( &in, f, p ) );
+    LCN_TEST( lcn_ram_input_stream_create( &in, "string.dat", f, p ) );
     LCN_TEST( lcn_index_input_seek(in, 10) );
     LCN_TEST( lcn_index_input_read_bytes( in, bytes, 0, &len ) );
     bytes[10] = 0;
@@ -292,7 +292,7 @@ TestCuClone(CuTest* tc)
     LCN_TEST( lcn_index_input_close( clone ) );
 
     f = make_ram_file( "string.dat", tc, p );
-    LCN_TEST( lcn_ram_input_stream_create( &in, f, p ) );
+    LCN_TEST( lcn_ram_input_stream_create( &in, "string.dat", f, p ) );
     LCN_TEST( lcn_index_input_read_string( in, &buf, &len, p ) );
     CuAssertIntEquals(tc, len, 26);
     CuAssertStrEquals(tc, buf, "Apache Software Foundation");

@@ -134,8 +134,9 @@ lcn_index_input_read_bytes( lcn_index_input_t *input_stream,
                             unsigned int *len);
 
 apr_status_t
-lcn_index_input_init_base( lcn_index_input_t **in,
-                           apr_pool_t *pool );
+lcn_index_input_init( lcn_index_input_t *in,
+                      const char *name,
+                      apr_pool_t *pool );
 
 
 /**
@@ -219,11 +220,6 @@ apr_status_t
 lcn_index_input_create( lcn_index_input_t **new_in,
                         const char *file_name,
                         apr_pool_t *pool );
-
-apr_status_t
-lcn_ram_input_stream_create( lcn_index_input_t **new_in,
-                             lcn_ram_file_t *ram_file,
-                             apr_pool_t *pool );
 
 apr_status_t
 lcn_cs_input_stream_create( lcn_index_input_t **new_is,

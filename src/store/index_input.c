@@ -76,6 +76,7 @@ lcn_index_input_fs_read_internal ( lcn_index_input_t *istream,
 
 apr_status_t
 lcn_index_input_init( lcn_index_input_t *in,
+                      const char *name,
                       apr_pool_t *pool )
 {
     apr_status_t s;
@@ -114,7 +115,7 @@ lcn_index_input_fs_clone ( lcn_index_input_t *istream,
     do
     {
         LCNPV( *clone = (lcn_index_input_t*) apr_pcalloc( pool, sizeof(lcn_index_input_t)), APR_ENOMEM );
-        LCNCE( lcn_index_input_init(*clone, pool ) );
+        LCNCE( lcn_index_input_init(*clone, NULL, pool ) );
 
         (*clone)->position = 0;
         (*clone)->size     = istream->size;
@@ -636,7 +637,8 @@ lcn_index_input_create( lcn_index_input_t **new_is,
 
         LCNPV( is = (lcn_index_input_t*) apr_pcalloc( pool, sizeof(lcn_index_input_t)), APR_ENOMEM );
 
-        LCNCE( lcn_index_input_init( is, pool ) );
+        LCNCE( lcn_index_input_init( is, file_name, pool ) );
+
         LCNCM( apr_stat( &finfo, file_name,
                          APR_FINFO_TYPE | APR_FINFO_SIZE,
                          is->pool ), file_name );
@@ -674,7 +676,7 @@ lcn_index_input_buf_stream_create ( lcn_index_input_t **new_in,
     {
         LCNPV( *new_in = (lcn_index_input_t*) apr_pcalloc( pool, sizeof(lcn_index_input_t)), APR_ENOMEM );
 
-        LCNCR( lcn_index_input_init( *new_in, pool ) );
+        LCNCR( lcn_index_input_init( *new_in, NULL, pool ) );
 
         (*new_in)->pointer = 0;
         (*new_in)->size    = len;
@@ -713,7 +715,7 @@ lcn_cs_input_stream_create( lcn_index_input_t **new_is,
     {
         LCNPV( *new_is = (lcn_index_input_t*) apr_pcalloc( pool, sizeof(lcn_index_input_t)), APR_ENOMEM );
 
-        LCNCE( lcn_index_input_init( *new_is, pool ) );
+        LCNCE( lcn_index_input_init( *new_is, NULL, pool ) );
 
         (*new_is)->base = base;
         (*new_is)->file_offset = file_offset;

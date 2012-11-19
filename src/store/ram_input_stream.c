@@ -56,7 +56,7 @@ lcn_index_input_ram_clone( lcn_index_input_t *istream,
 {
     apr_status_t s;
 
-    LCNCR( lcn_ram_input_stream_create( clone_in, istream->_file, pool ));
+    LCNCR( lcn_ram_input_stream_create( clone_in, NULL, istream->_file, pool ));
 
     (*clone_in)->size     = istream->size;
     (*clone_in)->is_open  = istream->is_open;
@@ -74,6 +74,7 @@ lcn_index_input_ram_close( lcn_index_input_t *istream )
 
 apr_status_t
 lcn_ram_input_stream_create( lcn_index_input_t **new_in,
+                             const char *name,
                              lcn_ram_file_t *file,
                              apr_pool_t *pool )
 {
@@ -85,7 +86,7 @@ lcn_ram_input_stream_create( lcn_index_input_t **new_in,
         LCNPV( is = (struct ram_input_stream*) apr_pcalloc( pool, sizeof(struct ram_input_stream)), APR_ENOMEM );
         *new_in = (lcn_index_input_t*) is;
 
-        LCNCE( lcn_index_input_init( *new_in, pool ) );
+        LCNCE( lcn_index_input_init( *new_in, name, pool ) );
 
         (*new_in)->pointer = 0;
         (*new_in)->_file = file;

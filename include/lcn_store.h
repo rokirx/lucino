@@ -117,35 +117,36 @@ lcn_index_input_read_vlong( lcn_index_input_t *istream,
  * minimum length of the buffer to store the string is stored in *len.
  */
 apr_status_t
-lcn_index_input_read_string ( lcn_index_input_t *input_stream,
-                          char **str,
-                          unsigned int *len,
-                          apr_pool_t *pool );
+lcn_index_input_read_string( lcn_index_input_t *input_stream,
+                             char **str,
+                             unsigned int *len,
+                             apr_pool_t *pool );
 
 apr_status_t
 lcn_index_input_seek( lcn_index_input_t *input_stream,
                   apr_off_t offset );
 
 apr_status_t
-lcn_index_input_name ( lcn_index_input_t *input_stream,
-                                        char **name,
-                                        apr_pool_t *pool);
+lcn_index_input_name( lcn_index_input_t *input_stream,
+                      char **name,
+                      apr_pool_t *pool);
 
 
 /**
  * Closes the stream if the stream is open.
  */
 apr_status_t
-lcn_index_input_close ( lcn_index_input_t *input_stream );
+lcn_index_input_close( lcn_index_input_t *input_stream );
 
 apr_status_t
-lcn_index_input_create ( lcn_index_input_t **new_in,
-                     const char *file_name,
-                     apr_pool_t *pool );
+lcn_index_input_create( lcn_index_input_t **new_in,
+                        const char *file_name,
+                        apr_pool_t *pool );
 apr_status_t
-lcn_ram_input_stream_create ( lcn_index_input_t **new_in,
-                              lcn_ram_file_t *ram_file,
-                              apr_pool_t *pool );
+lcn_ram_input_stream_create( lcn_index_input_t **new_in,
+                             const char *name,
+                             lcn_ram_file_t *ram_file,
+                             apr_pool_t *pool );
 
 /**
  * @brief Creates an input stream getting bytes from buffer
@@ -157,17 +158,17 @@ lcn_ram_input_stream_create ( lcn_index_input_t **new_in,
  */
 apr_status_t
 lcn_index_input_buf_stream_create ( lcn_index_input_t **new_in,
-                                const char *buffer,
-                                unsigned int len,
-                                apr_pool_t *pool );
+                                    const char *buffer,
+                                    unsigned int len,
+                                    apr_pool_t *pool );
 
 
 apr_status_t
-lcn_cs_input_stream_create ( lcn_index_input_t **new_is,
-                             lcn_index_input_t *base,
-                             apr_off_t file_offset,
-                             apr_off_t length,
-                             apr_pool_t *pool);
+lcn_cs_input_stream_create( lcn_index_input_t **new_is,
+                            lcn_index_input_t *base,
+                            apr_off_t file_offset,
+                            apr_off_t length,
+                            apr_pool_t *pool);
 
 /** @} */
 
@@ -182,14 +183,14 @@ lcn_ostream_get_file_pointer( lcn_ostream_t *ostream );
 
 
 apr_status_t
-lcn_ostream_seek ( lcn_ostream_t *ostream, apr_off_t pos );
+lcn_ostream_seek( lcn_ostream_t *ostream, apr_off_t pos );
 
 
 apr_status_t
-lcn_ostream_write_chars ( lcn_ostream_t *os,
-                          const char *s,
-                          apr_off_t start,
-                          unsigned int length );
+lcn_ostream_write_chars( lcn_ostream_t *os,
+                         const char *s,
+                         apr_off_t start,
+                         unsigned int length );
 
 apr_status_t
 lcn_ostream_write_vlong( lcn_ostream_t *ostream,

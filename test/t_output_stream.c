@@ -90,7 +90,7 @@ TestCuWriteByte(CuTest* tc)
         {
             apr_pool_t *is_pool;
             LCN_TEST( apr_pool_create( &is_pool, main_pool ) );
-            LCN_TEST( lcn_ram_input_stream_create( &in, file, is_pool ) );
+            LCN_TEST( lcn_ram_input_stream_create( &in, NULL, file, is_pool ) );
             LCN_TEST( lcn_index_input_read_byte(in, &byte ) );
             CuAssertIntEquals(tc, byte, 250 );
             LCN_TEST( lcn_index_input_close( in ) );
@@ -160,7 +160,7 @@ TestCuWriteBytes(CuTest* tc)
         {
             apr_pool_t *is_pool;
             LCN_TEST( apr_pool_create( &is_pool, main_pool ) );
-            LCN_TEST( lcn_ram_input_stream_create( &in, file, is_pool ) );
+            LCN_TEST( lcn_ram_input_stream_create( &in, NULL, file, is_pool ) );
             len = 16;
             LCN_TEST( lcn_index_input_read_bytes( in, buf, 0, &len ) );
             CuAssertStrEquals(tc, s, buf );
@@ -314,7 +314,7 @@ TestCuWriteInt(CuTest* tc)
         {
             apr_pool_t *is_pool;
             LCN_TEST( apr_pool_create( &is_pool, main_pool ) );
-            LCN_TEST( lcn_ram_input_stream_create( &in, file, is_pool ) );
+            LCN_TEST( lcn_ram_input_stream_create( &in, NULL, file, is_pool ) );
             test_write_int_read_impl( tc, lcn_index_input_read_int, in );
             LCN_TEST( lcn_index_input_close( in ) );
             apr_pool_destroy( is_pool );
@@ -422,7 +422,7 @@ TestCuWriteVint(CuTest* tc)
         {
             apr_pool_t *is_pool;
             LCN_TEST( apr_pool_create( &is_pool, main_pool ) );
-            LCN_TEST( lcn_ram_input_stream_create( &in, file, is_pool ) );
+            LCN_TEST( lcn_ram_input_stream_create( &in, NULL, file, is_pool ) );
             test_write_vint_read_impl( tc, lcn_index_input_read_vint, in );
             LCN_TEST( lcn_index_input_close( in ) );
             apr_pool_destroy( is_pool );
@@ -488,7 +488,7 @@ TestCuWriteString(CuTest* tc)
             LCN_TEST( apr_pool_create( &is_pool, main_pool ) );
             LCN_TEST( apr_pool_create( &str_pool, main_pool ) );
 
-            LCN_TEST( lcn_ram_input_stream_create( &in, file, is_pool ) );
+            LCN_TEST( lcn_ram_input_stream_create( &in, NULL, file, is_pool ) );
             LCN_TEST( lcn_index_input_read_string( in, &buf, &len, str_pool ) );
             LCN_TEST( lcn_index_input_close( in ) );
             apr_pool_destroy( is_pool );
