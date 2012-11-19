@@ -1,6 +1,18 @@
 #include "index_input.h"
 #include "lcn_store.h"
 
+
+struct ram_input_stream {
+
+    lcn_index_input_t index_input;
+
+    apr_off_t pointer;
+
+    lcn_ram_file_t *file;
+};
+
+
+
 static apr_status_t
 lcn_index_input_ram_read_internal ( lcn_index_input_t *in,
                                 char *dest,
@@ -66,18 +78,26 @@ lcn_ram_input_stream_create( lcn_index_input_t **new_in,
                              apr_pool_t *pool )
 {
     apr_status_t s;
+    struct ram_input_stream *is;
 
-    LCNCR( lcn_index_input_init_base( new_in, pool ) );
+    do
+    {
+        LCNPV( is = (struct ram_input_stream*) apr_pcalloc( pool, sizeof(struct ram_input_stream)), APR_ENOMEM );
+        *new_in = (lcn_index_input_t*) is;
 
-    (*new_in)->pointer = 0;
-    (*new_in)->_file = file;
-    (*new_in)->size = file->length;
+        LCNCE( lcn_index_input_init( *new_in, pool ) );
 
-    /* overload implementation specific methods */
+        (*new_in)->pointer = 0;
+        (*new_in)->_file = file;
+        (*new_in)->size = file->length;
 
-    (*new_in)->_close         = lcn_index_input_ram_close;
-    (*new_in)->_read_internal = lcn_index_input_ram_read_internal;
-    (*new_in)->_clone         = lcn_index_input_ram_clone;
+        /* overload implementation specific methods */
+
+        (*new_in)->_close         = lcn_index_input_ram_close;
+        (*new_in)->_read_internal = lcn_index_input_ram_read_internal;
+        (*new_in)->_clone         = lcn_index_input_ram_clone;
+    }
+    while(0);
 
     return s;
 }

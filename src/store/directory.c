@@ -851,14 +851,8 @@ lcn_fs_directory_create( lcn_directory_t **new_dir,
 
 /* }}} */
 
-/* {{{ lcn_bool_t lcn_directory_is_open */
-
 lcn_bool_t
 lcn_directory_is_open( lcn_directory_t *directory )
 {
     return directory->is_open;
 }
-
-/* }}} */
-
-

@@ -75,30 +75,29 @@ lcn_index_input_fs_read_internal ( lcn_index_input_t *istream,
 }
 
 apr_status_t
-lcn_index_input_init_base( lcn_index_input_t **in,
-                           apr_pool_t *pool )
+lcn_index_input_init( lcn_index_input_t *in,
+                      apr_pool_t *pool )
 {
     apr_status_t s;
 
     do
     {
-        LCNPV( *in = (lcn_index_input_t*) apr_pcalloc( pool, sizeof(lcn_index_input_t) ), APR_ENOMEM );
-        LCNPV( (*in)->buffer = (char*) apr_palloc( pool, sizeof(char) * LCN_STREAM_BUFFER_SIZE), APR_ENOMEM );
+        LCNPV( in->buffer = (char*) apr_palloc( pool, sizeof(char) * LCN_STREAM_BUFFER_SIZE), APR_ENOMEM );
 
-        (*in)->_file = NULL;
-        (*in)->name  = NULL;
-        (*in)->position = 0;
-        (*in)->is_open  = LCN_TRUE;
-        (*in)->is_clone = LCN_FALSE;
+        in->_file = NULL;
+        in->name  = NULL;
+        in->position = 0;
+        in->is_open  = LCN_TRUE;
+        in->is_clone = LCN_FALSE;
 
-        (*in)->buffer_start    = 0;
-        (*in)->buffer_length   = 0;
-        (*in)->buffer_position = 0;
-        (*in)->pool = pool;
+        in->buffer_start    = 0;
+        in->buffer_length   = 0;
+        in->buffer_position = 0;
+        in->pool = pool;
 
-        (*in)->_clone         = lcn_index_input_fs_clone;
-        (*in)->_close         = lcn_index_input_fs_close;
-        (*in)->_read_internal = lcn_index_input_fs_read_internal;
+        in->_clone         = lcn_index_input_fs_clone;
+        in->_close         = lcn_index_input_fs_close;
+        in->_read_internal = lcn_index_input_fs_read_internal;
     }
     while(0);
 
@@ -114,7 +113,8 @@ lcn_index_input_fs_clone ( lcn_index_input_t *istream,
 
     do
     {
-        LCNCE( lcn_index_input_init_base( clone, pool ) );
+        LCNPV( *clone = (lcn_index_input_t*) apr_pcalloc( pool, sizeof(lcn_index_input_t)), APR_ENOMEM );
+        LCNCE( lcn_index_input_init(*clone, pool ) );
 
         (*clone)->position = 0;
         (*clone)->size     = istream->size;
@@ -621,10 +621,10 @@ lcn_index_input_cs_clone( lcn_index_input_t *istream,
     return s;
 }
 
-LUCENE_EXTERN apr_status_t
-LUCENE_API(lcn_index_input_create) ( lcn_index_input_t **new_is,
-                                     const char *file_name,
-                                     apr_pool_t *pool )
+apr_status_t
+lcn_index_input_create( lcn_index_input_t **new_is,
+                        const char *file_name,
+                        apr_pool_t *pool )
 {
     apr_status_t s;
 
@@ -634,7 +634,9 @@ LUCENE_API(lcn_index_input_create) ( lcn_index_input_t **new_is,
         apr_file_t *newf;
         lcn_index_input_t *is;
 
-        LCNCE( lcn_index_input_init_base( &is, pool ) );
+        LCNPV( is = (lcn_index_input_t*) apr_pcalloc( pool, sizeof(lcn_index_input_t)), APR_ENOMEM );
+
+        LCNCE( lcn_index_input_init( is, pool ) );
         LCNCM( apr_stat( &finfo, file_name,
                          APR_FINFO_TYPE | APR_FINFO_SIZE,
                          is->pool ), file_name );
@@ -668,17 +670,23 @@ lcn_index_input_buf_stream_create ( lcn_index_input_t **new_in,
 {
     apr_status_t s;
 
-    LCNCR( lcn_index_input_init_base( new_in, pool ) );
+    do
+    {
+        LCNPV( *new_in = (lcn_index_input_t*) apr_pcalloc( pool, sizeof(lcn_index_input_t)), APR_ENOMEM );
 
-    (*new_in)->pointer = 0;
-    (*new_in)->size    = len;
-    (*new_in)->buffer  = (char*) buffer;
+        LCNCR( lcn_index_input_init( *new_in, pool ) );
 
-    /* overload implementation specific methods */
+        (*new_in)->pointer = 0;
+        (*new_in)->size    = len;
+        (*new_in)->buffer  = (char*) buffer;
 
-    (*new_in)->_close         = lcn_index_input_ram_close;
-    (*new_in)->_read_internal = lcn_index_input_buf_read_internal;
-    (*new_in)->_clone         = lcn_index_input_buf_clone;
+        /* overload implementation specific methods */
+
+        (*new_in)->_close         = lcn_index_input_ram_close;
+        (*new_in)->_read_internal = lcn_index_input_buf_read_internal;
+        (*new_in)->_clone         = lcn_index_input_buf_clone;
+    }
+    while(0);
 
     return s;
 }
@@ -701,15 +709,21 @@ lcn_cs_input_stream_create( lcn_index_input_t **new_is,
 {
     apr_status_t s;
 
-    LCNCR( lcn_index_input_init_base( new_is, pool ) );
+    do
+    {
+        LCNPV( *new_is = (lcn_index_input_t*) apr_pcalloc( pool, sizeof(lcn_index_input_t)), APR_ENOMEM );
 
-    (*new_is)->base = base;
-    (*new_is)->file_offset = file_offset;
-    (*new_is)->size = length;
+        LCNCE( lcn_index_input_init( *new_is, pool ) );
 
-    (*new_is)->_read_internal = cs_read_internal;
-    (*new_is)->_close = lcn_index_input_ram_close;
-    (*new_is)->_clone = lcn_index_input_cs_clone;
+        (*new_is)->base = base;
+        (*new_is)->file_offset = file_offset;
+        (*new_is)->size = length;
+
+        (*new_is)->_read_internal = cs_read_internal;
+        (*new_is)->_close = lcn_index_input_ram_close;
+        (*new_is)->_clone = lcn_index_input_cs_clone;
+    }
+    while(0);
 
     return s;
 }
