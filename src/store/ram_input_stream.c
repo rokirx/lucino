@@ -6,18 +6,16 @@ struct ram_input_stream {
 
     lcn_index_input_t index_input;
 
-    apr_off_t pointer;
-
     lcn_ram_file_t *file;
 };
 
 
 
 static apr_status_t
-lcn_index_input_ram_read_internal ( lcn_index_input_t *in,
-                                char *dest,
-                                apr_off_t offset,
-                                unsigned int len)
+lcn_index_input_ram_read_internal( lcn_index_input_t *in,
+                                   char *dest,
+                                   apr_off_t offset,
+                                   unsigned int len)
 {
     unsigned int remainder = len;
     apr_off_t start = in->pointer;
@@ -28,6 +26,8 @@ lcn_index_input_ram_read_internal ( lcn_index_input_t *in,
     unsigned int bytes_to_copy;
     char *file_buffer;
 
+    struct ram_input_stream* ram_is = (struct ram_input_stream*) in;
+
     while (remainder)
     {
         buffer_number = (unsigned int)(start / LCN_STREAM_BUFFER_SIZE);
@@ -35,7 +35,7 @@ lcn_index_input_ram_read_internal ( lcn_index_input_t *in,
         bytes_in_buffer = (unsigned int)(LCN_STREAM_BUFFER_SIZE - buffer_offset);
         bytes_to_copy = bytes_in_buffer >= remainder ? remainder : bytes_in_buffer;
 
-        file_buffer = lcn_list_get( in->_file->buffers,
+        file_buffer = lcn_list_get( ram_is->file->buffers,
                                     (unsigned int) buffer_number );
 
         memcpy( dest + offset, file_buffer + buffer_offset, bytes_to_copy );
@@ -50,16 +50,18 @@ lcn_index_input_ram_read_internal ( lcn_index_input_t *in,
 }
 
 static apr_status_t
-lcn_index_input_ram_clone( lcn_index_input_t *istream,
-                       lcn_index_input_t **clone_in,
-                       apr_pool_t *pool )
+lcn_index_input_ram_clone( lcn_index_input_t *in,
+                           lcn_index_input_t **clone_in,
+                           apr_pool_t *pool )
 {
     apr_status_t s;
 
-    LCNCR( lcn_ram_input_stream_create( clone_in, NULL, istream->_file, pool ));
+    struct ram_input_stream* ram_is = (struct ram_input_stream*) in;
 
-    (*clone_in)->size     = istream->size;
-    (*clone_in)->is_open  = istream->is_open;
+    LCNCR( lcn_ram_input_stream_create( clone_in, NULL, ram_is->file, pool ));
+
+    (*clone_in)->size     = in->size;
+    (*clone_in)->is_open  = in->is_open;
     (*clone_in)->is_clone = LCN_TRUE;
 
     return s;
@@ -89,8 +91,9 @@ lcn_ram_input_stream_create( lcn_index_input_t **new_in,
         LCNCE( lcn_index_input_init( *new_in, name, pool ) );
 
         (*new_in)->pointer = 0;
-        (*new_in)->_file = file;
         (*new_in)->size = file->length;
+
+        is->file = file;
 
         /* overload implementation specific methods */
 

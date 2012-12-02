@@ -66,6 +66,8 @@ struct lcn_index_input_t {
      */
     apr_off_t buffer_position;
 
+    apr_off_t pointer;
+
     /**
      * Length of the buffer ( end of valid bytes )
      */
@@ -97,11 +99,6 @@ struct lcn_index_input_t {
                              apr_pool_t *pool );
 
     apr_status_t (*_close)( lcn_index_input_t *istream );
-
-
-    /* RAMInputStream */
-    apr_off_t pointer;
-    lcn_ram_file_t *_file;
 
     /* CSInputStream */
     lcn_index_input_t *base;

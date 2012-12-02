@@ -85,7 +85,6 @@ lcn_index_input_init( lcn_index_input_t *in,
     {
         LCNPV( in->buffer = (char*) apr_palloc( pool, sizeof(char) * LCN_STREAM_BUFFER_SIZE), APR_ENOMEM );
 
-        in->_file = NULL;
         in->name  = NULL;
         in->position = 0;
         in->is_open  = LCN_TRUE;
