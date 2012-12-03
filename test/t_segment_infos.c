@@ -169,13 +169,8 @@ test_combining_field_infos( CuTest* tc )
         lcn_list_t *list, *field_infos;
         lcn_field_info_t *fi;
 
-        LCN_TEST( lcn_index_reader_create_by_directory( &reader1,
-                                                        dir1,
-                                                        pool ));
-
-        LCN_TEST( lcn_index_reader_create_by_directory( &reader2,
-                                                        dir1,
-                                                        pool ));
+        LCN_TEST( lcn_index_reader_create_by_directory( &reader1, dir1, LCN_TRUE, pool ));
+        LCN_TEST( lcn_index_reader_create_by_directory( &reader2, dir1, LCN_TRUE, pool ));
 
         LCN_TEST( lcn_list_create( &list, 10, pool ) );
 

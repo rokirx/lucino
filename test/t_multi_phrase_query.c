@@ -615,7 +615,7 @@ test_hits_length( CuTest *tc,
     lcn_searcher_t *searcher;
     lcn_index_reader_t *reader;
 
-    LCN_TEST( lcn_index_reader_create_by_directory( &reader, dir, pool ));
+    LCN_TEST( lcn_index_reader_create_by_directory( &reader, dir, LCN_FALSE, pool ));
     LCN_TEST( lcn_index_searcher_create_by_reader( &searcher, reader, pool ));
 
     LCN_TEST( lcn_parse_query( &q, query_string, pool ));
@@ -650,7 +650,7 @@ test_phrase_bug_1( CuTest* tc )
         lcn_searcher_t *searcher;
         lcn_index_reader_t *reader;
 
-        LCN_TEST( lcn_index_reader_create_by_directory( &reader, dir, pool ));
+        LCN_TEST( lcn_index_reader_create_by_directory( &reader, dir, LCN_TRUE, pool ));
 
         /* check the proximity data for the term "sf" */
         {

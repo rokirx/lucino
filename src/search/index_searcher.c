@@ -315,21 +315,11 @@ lcn_index_searcher_create_by_directory( lcn_searcher_t** index_searcher,
 
     do
     {
-        LCNPV( *index_searcher = apr_pcalloc( pool,
-                                              sizeof( lcn_searcher_t ) ),
-               APR_ENOMEM );
-
+        LCNPV( *index_searcher = apr_pcalloc( pool, sizeof( lcn_searcher_t ) ), APR_ENOMEM );
         (*index_searcher)->pool = pool;
-
-        LCNCE( lcn_index_reader_create_by_directory( &((*index_searcher)->reader),
-                                                     dir,
-                                                     pool ) );
-
-        LCNCE( lcn_default_similarity_create( &((*index_searcher)->similarity ),
-                                              pool ) );
-
+        LCNCE( lcn_index_reader_create_by_directory( &((*index_searcher)->reader), dir, LCN_TRUE, pool ) );
+        LCNCE( lcn_default_similarity_create( &((*index_searcher)->similarity ), pool ) );
         lcn_index_searcher_init( *index_searcher );
-
     }
     while( FALSE );
 

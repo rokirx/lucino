@@ -240,7 +240,7 @@ lcn_index_reader_create_by_path( lcn_index_reader_t **index_reader,
     do
     {
         LCNCM( lcn_fs_directory_create( &dir, path, LCN_FALSE, pool ), path );
-        LCNCE( lcn_index_reader_create_by_directory( index_reader, dir, pool ));
+        LCNCE( lcn_index_reader_create_by_directory( index_reader, dir, LCN_TRUE, pool ));
     }
     while(0);
 
@@ -260,13 +260,14 @@ lcn_index_reader_create_by_path( lcn_index_reader_t **index_reader,
 apr_status_t
 lcn_index_reader_create_by_directory( lcn_index_reader_t **index_reader,
                                       lcn_directory_t* dir,
+                                      lcn_bool_t close_dir,
                                       apr_pool_t *pool )
 {
     apr_status_t s;
     apr_pool_t *p;
 
     LCNCR( apr_pool_create( &p, pool ) );
-    LCNCR( lcn_index_reader_create_by_directory_impl( index_reader, dir, LCN_TRUE, p ) );
+    LCNCR( lcn_index_reader_create_by_directory_impl( index_reader, dir, close_dir, p ) );
 
     return s;
 }

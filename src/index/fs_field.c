@@ -1300,7 +1300,7 @@ lcn_fs_field_do_merge( const char* field_name,
             lcn_directory_t *dir = (lcn_directory_t*) lcn_list_get( dir_list, i );
             lcn_index_reader_t *reader;
 
-            LCNCE( lcn_index_reader_create_by_directory( &reader, dir, pool ));
+            LCNCE( lcn_index_reader_create_by_directory( &reader, dir, LCN_TRUE, pool ));
             cur_max_doc = lcn_index_reader_max_doc( reader );
             LCNCE( lcn_index_reader_close( reader ));
 

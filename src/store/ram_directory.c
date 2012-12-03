@@ -149,7 +149,11 @@ lcn_ram_directory_open_input( lcn_directory_t *directory,
 
     do
     {
-        lcn_ram_file_t *file = (lcn_ram_file_t *) apr_hash_get( ram_dir->file_map, file_name, strlen(file_name) );
+        lcn_ram_file_t *file;
+
+        LCNASSERTR( directory->is_open, LCN_ERR_ALREADY_CLOSED );
+
+        file = (lcn_ram_file_t *) apr_hash_get( ram_dir->file_map, file_name, strlen(file_name) );
 
         if ( 0 == strcmp( "segments", file_name ) && NULL == file )
         {

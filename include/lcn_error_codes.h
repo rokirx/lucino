@@ -191,23 +191,25 @@ LCN_ERRDEF( LCN_ERR_GROUP_INDEX_OUT_OF_RANGE,
 
 LCN_ERRDEF( LCN_ERR_SETTING_FROZEN_FIELD_TYPE,
             50, "Trying to set a value on a frozen field type" )
-        
+
 LCN_ERRDEF( LCN_ERR_CF_DATA_COPY_NOT_COMPLETE,
             51, "Compound file data not full copied" )
-    
+
 LCN_ERRDEF( LCN_ERR_CF_DATA_DIFFERENT_OFFSETS,
             52, "Compound file data offset does not match the original file length" )
-        
+
 LCN_ERRDEF( LCN_ERR_STREAM_CLOSED,
             53, "Tried to read closed stream" )
-        
+
 LCN_ERRDEF( LCN_ERR_METHOD_NOT_IMPLEMENTED,
             54, "The called Method was not implemented. Watch error Log for more ditails." )
 
 LCN_ERRDEF( LCN_ERR_SEGMENT_INFOS_INVALID_SEGMENTS_FILE_NAME,
             55, "The name of a segments file has invalid format" )
 
-        
+LCN_ERRDEF( LCN_ERR_ALREADY_CLOSED,
+            56, "Trying to read from closed resource" )
+
 LCN_ERROR_END
 
 

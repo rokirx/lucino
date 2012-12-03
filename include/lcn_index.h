@@ -333,6 +333,7 @@ lcn_index_reader_create_by_path( lcn_index_reader_t **index_reader,
 apr_status_t
 lcn_index_reader_create_by_directory( lcn_index_reader_t **index_reader,
                                       lcn_directory_t* dir,
+                                      lcn_bool_t close_directory,
                                       apr_pool_t *pool );
 
 /**
