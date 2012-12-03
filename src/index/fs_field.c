@@ -123,11 +123,11 @@ lcn_fs_field_open_input( lcn_directory_fs_field_t *field,
             LCNCE( lcn_ostream_close( os ));
         }
 
-        LCNCE( lcn_directory_open_input_( field->directory,
-                                          &(field->istream),
-                                          file_name,
-                                          LCN_IO_CONTEXT_READONCE,
-                                          field->parent.pool ));
+        LCNCE( lcn_directory_open_input( field->directory,
+                                         &(field->istream),
+                                         file_name,
+                                         LCN_IO_CONTEXT_READONCE,
+                                         field->parent.pool ));
     }
     while(0);
 
@@ -546,11 +546,11 @@ lcn_directory_fs_field_read_field_infos( apr_hash_t *hash,
             break;
         }
 
-        LCNCE( lcn_directory_open_input_( directory,
-                                          &is,
-                                          LCN_INDEX_WRITER_FIXED_SIZE_FIELD_DEF,
-                                          LCN_IO_CONTEXT_READONCE,
-                                          pool ));
+        LCNCE( lcn_directory_open_input( directory,
+                                         &is,
+                                         LCN_INDEX_WRITER_FIXED_SIZE_FIELD_DEF,
+                                         LCN_IO_CONTEXT_READONCE,
+                                         pool ));
 
         LCNCE( lcn_index_input_read_int( is, &field_count ));
 

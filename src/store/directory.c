@@ -96,8 +96,6 @@ lcn_cfs_directory_rename_file( lcn_directory_t *directory,
  */
 
 
-/* {{{ apr_status_t lcn_directory_list */
-
 char *
 lcn_directory_name( lcn_directory_t *directory,
                     apr_pool_t *pool )
@@ -114,10 +112,6 @@ lcn_directory_list( const lcn_directory_t *directory,
     LCNCR( directory->_list( directory, file_list, pool ) );
     return s;
 }
-
-/* }}} */
-
-/* {{{ apr_status_t lcn_directory_segments_format */
 
 apr_status_t
 lcn_directory_segments_format( lcn_directory_t *directory,
@@ -160,10 +154,6 @@ lcn_directory_segments_format( lcn_directory_t *directory,
     return s;
 }
 
-/* }}} */
-
-/* {{{ apr_status_t lcn_directory_rename_file */
-
 apr_status_t
 lcn_directory_rename_file( lcn_directory_t *directory,
                            const char *from,
@@ -173,8 +163,6 @@ lcn_directory_rename_file( lcn_directory_t *directory,
     LCNCR( directory->_rename_file( directory, from, to ) );
     return s;
 }
-
-/* }}} */
 
 apr_status_t
 lcn_directory_open_input( lcn_directory_t *directory,
@@ -196,28 +184,6 @@ lcn_directory_open_input( lcn_directory_t *directory,
 
     return s;
 }
-
-apr_status_t
-lcn_directory_open_input_( lcn_directory_t *directory,
-                           lcn_index_input_t **new_in,
-                           const char *file_name,
-                           lcn_io_context_t io_context,
-                           apr_pool_t *pool )
-{
-    apr_status_t s;
-
-    /* opening non-existing segments while indexing is a common error */
-
-    if ( 0 == strcmp( "segments", file_name ) )
-    {
-        return directory->open_input( directory, new_in, file_name, pool );
-    }
-
-    LCNRM( directory->open_input( directory, new_in, file_name, pool ), file_name );
-
-    return s;
-}
-
 
 apr_status_t
 lcn_directory_delete_file( lcn_directory_t *directory,
@@ -251,8 +217,6 @@ lcn_directory_remove( lcn_directory_t *directory )
     return s;
 }
 
-/* {{{ apr_status_t lcn_directory_create_output */
-
 apr_status_t
 lcn_directory_create_output ( lcn_directory_t *directory,
                               lcn_ostream_t **os,
@@ -263,10 +227,6 @@ lcn_directory_create_output ( lcn_directory_t *directory,
     LCNCR( directory->_create_file( directory, os, file_name, pool ) );
     return s;
 }
-
-/* }}} */
-
-/* {{{ static apr_status_t lcn_directory_open_ostream */
 
 static apr_status_t
 lcn_directory_open_ostream ( const char *path,
@@ -283,10 +243,6 @@ lcn_directory_open_ostream ( const char *path,
     return s;
 }
 
-/* }}} */
-
-/* {{{ static apr_status_t lcn_directory_open_input_stream */
-
 static apr_status_t
 lcn_directory_open_input_stream ( const char *path,
                                   const char *name,
@@ -302,20 +258,12 @@ lcn_directory_open_input_stream ( const char *path,
     return s;
 }
 
-/* }}} */
-
-/* {{{ apr_status_t lcn_directory_close */
-
 apr_status_t
 lcn_directory_close( lcn_directory_t *directory )
 {
     directory->is_open = LCN_FALSE;
     return APR_SUCCESS;
 }
-
-/* }}} */
-
-/* {{{ static apr_status_t lcn_fs_directory_open_file */
 
 static apr_status_t
 lcn_fs_directory_open_file( lcn_directory_t *directory,
@@ -503,8 +451,6 @@ lcn_fs_directory_remove( lcn_directory_t *directory )
 }
 
 
-/* }}} */
-
 apr_status_t
 lcn_directory_open_segment_file ( lcn_directory_t *directory,
                                   lcn_index_input_t **new_in,
@@ -525,8 +471,6 @@ lcn_directory_open_segment_file ( lcn_directory_t *directory,
     return s;
 }
 
-/* {{{ apr_status_t lcn_directory_create_segment_file */
-
 apr_status_t
 lcn_directory_create_segment_file ( lcn_directory_t *directory,
                                     lcn_ostream_t **ostream,
@@ -546,10 +490,6 @@ lcn_directory_create_segment_file ( lcn_directory_t *directory,
 
     return s;
 }
-
-/* }}} */
-
-/* {{{ static apr_status_t lcn_file_exists */
 
 apr_status_t
 lcn_file_exists( const char *file_name, lcn_bool_t *flag, apr_pool_t *pool )
@@ -573,8 +513,6 @@ lcn_file_exists( const char *file_name, lcn_bool_t *flag, apr_pool_t *pool )
     return s;
 }
 
-/* }}} */
-
 apr_status_t
 lcn_directory_file_exists ( const lcn_directory_t *directory,
                             const char *file_name,
@@ -584,8 +522,6 @@ lcn_directory_file_exists ( const lcn_directory_t *directory,
     LCNCR( directory->_file_exists( directory, file_name, flag ) );
     return s;
 }
-
-/* {{{ static apr_status_t lcn_fs_directory_file_exists */
 
 static apr_status_t
 lcn_fs_directory_file_exists( const lcn_directory_t *directory,
@@ -612,10 +548,6 @@ lcn_fs_directory_file_exists( const lcn_directory_t *directory,
 
     return s;
 }
-
-/* }}} */
-
-/* {{{ static apr_status_t lcn_fs_directory_list */
 
 static apr_status_t
 lcn_fs_directory_list( const lcn_directory_t *directory,
@@ -656,10 +588,6 @@ lcn_fs_directory_list( const lcn_directory_t *directory,
     return s;
 }
 
-/* }}} */
-
-/* {{{ static apr_status_t lcn_fs_directory_create_file */
-
 static apr_status_t
 lcn_fs_directory_create_file ( lcn_directory_t *directory,
                                lcn_ostream_t **os,
@@ -670,10 +598,6 @@ lcn_fs_directory_create_file ( lcn_directory_t *directory,
     LCNCR( lcn_directory_open_ostream ( directory->name, file_name, os, pool ) );
     return s;
 }
-
-/* }}} */
-
-/* {{{ static apr_status_t lcn_fs_directory_rename_file */
 
 static apr_status_t
 lcn_fs_directory_rename_file ( lcn_directory_t *directory,
@@ -702,10 +626,6 @@ lcn_fs_directory_rename_file ( lcn_directory_t *directory,
 
     return s;
 }
-
-/* }}} */
-
-/* {{{ static apr_status_t lcn_fs_directory_delete_file */
 
 static apr_status_t
 lcn_fs_directory_delete_file ( lcn_directory_t *directory,
@@ -737,8 +657,6 @@ lcn_fs_directory_delete_file ( lcn_directory_t *directory,
 
     return s;
 }
-
-/* }}} */
 
 apr_status_t
 lcn_base_directory_init( lcn_directory_t *directory,
@@ -774,8 +692,6 @@ lcn_base_directory_create( lcn_directory_t **directory,
 
     return s;
 }
-
-/* {{{ apr_status_t lcn_fs_directory_create */
 
 apr_status_t
 lcn_fs_directory_create( lcn_directory_t **new_dir,
@@ -848,8 +764,6 @@ lcn_fs_directory_create( lcn_directory_t **new_dir,
 
     return s;
 }
-
-/* }}} */
 
 lcn_bool_t
 lcn_directory_is_open( lcn_directory_t *directory )
