@@ -1,5 +1,6 @@
 #include "test_all.h"
 #include "index_input.h"
+#include "io_context.h"
 
 static lcn_ram_file_t *
 make_ram_file ( char *file_name, CuTest *tc, apr_pool_t *pool )
@@ -12,7 +13,7 @@ make_ram_file ( char *file_name, CuTest *tc, apr_pool_t *pool )
     unsigned int len;
 
     LCN_TEST( lcn_fs_directory_create( &t_dir, TEST_DIR, LCN_FALSE, pool ) );
-    LCN_TEST( lcn_directory_open_input( t_dir, &in, file_name, pool ) );
+    LCN_TEST( lcn_directory_open_input( t_dir, &in, file_name, LCN_IO_CONTEXT_READONCE, pool ) );
     LCN_TEST( lcn_ram_file_create( &f, pool ) );
     LCN_TEST( lcn_ram_ostream_create( &out, f, pool ) );
 
@@ -30,7 +31,7 @@ make_ram_file ( char *file_name, CuTest *tc, apr_pool_t *pool )
 }
 
 static void
-TestCuReadInt(CuTest* tc)
+test_read_int(CuTest* tc)
 {
     apr_pool_t *pool;
     lcn_ram_file_t *f ;
@@ -41,7 +42,7 @@ TestCuReadInt(CuTest* tc)
 
     apr_pool_create( &pool, NULL );
     LCN_TEST( lcn_fs_directory_create( &t_dir, TEST_DIR, LCN_FALSE, pool ) );
-    LCN_TEST( lcn_directory_open_input( t_dir, &in, "segments", pool ) );
+    LCN_TEST( lcn_directory_open_input( t_dir, &in, "segments", LCN_IO_CONTEXT_READONCE, pool ) );
     len = lcn_index_input_size( in );
 
     CuAssertPtrNotNull(tc, in );
@@ -91,7 +92,7 @@ test_read_vint_impl (   CuTest* tc, lcn_index_input_t *in )
 }
 
 static void
-TestCuReadVint(CuTest* tc)
+test_read_vint(CuTest* tc)
 {
     apr_pool_t *p;
     lcn_directory_t *t_dir;
@@ -100,7 +101,7 @@ TestCuReadVint(CuTest* tc)
 
     LCN_TEST( apr_pool_create( &p, main_pool ) );
     LCN_TEST( lcn_fs_directory_create( &t_dir, TEST_DIR, LCN_FALSE, p ) );
-    LCN_TEST( lcn_directory_open_input( t_dir, &in, "vint.dat", p ) );
+    LCN_TEST( lcn_directory_open_input( t_dir, &in, "vint.dat", LCN_IO_CONTEXT_READONCE, p ) );
     test_read_vint_impl(tc, in );
     LCN_TEST( lcn_index_input_close( in ) );
     f = make_ram_file( "vint.dat", tc, p );
@@ -128,7 +129,7 @@ test_read_long_impl (CuTest* tc, lcn_index_input_t *in )
 }
 
 static void
-TestCuReadLong(CuTest* tc)
+test_read_long(CuTest* tc)
 {
     apr_pool_t *p;
     lcn_directory_t *t_dir;
@@ -137,7 +138,7 @@ TestCuReadLong(CuTest* tc)
 
     LCN_TEST( apr_pool_create( &p, main_pool ) );
     LCN_TEST( lcn_fs_directory_create( &t_dir, TEST_DIR, LCN_FALSE, p ) );
-    LCN_TEST( lcn_directory_open_input( t_dir, &in,  "long.dat", p ) );
+    LCN_TEST( lcn_directory_open_input( t_dir, &in,  "long.dat", LCN_IO_CONTEXT_READONCE, p ) );
     test_read_long_impl (tc, in );
     LCN_TEST( lcn_index_input_close( in ) );
     f = make_ram_file( "long.dat", tc, p );
@@ -149,7 +150,7 @@ TestCuReadLong(CuTest* tc)
 }
 
 static void
-TestCuReadString(CuTest* tc)
+test_read_string(CuTest* tc)
 {
     apr_pool_t *p;
     char *buf;
@@ -160,7 +161,7 @@ TestCuReadString(CuTest* tc)
 
     LCN_TEST( apr_pool_create( &p, main_pool ) );
     LCN_TEST( lcn_fs_directory_create( &t_dir, TEST_DIR, LCN_FALSE, p ) );
-    LCN_TEST( lcn_directory_open_input( t_dir, &in, "string.dat", p ) );
+    LCN_TEST( lcn_directory_open_input( t_dir, &in, "string.dat", LCN_IO_CONTEXT_READONCE, p ) );
 
     LCN_TEST( lcn_index_input_read_string( in, &buf, &len, p ) );
     CuAssertTrue(tc, len == 26);
@@ -182,7 +183,7 @@ TestCuReadString(CuTest* tc)
 }
 
 static void
-TestCuReadBytes(CuTest* tc)
+test_read_bytes(CuTest* tc)
 {
     apr_pool_t *p;
     char bytes[27];
@@ -194,7 +195,7 @@ TestCuReadBytes(CuTest* tc)
 
     LCN_TEST( apr_pool_create( &p, main_pool ) );
     LCN_TEST( lcn_fs_directory_create( &t_dir, TEST_DIR, LCN_FALSE, p ) );
-    LCN_TEST( lcn_directory_open_input( t_dir, &in, "string.dat", p ) );
+    LCN_TEST( lcn_directory_open_input( t_dir, &in, "string.dat", LCN_IO_CONTEXT_READONCE, p ) );
 
     len = 26;
 
@@ -233,7 +234,7 @@ TestCuReadBytes(CuTest* tc)
 }
 
 static void
-TestCuSeek(CuTest* tc)
+test_seek(CuTest* tc)
 {
     apr_pool_t *p;
     char bytes[20];
@@ -244,7 +245,7 @@ TestCuSeek(CuTest* tc)
 
     LCN_TEST( apr_pool_create( &p, main_pool ) );
     LCN_TEST( lcn_fs_directory_create( &t_dir, TEST_DIR, LCN_FALSE, p ) );
-    LCN_TEST( lcn_directory_open_input( t_dir, &in, "string.dat", p ) );
+    LCN_TEST( lcn_directory_open_input( t_dir, &in, "string.dat", LCN_IO_CONTEXT_READONCE, p ) );
 
     len = 10;
     LCN_TEST( lcn_index_input_seek(in, 10) );
@@ -265,7 +266,7 @@ TestCuSeek(CuTest* tc)
 }
 
 static void
-TestCuClone(CuTest* tc)
+test_clone(CuTest* tc)
 {
     apr_pool_t *p;
     lcn_index_input_t *clone;
@@ -277,7 +278,7 @@ TestCuClone(CuTest* tc)
 
     LCN_TEST( apr_pool_create( &p, main_pool ) );
     LCN_TEST( lcn_fs_directory_create( &t_dir, TEST_DIR, LCN_FALSE, p ) );
-    LCN_TEST( lcn_directory_open_input( t_dir, &in, "string.dat", p ) );
+    LCN_TEST( lcn_directory_open_input( t_dir, &in, "string.dat", LCN_IO_CONTEXT_READONCE, p ) );
     CuAssertTrue(tc, in != NULL);
     LCN_TEST( lcn_index_input_read_string( in, &buf, &len, p ) );
     CuAssertIntEquals(tc, len, 26);
@@ -311,7 +312,7 @@ TestCuClone(CuTest* tc)
 }
 
 static void
-TestAprOffT(CuTest* tc)
+test_apr_off_t(CuTest* tc)
 {
     apr_off_t i = -1;
     unsigned int j = -1;
@@ -326,14 +327,14 @@ make_input_stream_suite (void)
 {
     CuSuite *s= CuSuiteNew();
 
-    SUITE_ADD_TEST(s,TestCuReadVint);
-    SUITE_ADD_TEST(s,TestCuReadLong);
-    SUITE_ADD_TEST(s,TestCuReadInt);
-    SUITE_ADD_TEST(s,TestCuReadString);
-    SUITE_ADD_TEST(s,TestCuReadBytes);
-    SUITE_ADD_TEST(s,TestCuSeek);
-    SUITE_ADD_TEST(s,TestCuClone);
-    SUITE_ADD_TEST(s,TestAprOffT);
+    SUITE_ADD_TEST(s, test_read_vint);
+    SUITE_ADD_TEST(s, test_read_long);
+    SUITE_ADD_TEST(s, test_read_int);
+    SUITE_ADD_TEST(s, test_read_string);
+    SUITE_ADD_TEST(s, test_read_bytes);
+    SUITE_ADD_TEST(s, test_seek);
+    SUITE_ADD_TEST(s, test_clone);
+    SUITE_ADD_TEST(s, test_apr_off_t);
 
     return s;
 }

@@ -5,6 +5,7 @@
 #include "ostream.h"
 #include <sys/param.h>
 #include <string.h>
+#include "io_context.h"
 
 const unsigned int BUFFER_SIZE = 1024;
 
@@ -31,7 +32,7 @@ lcn_compound_file_copy( lcn_compound_file_writer_t *cfw,
         unsigned int endPtr = 0;
         unsigned int diff = 0;
 
-        LCNCE( lcn_directory_open_input(cfw->dir, &istream, entry->file, cfw->pool ) );
+        LCNCE( lcn_directory_open_input(cfw->dir, &istream, entry->file, LCN_IO_CONTEXT_READONCE, cfw->pool ) );
         istream_length = lcn_index_input_size(istream);
         istream_length_remainder = istream_length;
 

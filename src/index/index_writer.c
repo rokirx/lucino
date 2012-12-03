@@ -7,35 +7,36 @@
 #include "compound_file_util.h"
 #include "segment_infos.h"
 #include "index_writer_config.h"
+#include "io_context.h"
 
 char* lcn_index_extensions[] = { "cfs", "fnm", "fdx", "fdt", "tii", "tis", "frq",
     "prx", "del", "tvx", "tvd", "tvf", "tvp" };
 
 void
-lcn_index_writer_set_log_stream ( lcn_index_writer_t *index_writer,
-                                  FILE *log_stream )
+lcn_index_writer_set_log_stream( lcn_index_writer_t *index_writer,
+                                 FILE *log_stream )
 {
     index_writer->log_stream = log_stream;
 }
 
 void
-lcn_index_writer_set_max_buffered_docs ( lcn_index_writer_t *index_writer,
-                                         unsigned int max_buffered_docs )
+lcn_index_writer_set_max_buffered_docs( lcn_index_writer_t *index_writer,
+                                        unsigned int max_buffered_docs )
 {
     index_writer->max_buffered_docs = max_buffered_docs;
 }
 
 void
-lcn_index_writer_set_merge_factor ( lcn_index_writer_t *index_writer,
-                                    unsigned int merge_factor )
+lcn_index_writer_set_merge_factor( lcn_index_writer_t *index_writer,
+                                   unsigned int merge_factor )
 {
     index_writer->merge_factor = ( merge_factor < 2 ? 2 : merge_factor );
 }
 
 static apr_status_t
-lcn_index_writer_write_deletable_files ( lcn_index_writer_t *index_writer,
-                                         lcn_list_t *files,
-                                         apr_pool_t *pool )
+lcn_index_writer_write_deletable_files( lcn_index_writer_t *index_writer,
+                                        lcn_list_t *files,
+                                        apr_pool_t *pool )
 {
     apr_status_t s;
 
@@ -70,10 +71,10 @@ lcn_index_writer_write_deletable_files ( lcn_index_writer_t *index_writer,
 }
 
 static apr_status_t
-lcn_index_writer_delete_files ( lcn_index_writer_t *index_writer,
-                                lcn_list_t *files_to_delete,
-                                lcn_list_t *deletable,
-                                apr_pool_t *pool )
+lcn_index_writer_delete_files( lcn_index_writer_t *index_writer,
+                               lcn_list_t *files_to_delete,
+                               lcn_list_t *deletable,
+                               apr_pool_t *pool )
 {
     apr_status_t s = APR_SUCCESS;
 
@@ -107,10 +108,10 @@ lcn_index_writer_delete_files ( lcn_index_writer_t *index_writer,
 }
 
 static apr_status_t
-lcn_index_writer_delete_other_files ( lcn_index_writer_t *index_writer,
-                                      lcn_list_t *files,
-                                      lcn_directory_t *directory,
-                                      apr_pool_t *pool )
+lcn_index_writer_delete_other_files( lcn_index_writer_t *index_writer,
+                                     lcn_list_t *files,
+                                     lcn_directory_t *directory,
+                                     apr_pool_t *pool )
 {
     apr_status_t s = APR_SUCCESS;
     unsigned int i;
@@ -127,9 +128,9 @@ lcn_index_writer_delete_other_files ( lcn_index_writer_t *index_writer,
 }
 
 static apr_status_t
-lcn_index_writer_read_deletable_files ( lcn_index_writer_t *index_writer,
-                                        lcn_list_t **deletable,
-                                        apr_pool_t *pool )
+lcn_index_writer_read_deletable_files( lcn_index_writer_t *index_writer,
+                                       lcn_list_t **deletable,
+                                       apr_pool_t *pool )
 {
     apr_status_t s;
 
@@ -151,9 +152,10 @@ lcn_index_writer_read_deletable_files ( lcn_index_writer_t *index_writer,
         }
 
         LCNCE( lcn_directory_open_input( index_writer->directory,
-                &input,
-                LCN_INDEX_WRITER_DELETABLE_FILE_NAME,
-                pool ) );
+                                         &input,
+                                         LCN_INDEX_WRITER_DELETABLE_FILE_NAME,
+                                         LCN_IO_CONTEXT_READONCE,
+                                         pool ) );
 
         LCNCE( lcn_index_input_read_int( input, &deletable_size ) );
 
@@ -182,8 +184,8 @@ lcn_index_writer_read_deletable_files ( lcn_index_writer_t *index_writer,
 }
 
 apr_status_t
-lcn_index_writer_delete_segments ( lcn_index_writer_t *index_writer,
-                                   lcn_list_t *segments_to_delete )
+lcn_index_writer_delete_segments( lcn_index_writer_t *index_writer,
+                                  lcn_list_t *segments_to_delete )
 {
     apr_status_t s;
     apr_pool_t *pool = NULL;
@@ -246,15 +248,15 @@ lcn_index_writer_delete_segments ( lcn_index_writer_t *index_writer,
 }
 
 lcn_similarity_t *
-lcn_index_writer_get_similarity ( lcn_index_writer_t *index_writer )
+lcn_index_writer_get_similarity( lcn_index_writer_t *index_writer )
 {
     return index_writer->similarity;
 }
 
 static apr_status_t
-lcn_index_writer_merge_segments_impl ( lcn_index_writer_t *index_writer,
-                                       unsigned int min_segment,
-                                       unsigned int end )
+lcn_index_writer_merge_segments_impl( lcn_index_writer_t *index_writer,
+                                      unsigned int min_segment,
+                                      unsigned int end )
 {
     apr_status_t s;
     apr_pool_t *pool = NULL;
@@ -356,7 +358,7 @@ lcn_index_writer_merge_segments_impl ( lcn_index_writer_t *index_writer,
 }
 
 static apr_status_t
-lcn_index_writer_merge_segments ( lcn_index_writer_t *index_writer, unsigned int min_segment )
+lcn_index_writer_merge_segments( lcn_index_writer_t *index_writer, unsigned int min_segment )
 {
     return lcn_index_writer_merge_segments_impl( index_writer,
             min_segment,
@@ -364,8 +366,8 @@ lcn_index_writer_merge_segments ( lcn_index_writer_t *index_writer, unsigned int
 }
 
 static lcn_bool_t
-check_dir_owner ( lcn_segment_infos_t *segment_infos,
-                  lcn_directory_t *directory )
+check_dir_owner( lcn_segment_infos_t *segment_infos,
+                 lcn_directory_t *directory )
 {
     apr_status_t s;
     lcn_segment_info_t *info;
@@ -386,7 +388,7 @@ check_dir_owner ( lcn_segment_infos_t *segment_infos,
 }
 
 static apr_status_t
-lcn_index_writer_flush_ram_segments ( lcn_index_writer_t *index_writer )
+lcn_index_writer_flush_ram_segments( lcn_index_writer_t *index_writer )
 {
     apr_status_t s = APR_SUCCESS;
 
@@ -435,7 +437,7 @@ lcn_index_writer_flush_ram_segments ( lcn_index_writer_t *index_writer )
 }
 
 static apr_status_t
-lcn_index_writer_maybe_merge_segments ( lcn_index_writer_t *index_writer )
+lcn_index_writer_maybe_merge_segments( lcn_index_writer_t *index_writer )
 {
     apr_status_t s = APR_SUCCESS;
 
@@ -490,11 +492,11 @@ lcn_index_writer_maybe_merge_segments ( lcn_index_writer_t *index_writer )
  * sollte jetzt genutzt werden.
  */
 static apr_status_t
-lcn_index_writer_create_impl ( lcn_index_writer_t **index_writer,
-                               lcn_directory_t *directory,
-                               lcn_bool_t create,
-                               lcn_bool_t close_dir,
-                               apr_pool_t *pool )
+lcn_index_writer_create_impl( lcn_index_writer_t **index_writer,
+                              lcn_directory_t *directory,
+                              lcn_bool_t create,
+                              lcn_bool_t close_dir,
+                              apr_pool_t *pool )
 {
     apr_status_t s;
     apr_pool_t *si_pool = NULL;
@@ -562,10 +564,10 @@ lcn_index_writer_create_impl ( lcn_index_writer_t **index_writer,
 }
 
 static apr_status_t
-lcn_index_writer_create_impl_neu ( lcn_index_writer_t **index_writer,
-                                   lcn_directory_t *directory,
-                                   lcn_index_writer_config_t *iwc,
-                                   apr_pool_t *pool )
+lcn_index_writer_create_impl_neu( lcn_index_writer_t **index_writer,
+                                  lcn_directory_t *directory,
+                                  lcn_index_writer_config_t *iwc,
+                                  apr_pool_t *pool )
 {
     apr_status_t s;
     apr_pool_t *cp;
@@ -573,6 +575,7 @@ lcn_index_writer_create_impl_neu ( lcn_index_writer_t **index_writer,
     do
     {
         lcn_bool_t create = LCN_FALSE;
+
         unsigned int open_mode = lcn_index_writer_config_get_open_mode( iwc );
 
         LCNCE( apr_pool_create( &cp, pool ) );
@@ -613,10 +616,10 @@ lcn_index_writer_create_impl_neu ( lcn_index_writer_t **index_writer,
 }
 
 apr_status_t
-lcn_index_writer_create_by_config ( lcn_index_writer_t **index_writer,
-                                    lcn_directory_t *directory,
-                                    lcn_index_writer_config_t *iwc,
-                                    apr_pool_t *pool )
+lcn_index_writer_create_by_config( lcn_index_writer_t **index_writer,
+                                   lcn_directory_t *directory,
+                                   lcn_index_writer_config_t *iwc,
+                                   apr_pool_t *pool )
 {
     apr_status_t s = APR_SUCCESS;
 
@@ -629,10 +632,10 @@ lcn_index_writer_create_by_config ( lcn_index_writer_t **index_writer,
 }
 
 apr_status_t
-lcn_index_writer_create_by_directory ( lcn_index_writer_t **index_writer,
-                                       lcn_directory_t *directory,
-                                       lcn_bool_t create,
-                                       apr_pool_t *pool )
+lcn_index_writer_create_by_directory( lcn_index_writer_t **index_writer,
+                                      lcn_directory_t *directory,
+                                      lcn_bool_t create,
+                                      apr_pool_t *pool )
 {
     apr_status_t s;
 
@@ -642,10 +645,10 @@ lcn_index_writer_create_by_directory ( lcn_index_writer_t **index_writer,
 }
 
 apr_status_t
-lcn_index_writer_create_by_path ( lcn_index_writer_t **index_writer,
-                                  const char *path,
-                                  lcn_bool_t create,
-                                  apr_pool_t *pool )
+lcn_index_writer_create_by_path( lcn_index_writer_t **index_writer,
+                                 const char *path,
+                                 lcn_bool_t create,
+                                 apr_pool_t *pool )
 {
     apr_status_t s;
     lcn_directory_t *directory;
@@ -668,10 +671,10 @@ lcn_index_writer_create_by_path ( lcn_index_writer_t **index_writer,
 }
 
 apr_status_t
-lcn_index_writer_write_binary_to_stream ( FILE* stream,
-                                          const char* varname,
-                                          const char* data,
-                                          unsigned int size )
+lcn_index_writer_write_binary_to_stream( FILE* stream,
+                                         const char* varname,
+                                         const char* data,
+                                         unsigned int size )
 {
     apr_status_t s;
     apr_status_t i;
@@ -693,9 +696,9 @@ lcn_index_writer_write_binary_to_stream ( FILE* stream,
 LCNASSERTR( 0 <= fprintf( stream, "%s", is_fun( field ) ? #prop " " : "" ), LCN_ERR_IO );
 
 apr_status_t
-lcn_index_writer_write_dump_entry ( FILE* stream,
-                                    lcn_list_t *fields_list,
-                                    apr_pool_t *pool )
+lcn_index_writer_write_dump_entry( FILE* stream,
+                                   lcn_list_t *fields_list,
+                                   apr_pool_t *pool )
 {
     apr_status_t s;
     apr_pool_t* cp;
@@ -794,8 +797,8 @@ lcn_index_writer_write_dump_entry ( FILE* stream,
 }
 
 unsigned int
-lcn_index_writer_write_fixed_sized_fields ( lcn_index_writer_t *index_writer,
-                                            lcn_document_t *document )
+lcn_index_writer_write_fixed_sized_fields( lcn_index_writer_t *index_writer,
+                                           lcn_document_t *document )
 {
     apr_status_t s;
     apr_pool_t *cp = NULL;
@@ -834,7 +837,7 @@ lcn_index_writer_write_fixed_sized_fields ( lcn_index_writer_t *index_writer,
                     {
                         lcn_index_input_t *is;
 
-                        LCNCE( lcn_directory_open_input( index_writer->directory, &is, file_name, cp ) );
+                        LCNCE( lcn_directory_open_input( index_writer->directory, &is, file_name, LCN_IO_CONTEXT_READONCE, cp ) );
                         LCNCE( lcn_directory_fs_field_read( &field, fname, is, index_writer->pool ) );
                         LCNCE( lcn_index_input_close( is ) );
                     }
@@ -895,8 +898,8 @@ lcn_index_writer_write_fixed_sized_fields ( lcn_index_writer_t *index_writer,
 }
 
 apr_status_t
-lcn_index_writer_add_document ( lcn_index_writer_t *index_writer,
-                                lcn_document_t *document )
+lcn_index_writer_add_document( lcn_index_writer_t *index_writer,
+                               lcn_document_t *document )
 {
     apr_status_t s;
     apr_pool_t *pool = NULL;
@@ -988,7 +991,7 @@ lcn_index_writer_add_document ( lcn_index_writer_t *index_writer,
 }
 
 apr_status_t
-lcn_index_writer_flush_fixed_size_fields ( lcn_index_writer_t *index_writer )
+lcn_index_writer_flush_fixed_size_fields( lcn_index_writer_t *index_writer )
 {
     apr_status_t s;
     apr_pool_t *cp = NULL;
@@ -1045,7 +1048,7 @@ lcn_index_writer_flush_fixed_size_fields ( lcn_index_writer_t *index_writer )
 }
 
 apr_status_t
-lcn_index_writer_close ( lcn_index_writer_t *index_writer )
+lcn_index_writer_close( lcn_index_writer_t *index_writer )
 {
     apr_status_t s;
 
@@ -1073,40 +1076,40 @@ lcn_index_writer_close ( lcn_index_writer_t *index_writer )
 }
 
 unsigned int
-lcn_index_writer_get_max_field_length ( lcn_index_writer_t *index_writer )
+lcn_index_writer_get_max_field_length( lcn_index_writer_t *index_writer )
 {
     return index_writer->max_field_length;
 }
 
 void
-lcn_index_writer_set_max_field_length ( lcn_index_writer_t *index_writer,
-                                        unsigned int max_field_length )
+lcn_index_writer_set_max_field_length( lcn_index_writer_t *index_writer,
+                                       unsigned int max_field_length )
 {
     index_writer->max_field_length = max_field_length;
 }
 
 unsigned int
-lcn_index_writer_get_term_index_interval ( lcn_index_writer_t *index_writer )
+lcn_index_writer_get_term_index_interval( lcn_index_writer_t *index_writer )
 {
     return index_writer->term_index_interval;
 }
 
 void
-lcn_index_writer_set_term_index_interval ( lcn_index_writer_t *index_writer,
-                                           unsigned int term_index_interval )
+lcn_index_writer_set_term_index_interval( lcn_index_writer_t *index_writer,
+                                          unsigned int term_index_interval )
 {
     index_writer->term_index_interval = term_index_interval;
 }
 
 void
-lcn_index_writer_set_config ( lcn_index_writer_t *index_writer,
-                              lcn_index_writer_config_t *iwc )
+lcn_index_writer_set_config( lcn_index_writer_t *index_writer,
+                             lcn_index_writer_config_t *iwc )
 {
     index_writer->iwc = iwc;
 }
 
 apr_status_t
-lcn_index_writer_optimize ( lcn_index_writer_t *index_writer )
+lcn_index_writer_optimize( lcn_index_writer_t *index_writer )
 {
     apr_status_t s;
 
@@ -1153,7 +1156,7 @@ lcn_index_writer_optimize ( lcn_index_writer_t *index_writer )
  * Erzeugt zuerst einen optimierten Index, welcher als Basis für den compound file Index genutzt wird.
  */
 apr_status_t
-lcn_index_writer_cf_optimize ( lcn_index_writer_t *index_writer )
+lcn_index_writer_cf_optimize( lcn_index_writer_t *index_writer )
 {
     apr_status_t s = APR_SUCCESS;
     apr_pool_t *child_pool = NULL;
@@ -1259,8 +1262,8 @@ lcn_index_writer_cf_optimize ( lcn_index_writer_t *index_writer )
 }
 
 apr_status_t
-lcn_index_writer_add_indexes ( lcn_index_writer_t *index_writer,
-                               lcn_list_t *dirs )
+lcn_index_writer_add_indexes( lcn_index_writer_t *index_writer,
+                              lcn_list_t *dirs )
 {
     apr_status_t s = APR_SUCCESS;
     apr_pool_t *pool = NULL;
@@ -1346,7 +1349,7 @@ lcn_index_writer_add_indexes ( lcn_index_writer_t *index_writer,
 }
 
 apr_status_t
-lcn_index_writer_delete_if_empty ( lcn_index_writer_t *index_writer )
+lcn_index_writer_delete_if_empty( lcn_index_writer_t *index_writer )
 {
     apr_status_t s;
     apr_pool_t *pool = NULL;
@@ -1373,11 +1376,11 @@ lcn_index_writer_delete_if_empty ( lcn_index_writer_t *index_writer )
 }
 
 apr_status_t
-lcn_index_writer_create_index_by_dump ( const char* index_path,
-                                        const char* dump_file,
-                                        apr_hash_t* analyzer_map,
-                                        lcn_bool_t optimize,
-                                        apr_pool_t *pool )
+lcn_index_writer_create_index_by_dump( const char* index_path,
+                                       const char* dump_file,
+                                       apr_hash_t* analyzer_map,
+                                       lcn_bool_t optimize,
+                                       apr_pool_t *pool )
 {
     apr_status_t s;
 
@@ -1407,7 +1410,7 @@ lcn_index_writer_create_index_by_dump ( const char* index_path,
 }
 
 unsigned int
-lcn_index_writer_max_doc ( lcn_index_writer_t *index_writer )
+lcn_index_writer_max_doc( lcn_index_writer_t *index_writer )
 {
     unsigned int count = 0;
 

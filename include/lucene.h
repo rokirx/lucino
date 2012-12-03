@@ -932,20 +932,6 @@ apr_status_t
 lcn_directory_delete_files( lcn_directory_t *directory,
                             lcn_list_t *list_file_names );
 
-/**
- * Opens a file in the given directory and initializes the pointer
- * to the corresponding lcn_index_input_t
- *
- * @param new_in lcn_index_input_t to initialize
- * @param self   Directory where to create new lcn_index_input_t
- * @param file_name Name of the file in the directory
- */
-apr_status_t
-lcn_directory_open_input( lcn_directory_t *directory,
-                          lcn_index_input_t **new_in,
-                          const char  *file_name,
-                          apr_pool_t *pool );
-
 
 /**
  * Returns a stream reading an existing file, with the
@@ -956,11 +942,11 @@ lcn_directory_open_input( lcn_directory_t *directory,
  * CompoundFileDirectory}.
  */
 apr_status_t
-lcn_directory_open_input_( lcn_directory_t *directory,
-                           const char *file_name,
-                           lcn_io_context_t io_context,
-                           lcn_index_input_t **index_input,
-                           apr_pool_t *pool );
+lcn_directory_open_input( lcn_directory_t *directory,
+                          lcn_index_input_t **index_input,
+                          const char *file_name,
+                          lcn_io_context_t io_context,
+                          apr_pool_t *pool );
 
 /**
  * Creates a new file in the directory with the given name. If the

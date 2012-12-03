@@ -2,6 +2,7 @@
 #include "lcn_util.h"
 #include "lcn_index.h"
 #include "lcn_analysis.h"
+#include "io_context.h"
 
 #define OPTIMIZE_CF (1)
 #define OPTIMIZE_DEFAULT (2)
@@ -46,8 +47,8 @@ compare_directories(CuTest* tc, const char* path_a, const char* path_b )
 
         s = lcn_list_get( file_list_a, i );
 
-        LCN_TEST( lcn_directory_open_input( dir_a, &is_a, s, pool ) );
-        LCN_TEST( lcn_directory_open_input( dir_b, &is_b, s, pool ) );
+        LCN_TEST( lcn_directory_open_input( dir_a, &is_a, s, LCN_IO_CONTEXT_READONCE, pool ) );
+        LCN_TEST( lcn_directory_open_input( dir_b, &is_b, s, LCN_IO_CONTEXT_READONCE, pool ) );
 
         compare_input_streams( tc, is_a, is_b );
 

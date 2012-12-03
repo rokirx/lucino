@@ -2,6 +2,7 @@
 #include "lcn_store.h"
 #include "hits.h"
 #include "fs_field.h"
+#include "io_context.h"
 
 struct lcn_bitvector_t{
 
@@ -500,6 +501,7 @@ lcn_bitvector_from_dir( lcn_bitvector_t** bitvector,
         LCNCE( lcn_directory_open_input( directory,
                                          &is,
                                          name,
+                                         LCN_IO_CONTEXT_READONCE,
                                          pool ) );
 
         LCNCE( lcn_bitvector_from_stream( bitvector, is, pool ) );

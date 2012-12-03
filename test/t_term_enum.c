@@ -3,6 +3,7 @@
 #include "field_infos.h"
 #include "term_enum.h"
 #include "lcn_search.h"
+#include "io_context.h"
 
 #define CALL_NEXT( TERM_ENUM )                         \
    next_status = lcn_term_enum_next( TERM_ENUM );      \
@@ -39,7 +40,7 @@ test_segment_term_enum(CuTest* tc)
         LCN_TEST( apr_pool_create( &fi_pool, pool ) );
         LCN_TEST( lcn_field_infos_create_from_dir( &field_infos, dir, "_2c", fi_pool ));
 
-        LCN_TEST( lcn_directory_open_input( dir, &istream, "_2c.tii", is_pool ) );
+        LCN_TEST( lcn_directory_open_input( dir, &istream, "_2c.tii", LCN_IO_CONTEXT_READONCE, is_pool ) );
         LCN_TEST( lcn_segment_term_enum_create( &term_enum, istream, field_infos, LCN_TRUE, te_pool ));
 
         CALL_NEXT( term_enum );

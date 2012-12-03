@@ -48,7 +48,6 @@ int main (void)
     //CuSuiteAddSuite(sr, make_compound_file_suite());
     //CuSuiteAddSuite(sr, make_compound_file_util_suite());
 #if 1
-    CuSuiteAddSuite(sr, make_index_reader_suite());
     CuSuiteAddSuite(sr, make_array_suite() );
     CuSuiteAddSuite(sr, make_atom_suite());
     CuSuiteAddSuite(sr, make_bitvector_suite());

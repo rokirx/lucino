@@ -410,15 +410,15 @@ find_segments_file( lcn_directory_t *directory,
          */
         gen_b = -1;
 #if 0
-        LCNCE( lcn_directory_open_input_( directory,
-                                          LCN_INDEX_FILE_NAMES_SEGMENTS,
-                                          LCN_IO_CONTEXT_READONCE,
-                                          &gen_input,
-                                          pool ));
+        LCNCE( lcn_directory_open_input( directory,
+                                         LCN_INDEX_FILE_NAMES_SEGMENTS,
+                                         LCN_IO_CONTEXT_READONCE,
+                                         &gen_input,
+                                         pool ));
 #endif
         //genInput = directory.openInput(IndexFileNames.SEGMENTS_GEN, IOContext.READONCE);
 
-       *segments_file = NULL;
+        *segments_file = NULL;
     }
     while(0);
 
@@ -455,7 +455,7 @@ lcn_segment_infos_read_directory( lcn_segment_infos_t *segment_infos,
         {
             /* execute old code here (to delete as soon as possible)  */
 
-            if (( s = lcn_directory_open_input( dir, &is, LCN_INDEX_FILE_NAMES_SEGMENTS, cp )))
+            if (( s = lcn_directory_open_input( dir, &is, LCN_INDEX_FILE_NAMES_SEGMENTS, LCN_IO_CONTEXT_READONCE, cp )))
             {
                 break;
             }

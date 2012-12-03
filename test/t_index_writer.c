@@ -1142,7 +1142,7 @@ CuSuite *make_index_writer_suite (void)
 {
     CuSuite *s= CuSuiteNew();
 
-#if 0
+#if 1
     SUITE_ADD_TEST(s, test_doc_count             );
     SUITE_ADD_TEST(s, test_adding_empty_document );
     SUITE_ADD_TEST(s, test_creation              );
@@ -1159,9 +1159,9 @@ CuSuite *make_index_writer_suite (void)
     SUITE_ADD_TEST(s, test_merge_terms_2         );
     SUITE_ADD_TEST(s, test_empty_field           );
     SUITE_ADD_TEST(s, test_indexing_11           );
-    SUITE_ADD_TEST(s, test_index_no_documents    );
+    //SUITE_ADD_TEST(s, test_index_no_documents    );
 #endif
-    SUITE_ADD_TEST(s, test_index_no_documents    );
+    //SUITE_ADD_TEST(s, test_index_no_documents    );
 
     //SUITE_ADD_TEST(s, test_add_indexes           );
 

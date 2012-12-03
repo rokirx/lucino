@@ -7,6 +7,7 @@
 #include "index_input.h"
 #include "fs_field.h"
 #include "compound_file_reader.h"
+#include "io_context.h"
 
 #if 0
 
@@ -179,6 +180,7 @@ apr_status_t
 lcn_directory_open_input( lcn_directory_t *directory,
                           lcn_index_input_t **new_in,
                           const char *file_name,
+                          lcn_io_context_t io_context,
                           apr_pool_t *pool )
 {
     apr_status_t s;
@@ -197,17 +199,25 @@ lcn_directory_open_input( lcn_directory_t *directory,
 
 apr_status_t
 lcn_directory_open_input_( lcn_directory_t *directory,
+                           lcn_index_input_t **new_in,
                            const char *file_name,
                            lcn_io_context_t io_context,
-                           lcn_index_input_t **index_input,
                            apr_pool_t *pool )
 {
-    return APR_ENOMEM;
+    apr_status_t s;
+
+    /* opening non-existing segments while indexing is a common error */
+
+    if ( 0 == strcmp( "segments", file_name ) )
+    {
+        return directory->open_input( directory, new_in, file_name, pool );
+    }
+
+    LCNRM( directory->open_input( directory, new_in, file_name, pool ), file_name );
+
+    return s;
 }
 
-
-
-/* {{{ apr_status_t lcn_directory_delete_file */
 
 apr_status_t
 lcn_directory_delete_file( lcn_directory_t *directory,
@@ -232,8 +242,6 @@ lcn_directory_delete_files( lcn_directory_t *directory,
 
     return s;
 }
-
-/* }}} */
 
 apr_status_t
 lcn_directory_remove( lcn_directory_t *directory )
@@ -497,8 +505,6 @@ lcn_fs_directory_remove( lcn_directory_t *directory )
 
 /* }}} */
 
-/* {{{ apr_status_t lcn_directory_open_segment_file */
-
 apr_status_t
 lcn_directory_open_segment_file ( lcn_directory_t *directory,
                                   lcn_index_input_t **new_in,
@@ -512,14 +518,12 @@ lcn_directory_open_segment_file ( lcn_directory_t *directory,
     do
     {
         LCNPV( fname = apr_pstrcat( pool, seg_name, ext, NULL ), APR_ENOMEM );
-        LCNCE( lcn_directory_open_input( directory, new_in, fname, pool ) );
+        LCNCE( lcn_directory_open_input( directory, new_in, fname, LCN_IO_CONTEXT_READONCE, pool ) );
     }
     while(0);
 
     return s;
 }
-
-/* }}} */
 
 /* {{{ apr_status_t lcn_directory_create_segment_file */
 
@@ -571,8 +575,6 @@ lcn_file_exists( const char *file_name, lcn_bool_t *flag, apr_pool_t *pool )
 
 /* }}} */
 
-/* {{{ apr_status_t lcn_directory_file_exists */
-
 apr_status_t
 lcn_directory_file_exists ( const lcn_directory_t *directory,
                             const char *file_name,
@@ -582,8 +584,6 @@ lcn_directory_file_exists ( const lcn_directory_t *directory,
     LCNCR( directory->_file_exists( directory, file_name, flag ) );
     return s;
 }
-
-/* }}} */
 
 /* {{{ static apr_status_t lcn_fs_directory_file_exists */
 

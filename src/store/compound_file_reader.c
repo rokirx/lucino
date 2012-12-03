@@ -2,6 +2,7 @@
 #include "directory.h"
 #include "compound_file_reader.h"
 #include "lcn_util.h"
+#include "io_context.h"
 
 apr_status_t
 lcn_compound_file_reader_create ( lcn_compound_file_reader_t **cfr,
@@ -21,7 +22,7 @@ lcn_compound_file_reader_create ( lcn_compound_file_reader_t **cfr,
         (*cfr)->pool = pool;
         (*cfr)->is_open = LCN_TRUE;
 
-        LCNCE( lcn_directory_open_input( (*cfr)->dir, &((*cfr)->istream), (*cfr)->cf_name, (*cfr)->pool ) );
+        LCNCE( lcn_directory_open_input( (*cfr)->dir, &((*cfr)->istream), (*cfr)->cf_name, LCN_IO_CONTEXT_READONCE, (*cfr)->pool ) );
         // read the directory and init files
         LCNCE( lcn_index_input_read_vint( (*cfr)->istream, &count ));
 
@@ -29,6 +30,7 @@ lcn_compound_file_reader_create ( lcn_compound_file_reader_t **cfr,
         lcn_file_entry_t *new_entry = NULL;
 
         lcn_bool_t is_start_entry = LCN_TRUE;
+
         for ( i = 0; i < count; i++ )
         {
             apr_int64_t offset = 0;

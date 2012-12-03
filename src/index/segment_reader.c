@@ -4,6 +4,7 @@
 #include "fs_field.h"
 #include "document.h"
 #include "compound_file_reader.h"
+#include "io_context.h"
 
 /****************************************************************************************
  *
@@ -232,6 +233,7 @@ lcn_segment_reader_init_stream( lcn_segment_reader_t *segment_reader,
             LCNCE( lcn_directory_open_input( segment_reader->parent.directory,
                                              stream,
                                              file_name,
+                                             LCN_IO_CONTEXT_READONCE,
                                              segment_reader->parent.pool ));
         }
         else
@@ -285,7 +287,12 @@ lcn_segment_reader_open_norms( lcn_segment_reader_t *segment_reader )
                     d = cfsDir;
             }
 #endif
-                LCNCE( lcn_directory_open_input( segment_reader->parent.directory, &istream, file_name, segment_reader->parent.pool ) );
+                LCNCE( lcn_directory_open_input( segment_reader->parent.directory,
+                                                 &istream,
+                                                 file_name,
+                                                 LCN_IO_CONTEXT_READONCE,
+                                                 segment_reader->parent.pool ) );
+
                 LCNCE( lcn_norm_create( &norm, istream, field_info->number, segment_reader->parent.pool ) );
 
                 apr_hash_set( segment_reader->parent.norms, field_info->name, strlen(field_info->name), norm );

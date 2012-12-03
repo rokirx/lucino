@@ -6,6 +6,7 @@
 #include "stdlib.h"
 #include "time.h"
 #include "lcn_util.h"
+#include "io_context.h"
 
 const char *dir_test = "cf_test_dir";
 const char *cf_name = "testfile.cfs";
@@ -176,7 +177,7 @@ test_single_file(CuTest* tc)
         lcn_index_input_t *expected = NULL;
         lcn_index_input_t *actual = NULL;
 
-        LCN_TEST( lcn_directory_open_input( dir, &expected, seq_file, pool ) );
+        LCN_TEST( lcn_directory_open_input( dir, &expected, seq_file, LCN_IO_CONTEXT_READONCE, pool ) );
         LCN_TEST( lcn_compound_file_reader_open_input( cfr, &actual, seq_file ) );
 
         assert_same_stream ( tc, expected, actual );
@@ -219,7 +220,7 @@ test_two_files ( CuTest* tc )
     lcn_index_input_t *expected = NULL;
     lcn_index_input_t *actual = NULL;
 
-    LCN_TEST( lcn_directory_open_input( dir, &expected, "seq_file1", pool ) );
+    LCN_TEST( lcn_directory_open_input( dir, &expected, "seq_file1", LCN_IO_CONTEXT_READONCE, pool ) );
     LCN_TEST( lcn_compound_file_reader_open_input( cfr, &actual, "seq_file1" ) );
 
     assert_same_stream ( tc, expected, actual);
@@ -231,7 +232,7 @@ test_two_files ( CuTest* tc )
     /**
      * Open seq_file2 and test it.
      */
-    LCN_TEST( lcn_directory_open_input( dir, &expected, "seq_file2", pool ) );
+    LCN_TEST( lcn_directory_open_input( dir, &expected, "seq_file2", LCN_IO_CONTEXT_READONCE, pool ) );
     LCN_TEST( lcn_compound_file_reader_open_input( cfr, &actual, "seq_file2" ) );
 
     assert_same_stream ( tc, expected, actual);
@@ -297,7 +298,7 @@ test_random_files( CuTest* tc )
         lcn_index_input_t *expected = NULL;
         lcn_index_input_t *actual = NULL;
 
-        LCN_TEST( lcn_directory_open_input( dir, &expected, apr_pstrcat(pool, segment, data[i], NULL ), pool ) );
+        LCN_TEST( lcn_directory_open_input( dir, &expected, apr_pstrcat(pool, segment, data[i], NULL ), LCN_IO_CONTEXT_READONCE, pool ) );
         LCN_TEST( lcn_compound_file_reader_open_input( cfr, &actual, apr_pstrcat(pool, segment, data[i], NULL ) ) );
 
         assert_same_stream ( tc, expected, actual);

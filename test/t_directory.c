@@ -1,5 +1,6 @@
 #include "test_all.h"
 #include "lcn_util.h"
+#include "io_context.h"
 
 static int
 check_in_list( lcn_list_t *list, const char *name )
@@ -48,11 +49,11 @@ do_tests( CuTest* tc, lcn_directory_t *t_dir, apr_pool_t *pool )
     LCN_TEST( lcn_directory_create_output( t_dir, &out, "segments", pool ));
     lcn_ostream_write_string( out, "TEST" );
     LCN_TEST( lcn_ostream_close( out ) );
-    LCN_TEST( lcn_directory_open_input( t_dir, &in, "segments", pool ) );
+    LCN_TEST( lcn_directory_open_input( t_dir, &in, "segments", LCN_IO_CONTEXT_READONCE, pool ) );
     LCN_TEST( lcn_index_input_read_string( in, &str, &len, pool ) );
     CuAssertStrEquals(tc, str, "TEST" );
     LCN_TEST( lcn_index_input_close( in ) );
-    CuAssertTrue(tc, APR_SUCCESS != lcn_directory_open_input( t_dir, &in, "xxx", pool ));
+    CuAssertTrue(tc, APR_SUCCESS != lcn_directory_open_input( t_dir, &in, "xxx", LCN_IO_CONTEXT_READONCE, pool ));
 
     LCN_TEST( lcn_directory_create_segment_file( t_dir, &out, "segments", ".abc", pool ));
     LCN_TEST( lcn_ostream_write_string( out, "TEST abc" ) );
@@ -75,7 +76,7 @@ do_tests( CuTest* tc, lcn_directory_t *t_dir, apr_pool_t *pool )
     CuAssertIntEquals(tc, 1, check_in_list( file_list, "segments.abc" ));
 
     LCN_TEST( lcn_directory_delete_file( t_dir, "segments" ) );
-    CuAssertTrue(tc, APR_SUCCESS != lcn_directory_open_input( t_dir, &in, "segments", pool ));
+    CuAssertTrue(tc, APR_SUCCESS != lcn_directory_open_input( t_dir, &in, "segments", LCN_IO_CONTEXT_READONCE, pool ));
 
     /* tests memory management: first write data into dir using a pool */
     LCN_TEST( apr_pool_create(&child_pool, pool ) );
@@ -86,7 +87,7 @@ do_tests( CuTest* tc, lcn_directory_t *t_dir, apr_pool_t *pool )
 
     /* now check whether the data is still available */
     LCN_TEST( apr_pool_create(&child_pool, pool ) );
-    LCN_TEST( lcn_directory_open_input( t_dir, &in, "afile", child_pool ));
+    LCN_TEST( lcn_directory_open_input( t_dir, &in, "afile", LCN_IO_CONTEXT_READONCE, child_pool ));
     LCN_TEST( lcn_index_input_read_string( in, &str, &len, str_pool ) );
     LCN_TEST( lcn_index_input_close( in ) );
     apr_pool_destroy( child_pool );
@@ -115,7 +116,7 @@ do_tests( CuTest* tc, lcn_directory_t *t_dir, apr_pool_t *pool )
     apr_pool_destroy( child_pool );
 
     LCN_TEST( apr_pool_create( &child_pool, pool ) );
-    LCN_TEST( lcn_directory_open_input( t_dir, &in, "thefile", child_pool ));
+    LCN_TEST( lcn_directory_open_input( t_dir, &in, "thefile", LCN_IO_CONTEXT_READONCE, child_pool ));
 
     for( i = 0; i < 60; i++ )
     {
@@ -137,7 +138,7 @@ do_tests( CuTest* tc, lcn_directory_t *t_dir, apr_pool_t *pool )
 }
 
 static void
-TestCuRAMCreate(CuTest* tc)
+test_ram_create(CuTest* tc)
 {
     apr_pool_t *pool;
     lcn_directory_t *dir;
@@ -151,7 +152,7 @@ TestCuRAMCreate(CuTest* tc)
 }
 
 static void
-TestCuCreate(CuTest* tc)
+test_create(CuTest* tc)
 {
     apr_pool_t *pool;
     apr_status_t s;
@@ -180,7 +181,7 @@ TestCuCreate(CuTest* tc)
 }
 
 static void
-TestCuCreateFile(CuTest* tc)
+test_create_file(CuTest* tc)
 {
     lcn_directory_t *t_dir;
     apr_pool_t *pool;
@@ -201,9 +202,9 @@ CuSuite *make_directory_suite (void)
 {
     CuSuite *s = CuSuiteNew();
 
-    SUITE_ADD_TEST(s,TestCuCreate);
-    SUITE_ADD_TEST(s,TestCuCreateFile);
-    SUITE_ADD_TEST(s,TestCuRAMCreate);
+    SUITE_ADD_TEST(s, test_create);
+    SUITE_ADD_TEST(s, test_create_file);
+    SUITE_ADD_TEST(s, test_ram_create);
 
     return s;
 }

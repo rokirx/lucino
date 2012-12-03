@@ -4,6 +4,7 @@
 #include "directory.h"
 #include "term_infos_reader.h"
 #include "term_enum.h"
+#include "io_context.h"
 
 
 static apr_status_t
@@ -134,7 +135,7 @@ lcn_term_infos_reader_ensure_index_is_read( lcn_term_infos_reader_t *ti_reader )
         lcn_index_input_t *istream;
 
         LCNPV( file_name = apr_pstrcat( pool, ti_reader->segment, ".tii", NULL ), APR_ENOMEM );
-        LCNCE( lcn_directory_open_input( ti_reader->dir, &istream, file_name, pool ) );
+        LCNCE( lcn_directory_open_input( ti_reader->dir, &istream, file_name, LCN_IO_CONTEXT_READONCE, pool ));
         LCNCE( lcn_segment_term_enum_create( &index_enum, istream, ti_reader->field_infos, LCN_TRUE, pool ));
 
         index_size = (unsigned int) lcn_term_enum_size( index_enum );
@@ -342,7 +343,7 @@ lcn_term_infos_reader_create( lcn_term_infos_reader_t **term_infos_reader,
 
             if ( exists )
             {
-                LCNCE( lcn_directory_open_input( dir, &istream, file_name, pool ));
+                LCNCE( lcn_directory_open_input( dir, &istream, file_name, LCN_IO_CONTEXT_READONCE, pool ));
             }
             else
             {
