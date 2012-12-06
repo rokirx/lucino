@@ -614,18 +614,17 @@ lcn_index_writer_create_impl_neu( lcn_index_writer_t **index_writer,
              * searching.  In this case we write the next
              * segments_N file with no segments:
              */
-#if 0
-        try {
-          segmentInfos.read(directory);
-          segmentInfos.clear();
-        } catch (IOException e) {
-          // Likely this means it's a fresh directory
-        }
+            if ( APR_SUCCESS == lcn_segment_infos_read_directory( segment_infos, directory ))
+            {
+                lcn_segment_infos_clear( segment_infos );
+            }
 
-        // Record that we have a change (zero out all
-        // segments) pending:
-        changeCount++;
-        segmentInfos.changed();
+            /*
+             * Record that we have a change (zero out all segments) pending:
+             */
+#if 0
+            changeCount++;
+            segmentInfos.changed();
 #endif
         }
 #if 0

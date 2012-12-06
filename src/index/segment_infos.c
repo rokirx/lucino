@@ -299,6 +299,13 @@ lcn_segment_infos_has_separate_norms( lcn_segment_info_t *segment_info,
  * Lucene 4.0
  */
 
+void
+lcn_segment_infos_clear( lcn_segment_infos_t *segment_infos )
+{
+    lcn_list_clear( segment_infos->segments );
+}
+
+
 static apr_status_t
 generation_from_segments_file_name(char *file_name, apr_int64_t *gen)
 {

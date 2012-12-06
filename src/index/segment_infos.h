@@ -32,6 +32,10 @@ struct lcn_segment_infos_t{
 
     apr_pool_t *pool;
 
+    /**
+     * List<SegmentInfoPerCommit>
+     */
+    lcn_list_t *segments;
 
     /**
      * generation of the "segments_N" for the next commit
@@ -55,7 +59,6 @@ lcn_segment_info_directory( lcn_segment_info_t *segment_info );
 
 unsigned int
 lcn_segment_info_doc_count( lcn_segment_info_t *segment_info );
-
 
 unsigned int
 lcn_segment_infos_size( lcn_segment_infos_t *segment_infos );
@@ -105,6 +108,10 @@ lcn_segment_infos_has_separate_norms( lcn_segment_info_t *segment_info,
 /**
  * Lucene 4.0
  */
+
+void
+lcn_segment_infos_clear( lcn_segment_infos_t *segment_infos );
+
 
 /**
  * Find the latest commit ({@code segments_N file}) and
