@@ -23,15 +23,6 @@ LUCENE_EXTERN void
 lcn_itoa32 ( unsigned int i, char *buf );
 
 /**
- * Converts an integer to the numeric representation
- * to base 36. Up to 7 characters may be written to
- * buffer
- */
-LUCENE_EXTERN void
-lcn_itoa36 ( unsigned int i, char *buf );
-
-
-/**
  * Converts a numeric representation to base 32 to an
  * integer. At most first 7 digits are evaluated.
  */

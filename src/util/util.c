@@ -102,8 +102,8 @@ lcn_itoa32 ( unsigned int i, char *buf )
     }
 }
 
-LUCENE_EXTERN void
-lcn_itoa36 ( unsigned int i, char *buf )
+void
+lcn_itoa36( apr_int64_t i, char *buf )
 {
     char b[10];
     int index = 0;

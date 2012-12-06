@@ -365,6 +365,101 @@ get_last_commit_generation( lcn_list_t *files, apr_int64_t *gen )
     return s;
 }
 
+
+/* TODO: mayby move to index_file_names.c */
+
+/**
+ * Returns a file name that includes the given segment name, your own custom
+ * name and extension. The format of the filename is:
+ *
+ * <segmentName>(_<name>)(.<ext>)
+ *
+ * NOTE: .<ext> is added to the result file name only if
+ * ext is not empty.
+ *
+ * NOTE: _<segmentSuffix> is added to the result file name only if
+ * it's not the empty string
+ *
+ * NOTE: all custom files should be named using this method, or
+ * otherwise some structures may fail to handle them properly (such as if they
+ * are added to compound files).
+ */
+static char* segment_file_name( const char *segment_name,
+                                const char *segment_suffix,
+                                const char *ext,
+                                apr_pool_t *pool )
+{
+    lcn_bool_t has_ext    = ( NULL != ext && strlen(ext) > 0 );
+    lcn_bool_t has_suffix = ( NULL != segment_suffix && strlen(segment_suffix) > 0 );
+
+    if ( has_ext || has_suffix )
+    {
+        /* mayby TODO: assert !ext.startsWith("."); */
+
+        return apr_pstrcat( pool,
+                            segment_name,
+                            has_suffix ? "_" : "",
+                            has_suffix ? segment_suffix : "",
+                            has_ext ? "." : "",
+                            has_ext ? ext : "",
+                            NULL );
+    }
+    else
+    {
+        return apr_pstrdup( pool, segment_name );
+    }
+}
+
+/**
+ * Computes the full file name from base, extension and generation.
+ *
+ * If the generation is -1, the file name is null.
+ * If it's 0, the file name is <base>.<ext>
+ * If it's > 0, the file name is <base>_<gen>.<ext>
+ *
+ * NOTE: .<ext> is added to the name only if ext not an empty string.
+ *
+ * @param base main part of the file name
+ * @param ext extension of the filename
+ * @param gen generation
+ */
+static char* file_name_from_generation( char *base,
+                                        char *ext,
+                                        apr_int64_t gen,
+                                        apr_pool_t *pool )
+{
+    if ( gen == -1)
+    {
+        return NULL;
+    }
+
+    if ( gen == 0 )
+    {
+        return segment_file_name(base, "", ext, pool );
+    }
+
+    {
+        /* mayby TODO: assert gen > 0 */
+
+        /* max long encoded to base 36: 1z141z4 (length 7), so 10 */
+        /* should be ok                                           */
+
+        char gen_buf[10];
+        lcn_bool_t has_ext = (NULL != ext && strlen(ext) > 0);
+
+        lcn_itoa36( gen, gen_buf );
+
+        return apr_pstrcat( pool,
+                            base,
+                            "_",
+                            gen_buf,
+                            has_ext ? "." : "",
+                            has_ext ? ext : "",
+                            NULL );
+    }
+}
+
+
 /**
  * List the directory and use the highest
  * segments_N file.  This method works well as long
@@ -382,13 +477,13 @@ find_segments_file( lcn_directory_t *directory,
     {
         lcn_bool_t exists;
         lcn_list_t *file_list;
-        apr_int64_t gen_a, gen_b;
+        apr_int64_t gen_a, gen_b, gen;
         lcn_index_input_t *gen_input = NULL;
+        apr_status_t stat;
 
         /* first check for old format (still 2.4) */
 
         LCNCE( lcn_directory_file_exists ( directory, LCN_INDEX_FILE_NAMES_SEGMENTS, &exists ));
-
 
         if ( LCN_TRUE == exists )
         {
@@ -409,14 +504,60 @@ find_segments_file( lcn_directory_t *directory,
          * getting the right generation.
          */
         gen_b = -1;
-#if 0
-        LCNCE( lcn_directory_open_input( directory,
+
+        stat = lcn_directory_open_input( directory,
+                                         &gen_input,
                                          LCN_INDEX_FILE_NAMES_SEGMENTS,
                                          LCN_IO_CONTEXT_READONCE,
-                                         &gen_input,
-                                         pool ));
+                                         pool );
+
+        if ( stat != LCN_ERR_NOT_REGULAR_FILE &&
+             stat != LCN_ERR_RAM_FILE_NOT_FOUND )
+        {
+            LCNCE( stat );
+        }
+
+        if ( gen_input != NULL )
+        {
+            flog( stderr, "Implement TODO segment_infos:427\n" );
+            return APR_ENOMEM;
+#if 0
+            try {
+              int version = genInput.readInt();
+              if (version == FORMAT_SEGMENTS_GEN_CURRENT) {
+                long gen0 = genInput.readLong();
+                long gen1 = genInput.readLong();
+                if (infoStream != null) {
+                  message("fallback check: " + gen0 + "; " + gen1);
+                }
+                if (gen0 == gen1) {
+                  // The file is consistent.
+                  genB = gen0;
+                }
+              } else {
+                throw new IndexFormatTooNewException(genInput, version, FORMAT_SEGMENTS_GEN_CURRENT, FORMAT_SEGMENTS_GEN_CURRENT);
+              }
+            } catch (IOException err2) {
+              // rethrow any format exception
+              if (err2 instanceof CorruptIndexException) throw err2;
+            } finally {
+              genInput.close();
+            }
 #endif
-        //genInput = directory.openInput(IndexFileNames.SEGMENTS_GEN, IOContext.READONCE);
+        }
+
+        gen = ( gen_a > gen_b ? gen_a : gen_b );
+
+        LCNASSERT( gen != -1, LCN_ERR_INDEX_NOT_FOUND );
+
+        /* more simplification's going on, fix it eventually */
+
+        *segments_file = file_name_from_generation( LCN_INDEX_FILE_NAMES_SEGMENTS,
+                                                    "",
+                                                    gen,
+                                                    pool );
+
+        flog( stderr, "segments_file:  %s\n", *segments_file );
 
         *segments_file = NULL;
     }

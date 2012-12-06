@@ -14,18 +14,12 @@ lcn_directory_reader_index_exists( lcn_directory_t *directory,
         LCNCE( lcn_segment_infos_create( &segment_infos, pool ));
 
         s = lcn_segment_infos_read_directory( segment_infos, directory );
+
+        *exists = ( APR_SUCCESS == s );
+
+        s = APR_SUCCESS;
     }
     while(0);
-#if 0
-  //apr_status_t s = lcn_segment_infos_read_directory( directory );
-    try {
-      new SegmentInfos().read(directory);
-      return true;
-    } catch (IOException ioe) {
-      return false;
-    }
-#endif
-    *exists = LCN_FALSE;
 
     return s;
 }

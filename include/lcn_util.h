@@ -69,7 +69,7 @@ lcn_list_uniquify( lcn_list_t **new_list,
                    apr_pool_t* pool );
 
 void
-lcn_list_set ( lcn_list_t *list,  unsigned int n, void *element );
+lcn_list_set( lcn_list_t *list,  unsigned int n, void *element );
 
 apr_status_t
 lcn_list_add( lcn_list_t *list, void *element );
@@ -546,13 +546,13 @@ struct lcn_priority_queue_t
  * @param max_size maximal size of queue heap
  */
 apr_status_t
-lcn_priority_queue_initialize ( lcn_priority_queue_t *queue,
-                                unsigned int max_size );
+lcn_priority_queue_initialize( lcn_priority_queue_t *queue,
+                               unsigned int max_size );
 /**
  * @brief Current size of queue
  */
 unsigned int
-lcn_priority_queue_size ( lcn_priority_queue_t* queue );
+lcn_priority_queue_size( lcn_priority_queue_t* queue );
 
 /**
  * @brief Maximal possible size of queue
@@ -578,7 +578,7 @@ lcn_priority_queue_adjust_top( lcn_priority_queue_t* queue );
  * TODO: Must set errno and check it in client code
  */
 void
-lcn_priority_queue_put ( lcn_priority_queue_t *, void *element );
+lcn_priority_queue_put( lcn_priority_queue_t *, void *element );
 
 /**
  * Adds element to the lcn_priority_queue_t in log(size) time if either
@@ -669,12 +669,12 @@ lcn_priority_queue_resize( lcn_priority_queue_t *priority_queue,
  * a > b  => return FALSE
  **/
 
-bool lcn_priority_queue_less_than (void *a, void *b);
+bool lcn_priority_queue_less_than(void *a, void *b);
 
 apr_status_t
-lcn_priority_queue_create ( lcn_priority_queue_t** priority_queue,
-                            lcn_bool_t (*less_than)( lcn_priority_queue_t*, void*, void* ),
-                            apr_pool_t* pool );
+lcn_priority_queue_create( lcn_priority_queue_t** priority_queue,
+                           lcn_bool_t (*less_than)( lcn_priority_queue_t*, void*, void* ),
+                           apr_pool_t* pool );
 
 
 lcn_byte_t
@@ -706,31 +706,31 @@ extern unsigned char lcn_upper_to_lower_map[];
  * to base 32. Up to 7 characters may be written to
  * buffer
  */
-LUCENE_EXTERN void
-lcn_itoa32 ( unsigned int i, char *buf );
+void
+lcn_itoa32( unsigned int i, char *buf );
 
 /**
  * Converts an integer to the numeric representation
  * to base 36. Up to 7 characters may be written to
  * buffer
  */
-LUCENE_EXTERN void
-lcn_itoa36 ( unsigned int i, char *buf );
+void
+lcn_itoa36( apr_int64_t i, char *buf );
 
 
 /**
  * Converts a numeric representation to base 32 to an
  * integer. At most first 7 digits are evaluated.
  */
-LUCENE_EXTERN unsigned int
-lcn_atoi32 ( const char *buf );
+unsigned int
+lcn_atoi32( const char *buf );
 
 /**
  * Converts a numeric representation to base 32 to an
  * integer. At most first 7 digits are evaluated.
  */
-LUCENE_EXTERN unsigned int
-lcn_atoi36 ( const char *buf );
+unsigned int
+lcn_atoi36( const char *buf );
 
 /**
  * Compares two strings, character by character, and returns the
@@ -741,7 +741,7 @@ lcn_atoi36 ( const char *buf );
  * @return The first position where the two strings differ.
  */
 int
-lcn_string_difference ( const char *s1, const char *s2 );
+lcn_string_difference( const char *s1, const char *s2 );
 
 /**
  * @brief Checks, if <code>haystack</code> starts with <code>needle</code>
