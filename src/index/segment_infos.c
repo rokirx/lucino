@@ -578,7 +578,7 @@ lcn_segment_infos_read_directory( lcn_segment_infos_t *segment_infos,
     do
     {
         int format, size, i;
-        char *segments_file;
+        char *segments_file = NULL;
 
         LCNCE( apr_pool_create( &cp, segment_infos->pool ));
 

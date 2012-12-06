@@ -575,7 +575,7 @@ lcn_index_writer_create_impl_neu( lcn_index_writer_t **index_writer,
     do
     {
         lcn_bool_t create = LCN_FALSE;
-
+        lcn_segment_infos_t *segment_infos;
         unsigned int open_mode = lcn_index_writer_config_get_open_mode( iwc );
 
         LCNCE( apr_pool_create( &cp, pool ) );
@@ -598,19 +598,67 @@ lcn_index_writer_create_impl_neu( lcn_index_writer_t **index_writer,
             lcn_bool_t exists;
 
             LCNCE( lcn_directory_reader_index_exists( directory, &exists, cp ));
+
             /*
              * CREATE_OR_APPEND - create only if an index does not exist
-             * create = !DirectoryReader.indexExists(directory);
              */
+            create = ! exists;
         }
-        /*
-         * If index is too old, reading the segments will throw
-         * IndexFormatTooOldException.
-         *segmentInfos = new SegmentInfos();
-         */
+
+        LCNCE( lcn_segment_infos_create( &segment_infos, pool ));
+
+        if ( create )
+        {
+            /* Try to read first.  This is to allow create
+             * against an index that's currently open for
+             * searching.  In this case we write the next
+             * segments_N file with no segments:
+             */
+#if 0
+        try {
+          segmentInfos.read(directory);
+          segmentInfos.clear();
+        } catch (IOException e) {
+          // Likely this means it's a fresh directory
+        }
+
+        // Record that we have a change (zero out all
+        // segments) pending:
+        changeCount++;
+        segmentInfos.changed();
+#endif
+        }
+#if 0
+        } else {
+        segmentInfos.read(directory);
+
+        IndexCommit commit = config.getIndexCommit();
+        if (commit != null) {
+          // Swap out all segments, but, keep metadata in
+          // SegmentInfos, like version & generation, to
+          // preserve write-once.  This is important if
+          // readers are open against the future commit
+          // points.
+          if (commit.getDirectory() != directory)
+            throw new IllegalArgumentException("IndexCommit's directory doesn't match my directory");
+          SegmentInfos oldInfos = new SegmentInfos();
+          oldInfos.read(directory, commit.getSegmentsFileName());
+          segmentInfos.replace(oldInfos);
+          changeCount++;
+          segmentInfos.changed();
+          if (infoStream.isEnabled("IW")) {
+            infoStream.message("IW", "init: loaded commit \"" + commit.getSegmentsFileName() + "\"");
+          }
+        }
+      }
+#endif
     }
     while ( 0 );
 
+    if ( NULL != cp )
+    {
+        apr_pool_destroy(cp);
+    }
 
     return s;
 }
