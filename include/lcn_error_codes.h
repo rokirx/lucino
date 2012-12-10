@@ -208,7 +208,7 @@ LCN_ERRDEF( LCN_ERR_SEGMENT_INFOS_INVALID_SEGMENTS_FILE_NAME,
             55, "The name of a segments file has invalid format" )
 
 LCN_ERRDEF( LCN_ERR_ALREADY_CLOSED,
-            56, "Trying to read from closed resource" )
+            56, "Trying to operate on closed resource" )
 
 LCN_ERRDEF( LCN_ERR_INDEX_NOT_FOUND,
             57, "No segments* file found in directory" )

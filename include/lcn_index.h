@@ -629,10 +629,44 @@ lcn_index_writer_create_by_directory( lcn_index_writer_t **index_writer,
                                       apr_pool_t *pool );
 
 apr_status_t
-lcn_index_writer_create_by_config( lcn_index_writer_t **index_writer, 
+lcn_index_writer_create_by_config( lcn_index_writer_t **index_writer,
                                    lcn_directory_t *directory,
                                    lcn_index_writer_config_t *config,
                                    apr_pool_t *pool );
+
+/**
+ * (JavaDoc: may not apply to C implementation!)
+ *
+ * <p>Commits all pending changes (added & deleted
+ * documents, segment merges, added
+ * indexes, etc.) to the index, and syncs all referenced
+ * index files, such that a reader will see the changes
+ * and the index updates will survive an OS or machine
+ * crash or power loss.  Note that this does not wait for
+ * any running background merges to finish.  This may be a
+ * costly operation, so you should test the cost in your
+ * application and do it only when really necessary.</p>
+ *
+ * <p> Note that this operation calls Directory.sync on
+ * the index files.  That call should not return until the
+ * file contents & metadata are on stable storage.  For
+ * FSDirectory, this calls the OS's fsync.  But, beware:
+ * some hardware devices may in fact cache writes even
+ * during fsync, and return before the bits are actually
+ * on stable storage, to give the appearance of faster
+ * performance.  If you have such a device, and it does
+ * not have a battery backup (for example) then on power
+ * loss it may still lose data.  Lucene cannot guarantee
+ * consistency on such devices.  </p>
+ *
+ * <p><b>NOTE</b>: if this method hits an OutOfMemoryError
+ * you should immediately close the writer.  See <a
+ * href="#OOME">above</a> for details.</p>
+ *
+ * @see #prepareCommit
+ */
+apr_status_t
+lcn_index_writer_commit( lcn_index_writer_t *index_writer );
 
 void
 lcn_index_writer_set_log_stream( lcn_index_writer_t *index_writer,

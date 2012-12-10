@@ -9,6 +9,13 @@
 #include "index_writer_config.h"
 #include "io_context.h"
 
+#define IW_INFO(MSG)                                    \
+if (NULL != index_writer->info_stream)                  \
+{                                                       \
+    fprintf( index_writer->info_stream, MSG "\n");      \
+}
+
+
 char* lcn_index_extensions[] = { "cfs", "fnm", "fdx", "fdt", "tii", "tis", "frq",
     "prx", "del", "tvx", "tvd", "tvf", "tvp" };
 
@@ -580,6 +587,7 @@ lcn_index_writer_create_impl_neu( lcn_index_writer_t **index_writer,
 
         LCNCE( apr_pool_create( &cp, pool ) );
         LCNPV( *index_writer = lcn_object_create( lcn_index_writer_t, pool ), APR_ENOMEM );
+        (*index_writer)->info_stream = stderr;
 
         (*index_writer)->pool = pool;
 
@@ -622,13 +630,13 @@ lcn_index_writer_create_impl_neu( lcn_index_writer_t **index_writer,
             /*
              * Record that we have a change (zero out all segments) pending:
              */
-#if 0
-            changeCount++;
-            segmentInfos.changed();
-#endif
+            (*index_writer)->change_count++;
+
+            lcn_segment_infos_changed( segment_infos );
         }
+        else
+        {
 #if 0
-        } else {
         segmentInfos.read(directory);
 
         IndexCommit commit = config.getIndexCommit();
@@ -649,8 +657,8 @@ lcn_index_writer_create_impl_neu( lcn_index_writer_t **index_writer,
             infoStream.message("IW", "init: loaded commit \"" + commit.getSegmentsFileName() + "\"");
           }
         }
-      }
 #endif
+      }
     }
     while ( 0 );
 
@@ -1475,3 +1483,71 @@ lcn_index_writer_max_doc( lcn_index_writer_t *index_writer )
     return count;
 }
 
+
+/**
+ * Lucene 4.x
+ */
+
+static apr_status_t
+lcn_index_writer_prepare_commit_internal( lcn_index_writer_t* index_writer )
+{
+    apr_status_t s = APR_SUCCESS;
+
+    do
+    {
+    }
+    while(0);
+
+    return s;
+}
+
+static apr_status_t
+lcn_index_writer_commit_internal( lcn_index_writer_t *index_writer )
+{
+    apr_status_t s = APR_SUCCESS;
+
+    do
+    {
+        IW_INFO("commit: start");
+
+#if 0
+        /* TODO: if ever to support multi threading */
+        synchronized(commitLock) {
+            ensureOpen(false);
+            if (infoStream.isEnabled("IW")) {
+                infoStream.message("IW", "commit: enter lock");
+            }}
+#endif
+
+        if ( NULL == index_writer->pending_commit )
+        {
+            IW_INFO("commit: now prepare");
+            lcn_index_writer_prepare_commit_internal( index_writer );
+        }
+        else
+        {
+            IW_INFO("commit: already_prepared");
+        }
+
+      //finishCommit();
+    }
+    while(0);
+
+    return s;
+}
+
+
+apr_status_t
+lcn_index_writer_commit( lcn_index_writer_t *index_writer )
+{
+    apr_status_t s = APR_SUCCESS;
+
+    do
+    {
+        LCNASSERTR( ! index_writer->closed, LCN_ERR_ALREADY_CLOSED );
+        LCNCE( lcn_index_writer_commit_internal( index_writer ));
+    }
+    while(0);
+
+    return s;
+}

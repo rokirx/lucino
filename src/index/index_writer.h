@@ -29,7 +29,7 @@ struct lcn_index_writer_t {
     apr_pool_t *seg_name_subpool;
 
     lcn_index_writer_config_t *iwc;
-    
+
     unsigned int max_field_length;
     unsigned int term_index_interval;
     unsigned int max_buffered_docs;
@@ -45,9 +45,19 @@ struct lcn_index_writer_t {
     lcn_similarity_t *similarity;
 
     FILE *log_stream;
+    FILE *info_stream;
 
     apr_hash_t *fs_fields;
     unsigned int docs_count;
+
+    /**
+     * Lucene 4.1
+     */
+    apr_int64_t change_count;
+
+    lcn_bool_t closed;
+
+    lcn_segment_infos_t *pending_commit;
 };
 
 #endif /* INDEX_WRITER_H */

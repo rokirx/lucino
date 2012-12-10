@@ -20,7 +20,6 @@ struct lcn_segment_info_t {
 struct lcn_segment_infos_t{
 
     int format;
-    apr_uint64_t version;
     unsigned int counter;
     lcn_list_t *list;
 
@@ -41,6 +40,11 @@ struct lcn_segment_infos_t{
      * generation of the "segments_N" for the next commit
      */
     apr_int64_t generation;
+
+    /**
+     * Counts how often the index has been changed.
+     */
+    apr_uint64_t version;
 
     /**
      * generation of the "segments_N" file we last successfully read
@@ -109,6 +113,13 @@ lcn_segment_infos_has_separate_norms( lcn_segment_info_t *segment_info,
  * Lucene 4.0
  */
 
+void
+lcn_segment_infos_changed( lcn_segment_infos_t *segment_infos );
+
+
+/**
+ * Clear all {@link SegmentInfoPerCommit}s.
+ */
 void
 lcn_segment_infos_clear( lcn_segment_infos_t *segment_infos );
 

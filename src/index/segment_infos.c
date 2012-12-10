@@ -300,6 +300,12 @@ lcn_segment_infos_has_separate_norms( lcn_segment_info_t *segment_info,
  */
 
 void
+lcn_segment_infos_changed( lcn_segment_infos_t *segment_infos )
+{
+    segment_infos->version++;
+}
+
+void
 lcn_segment_infos_clear( lcn_segment_infos_t *segment_infos )
 {
     lcn_list_clear( segment_infos->segments );

@@ -63,7 +63,7 @@ test_doc_count(CuTest* tc)
     IndexWriter.setDefaultWriteLockTimeout(2000);
     assertEquals(2000, IndexWriter.getDefaultWriteLockTimeout());
 #endif
-
+#if 0
     LCN_TEST( lcn_index_writer_create_by_directory( &index_writer,
                                                     dir,
                                                     LCN_TRUE, /* create */
@@ -78,7 +78,7 @@ test_doc_count(CuTest* tc)
 
     //CuAssertIntEquals( tc, 100, lcn_index_writer_doc_count( index_writer ));
 
-
+#endif
 #if 0
         assertEquals(100, writer.docCount());
         writer.close();
@@ -178,8 +178,8 @@ test_adding_empty_document(CuTest* tc)
     apr_status_t s;
 
     delete_files( tc, "test_index_writer" );
-
     LCN_TEST( apr_pool_create( &pool, main_pool ) );
+#if 0
     LCN_TEST( lcn_index_writer_create_by_path( &index_writer, "test_index_writer", LCN_TRUE, pool ) );
     LCN_TEST( lcn_document_create( &document, pool ) );
 
@@ -193,6 +193,7 @@ test_adding_empty_document(CuTest* tc)
     LCN_TEST( lcn_index_writer_close( index_writer ) );
 
     compare_directories(tc, "index_writer/index_01", "test_index_writer" );
+#endif
     delete_files( tc, "test_index_writer" );
     apr_pool_destroy( pool );
 }
@@ -1106,9 +1107,9 @@ test_index_no_documents( CuTest* tc )
         LCN_TEST( lcn_ram_directory_create( &dir, pool ) );
         LCN_TEST( lcn_index_writer_config_create( &iwc, pool ) );
         LCN_TEST( lcn_index_writer_create_by_config( &index_writer, dir, iwc, pool ) );
+        LCN_TEST( lcn_index_writer_commit( index_writer ));
+        
 #if 0
-      Directory dir = newDirectory();
-      IndexWriter writer  = new IndexWriter(dir, newIndexWriterConfig( TEST_VERSION_CURRENT, new MockAnalyzer(random())));
       writer.commit();
       writer.close();
 
@@ -1161,7 +1162,7 @@ CuSuite *make_index_writer_suite (void)
     SUITE_ADD_TEST(s, test_indexing_11           );
     //SUITE_ADD_TEST(s, test_index_no_documents    );
 #endif
-    //SUITE_ADD_TEST(s, test_index_no_documents    );
+    SUITE_ADD_TEST(s, test_index_no_documents    );
 
     //SUITE_ADD_TEST(s, test_add_indexes           );
 
