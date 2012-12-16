@@ -1489,15 +1489,63 @@ lcn_index_writer_max_doc( lcn_index_writer_t *index_writer )
 
 apr_status_t
 lcn_index_writer_seg_string_all( lcn_index_writer_t *index_writer,
-                                 char **str )
+                                 char **str,
+                                 apr_pool_t *pool )
 {
-    return lcn_index_writer_seg_string( index_writer, str, index_writer->segment_infos );
+    return lcn_index_writer_seg_string( index_writer, str, index_writer->segment_infos, pool );
 }
 
 apr_status_t
 lcn_index_writer_seg_string( lcn_index_writer_t *index_writer,
                              char **str,
-                             lcn_segment_infos_t *segment_infos )
+                             lcn_segment_infos_t *segment_infos,
+                             apr_pool_t *pool )
+{
+    apr_status_t s = APR_SUCCESS;
+    apr_pool_t *cp = NULL;
+
+    do
+    {
+        int i;
+        lcn_string_buffer_t *sb;
+
+        LCNCE( apr_pool_create( &cp, pool ));
+        LCNCE( lcn_string_buffer_create( &sb, cp ));
+
+        for( i = 0; i < lcn_segment_infos_size( segment_infos ); i++ )
+        {
+            char *seg_info;
+            lcn_segment_info_t *segment_info;
+
+            if ( 0 < lcn_string_buffer_length( sb ) )
+            {
+                LCNCE( lcn_string_buffer_append( sb, " " ));
+            }
+
+            LCNCE( lcn_segment_infos_get( segment_infos, &segment_info, i ));
+            LCNCE( lcn_index_writer_seg_string_info( index_writer, segment_info, cp ));
+            LCNCE( lcn_string_buffer_append( sb, seg_info ));
+        }
+
+        LCNCE( s );
+
+        LCNCE( lcn_string_buffer_to_string( sb, str, pool ));
+    }
+    while(0);
+
+    if ( NULL != cp )
+    {
+        apr_pool_destroy( cp );
+    }
+
+    return s;
+}
+
+apr_status_t
+lcn_index_writer_seg_string_info( lcn_index_writer_t *index_writer,
+                                  char **str,
+                                  lcn_segment_info_t *segment_info,
+                                  apr_pool_t *pool )
 {
     apr_status_t s = APR_SUCCESS;
 
@@ -1508,7 +1556,6 @@ lcn_index_writer_seg_string( lcn_index_writer_t *index_writer,
 
     return s;
 }
-
 
 
 static apr_status_t
