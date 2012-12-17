@@ -415,7 +415,7 @@ test_check_reader(CuTest *tc )
             const lcn_term_t *term;
 
             next_status = lcn_term_enum_next( term_enum );
-	    term = lcn_term_enum_term( term_enum );
+            term = lcn_term_enum_term( term_enum );
 
             if ( LCN_ERR_ITERATOR_NO_NEXT == next_status )
             {
@@ -658,7 +658,7 @@ test_norms( CuTest *tc )
     LCN_TEST( lcn_index_reader_norms( index_reader,
                                       &norms,
                                       "text" ));
-    
+
     CuAssertIntEquals( tc, 331, norms->length );
 
 #if 0
@@ -728,7 +728,7 @@ test_term_enum_from( CuTest *tc )
 
     LCN_TEST( apr_pool_create( &pool, main_pool ));
     LCN_TEST( lcn_index_reader_create_by_path( &index_reader, test_index_name, pool ) );
-    
+
     {
         apr_pool_t *te_pool;
         lcn_term_enum_t *term_enum;
@@ -823,15 +823,13 @@ make_csf_index( CuTest *tc )
 {
     apr_pool_t *pool;
     apr_pool_create( &pool, main_pool );
-    
     create_index_cf(tc, 0, 331, "cf_index", LCN_TRUE , pool);
 }
 
 CuSuite *make_index_reader_suite (void)
-{    
+{
     CuSuite *s = CuSuiteNew();
-    
-    
+
     SUITE_ADD_TEST( s, setup );
     SUITE_ADD_TEST( s, test_get_int_field_values );
     SUITE_ADD_TEST( s, test_norms );

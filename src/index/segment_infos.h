@@ -5,9 +5,16 @@
 #include "term.h"
 
 typedef struct lcn_segment_info_t lcn_segment_info_t;
+typedef struct lcn_segment_info_per_commit_t lcn_segment_info_per_commit_t;
+typedef struct lcn_segment_infos_t lcn_segment_infos_t;
 
 
 #define LCN_SEGMENT_INFOS_FORMAT (-1)
+
+struct lcn_segment_info_per_commit_t
+{
+    lcn_segment_info_t *segment_info;
+};
 
 struct lcn_segment_info_t {
 
@@ -54,6 +61,10 @@ struct lcn_segment_infos_t {
 
 };
 
+lcn_segment_info_t *
+lcn_segment_info_per_commit_info( lcn_segment_info_per_commit_t *info_pc );
+
+
 const char *
 lcn_segment_info_name( lcn_segment_info_t *segment_info );
 
@@ -68,7 +79,7 @@ lcn_segment_infos_size( lcn_segment_infos_t *segment_infos );
 
 apr_status_t
 lcn_segment_infos_get( lcn_segment_infos_t *segment_infos,
-                       lcn_segment_info_t **segment_info,
+                       lcn_segment_info_per_commit_t **segment_info,
                        unsigned int nth );
 
 apr_status_t

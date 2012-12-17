@@ -169,8 +169,12 @@ lcn_index_reader_create_by_directory_impl( lcn_index_reader_t **index_reader,
 
         if ( 1 == (segments_count = lcn_segment_infos_size( infos ) ) )
         {
+            lcn_segment_info_per_commit_t *info_pc;
             lcn_segment_info_t *info;
-            LCNCE( lcn_segment_infos_get( infos, &info, 0 ));
+
+            LCNCE( lcn_segment_infos_get( infos, &info_pc, 0 ));
+            info = lcn_segment_info_per_commit_info( info_pc );
+
             LCNCE( lcn_segment_reader_create( index_reader,
                                               lcn_segment_info_directory( info ),
                                               infos,
@@ -190,9 +194,12 @@ lcn_index_reader_create_by_directory_impl( lcn_index_reader_t **index_reader,
             for( i = 0; i < segments_count; i++ )
             {
                 lcn_index_reader_t *segment_reader;
+                lcn_segment_info_per_commit_t *info_pc;
                 lcn_segment_info_t *info;
 
-                LCNCE( lcn_segment_infos_get( infos, &info, i ));
+                LCNCE( lcn_segment_infos_get( infos, &info_pc, i ));
+                info = lcn_segment_info_per_commit_info( info_pc );
+
                 LCNCE( lcn_segment_reader_create_by_info( &segment_reader, info, pool ) );
                 readers[i] = segment_reader;
             }

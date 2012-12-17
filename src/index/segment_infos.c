@@ -7,56 +7,6 @@
 
 /********************************************************
  *                                                      *
- * Functions of segment_info                            *
- *                                                      *
- * constructor is inlined in lcn_segment_infos_add_info *
- *                                                      *
- ********************************************************/
-
-const char *
-lcn_segment_info_name( lcn_segment_info_t *segment_info )
-{
-    return segment_info->name;
-}
-
-lcn_directory_t *
-lcn_segment_info_directory( lcn_segment_info_t *segment_info )
-{
-    return segment_info->directory;
-}
-
-unsigned int
-lcn_segment_info_doc_count( lcn_segment_info_t *segment_info )
-{
-    return segment_info->doc_count;
-}
-
-apr_status_t
-lcn_segment_info_has_deletions( lcn_segment_info_t *segment_info,
-                                lcn_bool_t *has_deletions )
-{
-    apr_status_t s;
-    char *del_file;
-    apr_pool_t *pool = NULL;
-
-    do
-    {
-        LCNCE( apr_pool_create( &pool, segment_info->directory->pool ));
-        LCNPV( del_file = apr_pstrcat( pool, segment_info->name, ".del", NULL ), APR_ENOMEM );
-        LCNCE( lcn_directory_file_exists ( segment_info->directory, del_file, has_deletions ) );
-    }
-    while(0);
-
-    if ( NULL != pool )
-    {
-        apr_pool_destroy( pool );
-    }
-
-    return s;
-}
-
-/********************************************************
- *                                                      *
  * Functions of segment_infos                           *
  *                                                      *
  * read current version not implemented. is a conv.     *
@@ -128,7 +78,7 @@ lcn_segment_infos_get_next_name( lcn_segment_infos_t *segment_infos,
 
 apr_status_t
 lcn_segment_infos_get( lcn_segment_infos_t *segment_infos,
-                       lcn_segment_info_t **segment_info,
+                       lcn_segment_info_per_commit_t **segment_info,
                        unsigned int nth )
 {
     *segment_info = lcn_list_get( segment_infos->list, nth );
@@ -145,17 +95,16 @@ lcn_segment_infos_add_info ( lcn_segment_infos_t *segment_infos,
 
     do
     {
-        lcn_segment_info_t *segment_info;
         apr_pool_t *pool = lcn_list_pool( segment_infos->list );
 
-        LCNPV( segment_info = (lcn_segment_info_t*) apr_pcalloc( pool, sizeof(lcn_segment_info_t) ),
-               APR_ENOMEM );
+        lcn_segment_info_per_commit_t *segment_info_pc = lcn_object_create( lcn_segment_info_per_commit_t, pool );
+        segment_info_pc->segment_info = lcn_object_create( lcn_segment_info_t, pool );
 
-        LCNCE( lcn_list_add( segment_infos->list, segment_info ) );
-        LCNPV( segment_info->name = apr_pstrdup( pool, name ), APR_ENOMEM );
+        LCNCE( lcn_list_add( segment_infos->list, segment_info_pc ) );
+        LCNPV( segment_info_pc->segment_info->name = apr_pstrdup( pool, name ), APR_ENOMEM );
 
-        segment_info->doc_count = count;
-        segment_info->directory = directory;
+        segment_info_pc->segment_info->doc_count = count;
+        segment_info_pc->segment_info->directory = directory;
 
         if ( 0 == (segment_infos->counter % 1000))
         {
@@ -169,17 +118,15 @@ lcn_segment_infos_add_info ( lcn_segment_infos_t *segment_infos,
 
             for (i = 0; i < lsize; i++ )
             {
-                lcn_segment_info_t *si = (lcn_segment_info_t*) lcn_list_get( segment_infos->list, i );
-                lcn_segment_info_t *new_si;
+                lcn_segment_info_per_commit_t *si_pc = (lcn_segment_info_per_commit_t*) lcn_list_get( segment_infos->list, i );
+                lcn_segment_info_per_commit_t *new_si_pc = lcn_object_create( lcn_segment_info_per_commit_t, p );
+                new_si_pc->segment_info = lcn_object_create( lcn_segment_info_t, p );
 
-                LCNPV( new_si = (lcn_segment_info_t*) apr_pcalloc( p, sizeof(lcn_segment_info_t) ),
-                       APR_ENOMEM );
+                LCNCE( lcn_list_add( list, new_si_pc ));
+                LCNPV( new_si_pc->segment_info->name = apr_pstrdup( p, si_pc->segment_info->name ), APR_ENOMEM );
 
-                LCNCE( lcn_list_add( list, new_si ) );
-                LCNPV( new_si->name = apr_pstrdup( p, si->name ), APR_ENOMEM );
-
-                new_si->doc_count = si->doc_count;
-                new_si->directory = si->directory;
+                new_si_pc->segment_info->doc_count = si_pc->segment_info->doc_count;
+                new_si_pc->segment_info->directory = si_pc->segment_info->directory;
             }
 
             if ( s )
@@ -222,7 +169,11 @@ lcn_segment_infos_write( lcn_segment_infos_t *segment_infos,
         for( i = 0; i < size; i++ )
         {
             lcn_segment_info_t *info;
-            LCNCE( lcn_segment_infos_get( segment_infos, &info, i ) );
+            lcn_segment_info_per_commit_t *info_pc;
+
+            LCNCE( lcn_segment_infos_get( segment_infos, &info_pc, i ) );
+            info = lcn_segment_info_per_commit_info( info_pc );
+
             LCNCE( lcn_ostream_write_string( os, info->name ) );
             LCNCE( lcn_ostream_write_int( os, info->doc_count ));
         }

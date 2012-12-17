@@ -16,7 +16,7 @@
         lcn_list_t *file_list;
         lcn_directory_t *directory = lcn_segment_info_directory( segment_info );
 
-        LCNCE( lcn_directory_list( directory, &file_list, pool ) );
+        LCNCE( lcn_directory_list( directory, &file_list, pool ));
 
         unsigned int i;
 
@@ -109,7 +109,7 @@ lcn_directory_list( const lcn_directory_t *directory,
                     apr_pool_t *pool )
 {
     apr_status_t s;
-    LCNCR( directory->_list( directory, file_list, pool ) );
+    LCNCR( directory->_list( directory, file_list, pool ));
     return s;
 }
 
@@ -133,7 +133,7 @@ lcn_directory_segments_format( lcn_directory_t *directory,
         LCNCE( apr_pool_create( &pool, directory->pool ));
         LCNCE( lcn_segment_infos_create( &segment_infos, pool ));
 
-        if ( APR_SUCCESS == lcn_segment_infos_read_directory( segment_infos, directory ) )
+        if ( APR_SUCCESS == lcn_segment_infos_read_directory( segment_infos, directory ))
         {
             *format = directory->segments_format = lcn_segment_infos_format( segment_infos );
         }
@@ -160,7 +160,7 @@ lcn_directory_rename_file( lcn_directory_t *directory,
                            const char *to )
 {
     apr_status_t s;
-    LCNCR( directory->_rename_file( directory, from, to ) );
+    LCNCR( directory->_rename_file( directory, from, to ));
     return s;
 }
 
@@ -175,7 +175,7 @@ lcn_directory_open_input( lcn_directory_t *directory,
 
     /* opening non-existing segments while indexing is a common error */
 
-    if ( 0 == strcmp( "segments", file_name ) )
+    if ( 0 == strcmp( "segments", file_name ))
     {
         return directory->open_input( directory, new_in, file_name, pool );
     }
@@ -224,7 +224,7 @@ lcn_directory_create_output ( lcn_directory_t *directory,
                               apr_pool_t *pool )
 {
     apr_status_t s;
-    LCNCR( directory->_create_file( directory, os, file_name, pool ) );
+    LCNCR( directory->_create_file( directory, os, file_name, pool ));
     return s;
 }
 
@@ -237,8 +237,8 @@ lcn_directory_open_ostream ( const char *path,
     apr_status_t s;
     char *fpath;
 
-    LCNCR( apr_filepath_merge( &fpath, path, name, 0, pool ) );
-    LCNCR( lcn_fs_ostream_create( os, fpath, pool ) );
+    LCNCR( apr_filepath_merge( &fpath, path, name, 0, pool ));
+    LCNCR( lcn_fs_ostream_create( os, fpath, pool ));
 
     return s;
 }
@@ -252,7 +252,7 @@ lcn_directory_open_input_stream ( const char *path,
     apr_status_t s;
     char *fpath;
 
-    LCNCR( apr_filepath_merge( &fpath, path, name, 0, pool ) );
+    LCNCR( apr_filepath_merge( &fpath, path, name, 0, pool ));
     LCNRM( lcn_index_input_create( is, fpath, pool ), fpath );
 
     return s;
@@ -291,7 +291,7 @@ lcn_cfs_directory_open_file( lcn_directory_t *directory,
 
     do
     {
-        if ( 0 == strcmp(file_name, "segments") )
+        if ( 0 == strcmp(file_name, "segments"))
         {
             LCNCE(lcn_fs_directory_open_file(directory, new_in, file_name, pool));
         }
@@ -383,7 +383,7 @@ lcn_cfs_directory_create( lcn_directory_t **new_dir,
     do
     {
         /* initialize type struct */
-        LCNCE( lcn_base_directory_create( new_dir, pool ) );
+        LCNCE( lcn_base_directory_create( new_dir, pool ));
         LCNPV( (*new_dir)->name = apr_pstrdup( pool, cf_base_dir->name ), APR_ENOMEM );
 
         /* Set compound file informations */
@@ -464,7 +464,7 @@ lcn_directory_open_segment_file ( lcn_directory_t *directory,
     do
     {
         LCNPV( fname = apr_pstrcat( pool, seg_name, ext, NULL ), APR_ENOMEM );
-        LCNCE( lcn_directory_open_input( directory, new_in, fname, LCN_IO_CONTEXT_READONCE, pool ) );
+        LCNCE( lcn_directory_open_input( directory, new_in, fname, LCN_IO_CONTEXT_READONCE, pool ));
     }
     while(0);
 
@@ -519,7 +519,7 @@ lcn_directory_file_exists ( const lcn_directory_t *directory,
                             lcn_bool_t *flag )
 {
     apr_status_t s;
-    LCNCR( directory->_file_exists( directory, file_name, flag ) );
+    LCNCR( directory->_file_exists( directory, file_name, flag ));
     return s;
 }
 
@@ -531,7 +531,7 @@ lcn_fs_directory_file_exists( const lcn_directory_t *directory,
     apr_status_t s;
     apr_pool_t *pool;
 
-    if ( APR_SUCCESS != ( s = apr_pool_create( &pool, directory->pool ) ) )
+    if ( APR_SUCCESS != ( s = apr_pool_create( &pool, directory->pool )) )
     {
         return s;
     }
@@ -539,8 +539,8 @@ lcn_fs_directory_file_exists( const lcn_directory_t *directory,
     do
     {
         char *path;
-        LCNCE( apr_filepath_merge( &path, directory->name, file_name, 0, pool ) );
-        LCNCE( lcn_file_exists( path, flag, pool ) );
+        LCNCE( apr_filepath_merge( &path, directory->name, file_name, 0, pool ));
+        LCNCE( lcn_file_exists( path, flag, pool ));
     }
     while(0);
 
@@ -563,7 +563,7 @@ lcn_fs_directory_list( const lcn_directory_t *directory,
         apr_status_t dir_read;
 
         LCNCE( lcn_list_create( file_list, 10, pool ));
-        LCNCE( apr_dir_open( &dir, directory->name, pool) );
+        LCNCE( apr_dir_open( &dir, directory->name, pool));
 
         while( APR_SUCCESS == ( dir_read = apr_dir_read( &finfo, APR_FINFO_NAME | APR_FINFO_TYPE, dir )))
         {
@@ -577,7 +577,7 @@ lcn_fs_directory_list( const lcn_directory_t *directory,
                 char *name;
 
                 LCNPV( name = apr_pstrdup( pool, finfo.name ), APR_ENOMEM );
-                LCNCE( lcn_list_add( *file_list, name ) );
+                LCNCE( lcn_list_add( *file_list, name ));
             }
         }
 
@@ -595,7 +595,7 @@ lcn_fs_directory_create_file ( lcn_directory_t *directory,
                                apr_pool_t *pool )
 {
     apr_status_t s;
-    LCNCR( lcn_directory_open_ostream ( directory->name, file_name, os, pool ) );
+    LCNCR( lcn_directory_open_ostream ( directory->name, file_name, os, pool ));
     return s;
 }
 
@@ -616,9 +616,9 @@ lcn_fs_directory_rename_file ( lcn_directory_t *directory,
     {
         char *full_old_name, *full_new_name;
 
-        LCNCE( apr_filepath_merge( &full_old_name, directory->name, old_name, 0, pool ) );
-        LCNCE( apr_filepath_merge( &full_new_name, directory->name, new_name, 0, pool ) );
-        LCNCE( apr_file_rename( full_old_name, full_new_name, pool ) );
+        LCNCE( apr_filepath_merge( &full_old_name, directory->name, old_name, 0, pool ));
+        LCNCE( apr_filepath_merge( &full_new_name, directory->name, new_name, 0, pool ));
+        LCNCE( apr_file_rename( full_old_name, full_new_name, pool ));
     }
     while(0);
 
@@ -636,19 +636,19 @@ lcn_fs_directory_delete_file ( lcn_directory_t *directory,
     char *path;
     lcn_bool_t flag;
 
-    if ( APR_SUCCESS != ( s = apr_pool_create( &pool, directory->pool ) ) )
+    if ( APR_SUCCESS != ( s = apr_pool_create( &pool, directory->pool )) )
     {
         return s;
     }
 
     do
     {
-        LCNCE( apr_filepath_merge( &path, directory->name, file_name, 0, pool ) );
-        LCNCE( lcn_file_exists( path, &flag, pool ) );
+        LCNCE( apr_filepath_merge( &path, directory->name, file_name, 0, pool ));
+        LCNCE( lcn_file_exists( path, &flag, pool ));
 
         if ( flag == LCN_TRUE )
         {
-            LCNCE( apr_file_remove( path, pool ) );
+            LCNCE( apr_file_remove( path, pool ));
         }
     }
     while(0);
@@ -683,7 +683,7 @@ lcn_base_directory_create( lcn_directory_t **directory,
 
     do
     {
-        LCNPV( *directory = (lcn_directory_t *) apr_pcalloc( pool, sizeof(lcn_directory_t) ), APR_ENOMEM );
+        LCNPV( *directory = (lcn_directory_t *) apr_pcalloc( pool, sizeof(lcn_directory_t)), APR_ENOMEM );
         (*directory)->pool    = pool;
         (*directory)->is_open = LCN_TRUE;
         (*directory)->_close  = lcn_directory_close;
@@ -716,7 +716,7 @@ lcn_fs_directory_create( lcn_directory_t **new_dir,
         {
             if (create == LCN_TRUE )
             {
-                LCNCE( apr_dir_make_recursive( dir_name, APR_OS_DEFAULT, child_pool ) );
+                LCNCE( apr_dir_make_recursive( dir_name, APR_OS_DEFAULT, child_pool ));
             }
             else
             {
@@ -735,10 +735,10 @@ lcn_fs_directory_create( lcn_directory_t **new_dir,
         /* check whether we can open/close directory */
 
         LCNCM( apr_dir_open( &dir, dir_name, pool ), dir_name );
-        LCNCE( apr_dir_close( dir ) );
+        LCNCE( apr_dir_close( dir ));
 
         /* initialize type struct */
-        LCNCE( lcn_base_directory_create( new_dir, pool ) );
+        LCNCE( lcn_base_directory_create( new_dir, pool ));
         LCNPV( (*new_dir)->name = apr_pstrdup( pool, dir_name ), APR_ENOMEM );
 
         (*new_dir)->open_input   = lcn_fs_directory_open_file;

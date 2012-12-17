@@ -157,25 +157,23 @@ create_index_impl( CuTest *tc,
                             pool ));
 
         LCN_TEST( lcn_document_add_field( document, field, pool ));
-        
+
         LCN_TEST( lcn_index_writer_add_document( index_writer, document ));
     }
-    
+
     LCN_TEST( lcn_index_writer_close( index_writer ));
 
- 
     if ( optimize )
     {
         LCN_TEST( lcn_index_writer_optimize( index_writer ));
     }
-    
+
     if( optimize_cf )
     {
         LCN_TEST( lcn_index_writer_cf_optimize( index_writer ) );
     }
-   
 }
- 
+
 void
 create_index_cf( CuTest *tc,
               unsigned int start,

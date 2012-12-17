@@ -34,6 +34,8 @@ ADD_LIBRARY( lucino
              ../src/index/multi_fs_field
              ../src/index/multi_reader
              ../src/index/multiple_term_positions
+             ../src/index/segment_info
+             ../src/index/segment_info_per_commit
              ../src/index/segment_infos
              ../src/index/segment_merge_info
              ../src/index/segment_merger

@@ -295,10 +295,13 @@ lcn_index_writer_merge_segments_impl( lcn_index_writer_t *index_writer,
 
         for ( i = min_segment; i < end; i++ )
         {
+            lcn_segment_info_per_commit_t *si_pc;
             lcn_segment_info_t *si;
             lcn_index_reader_t *reader;
 
-            LCNCE( lcn_segment_infos_get( index_writer->segment_infos, &si, i ));
+            LCNCE( lcn_segment_infos_get( index_writer->segment_infos, &si_pc, i ));
+            si = lcn_segment_info_per_commit_info( si_pc );
+
             LCNCE( lcn_segment_reader_create_by_info( &reader, si, pool ));
 
 #if 0
@@ -378,11 +381,14 @@ check_dir_owner( lcn_segment_infos_t *segment_infos,
 {
     apr_status_t s;
     lcn_segment_info_t *info;
+    lcn_segment_info_per_commit_t *info_pc;
 
     do
     {
-        LCNCE( lcn_segment_infos_get( segment_infos, &info,
+        LCNCE( lcn_segment_infos_get( segment_infos, &info_pc,
                                       lcn_segment_infos_size( segment_infos ) - 1 ));
+
+        info = lcn_segment_info_per_commit_info( info_pc );
     }
     while ( 0 );
 
@@ -404,10 +410,12 @@ lcn_index_writer_flush_ram_segments( lcn_index_writer_t *index_writer )
         int min_segment = ( int ) lcn_segment_infos_size( index_writer->segment_infos ) - 1;
         int doc_count = 0;
         lcn_segment_info_t *info;
+        lcn_segment_info_per_commit_t *info_pc;
 
         while ( min_segment >= 0 )
         {
-            LCNCE( lcn_segment_infos_get( index_writer->segment_infos, &info, min_segment ));
+            LCNCE( lcn_segment_infos_get( index_writer->segment_infos, &info_pc, min_segment ));
+            info = lcn_segment_info_per_commit_info( info_pc );
 
             if ( lcn_segment_info_directory( info ) != index_writer->ram_directory )
             {
@@ -461,8 +469,10 @@ lcn_index_writer_maybe_merge_segments( lcn_index_writer_t *index_writer )
             while ( --min_segment >= 0 )
             {
                 lcn_segment_info_t *si;
+                lcn_segment_info_per_commit_t *si_pc;
 
-                LCNCE( lcn_segment_infos_get( index_writer->segment_infos, &si, min_segment ));
+                LCNCE( lcn_segment_infos_get( index_writer->segment_infos, &si_pc, min_segment ));
+                si = lcn_segment_info_per_commit_info( si_pc );
 
                 if ( si->doc_count >= target_merge_docs )
                 {
@@ -547,8 +557,10 @@ lcn_index_writer_create_impl( lcn_index_writer_t **index_writer,
             for ( i = 0; i < lcn_segment_infos_size( ( *index_writer )->segment_infos ); i++ )
             {
                 lcn_segment_info_t *segment_info;
+                lcn_segment_info_per_commit_t *segment_info_pc;
 
-                LCNCE( lcn_segment_infos_get( ( *index_writer )->segment_infos, &segment_info, i ));
+                LCNCE( lcn_segment_infos_get( ( *index_writer )->segment_infos, &segment_info_pc, i ));
+                segment_info = lcn_segment_info_per_commit_info( segment_info_pc );
                 ( *index_writer )->docs_count += lcn_segment_info_doc_count( segment_info );
             }
         }
@@ -1183,9 +1195,12 @@ lcn_index_writer_optimize( lcn_index_writer_t *index_writer )
             if ( lcn_segment_infos_size( index_writer->segment_infos ) == 1 )
             {
                 lcn_segment_info_t *si;
+                lcn_segment_info_per_commit_t *si_pc;
                 lcn_bool_t has_deletions;
 
-                LCNCE( lcn_segment_infos_get( index_writer->segment_infos, &si, 0 ));
+                LCNCE( lcn_segment_infos_get( index_writer->segment_infos, &si_pc, 0 ));
+                si = lcn_segment_info_per_commit_info( si_pc );
+
                 LCNCE( lcn_segment_info_has_deletions( si, &has_deletions ));
 
                 if (( ! has_deletions &&
@@ -1222,6 +1237,7 @@ lcn_index_writer_cf_optimize( lcn_index_writer_t *index_writer )
         lcn_compound_file_writer_t *cfw = NULL;
         lcn_list_t *index_files = NULL;
         lcn_segment_info_t *segment_info = NULL;
+        lcn_segment_info_per_commit_t *segment_info_pc = NULL;
         lcn_list_t *files_to_delete = NULL;
 
 
@@ -1242,7 +1258,8 @@ lcn_index_writer_cf_optimize( lcn_index_writer_t *index_writer )
             return LCN_ERR_INDEX_OUT_OF_RANGE;
         }
 
-        LCNPV( segment_info = lcn_list_get( index_writer->segment_infos->list, 0 ), LCN_ERR_NULL_PTR );
+        LCNPV( segment_info_pc = lcn_list_get( index_writer->segment_infos->list, 0 ), LCN_ERR_NULL_PTR );
+        segment_info = lcn_segment_info_per_commit_info( segment_info_pc );
 
         LCNPV( csf_filename = apr_pstrcat( child_pool, segment_info->name, ".cfs", NULL ), APR_ENOMEM );
 
@@ -1350,8 +1367,10 @@ lcn_index_writer_add_indexes( lcn_index_writer_t *index_writer,
             for ( j = 0; j < lcn_segment_infos_size( sis ); j++ )
             {
                 lcn_segment_info_t *si;
+                lcn_segment_info_per_commit_t *si_pc;
 
-                LCNCE( lcn_segment_infos_get( sis, &si, j ));
+                LCNCE( lcn_segment_infos_get( sis, &si_pc, j ));
+                si = lcn_segment_info_per_commit_info( si_pc );
                 LCNCE( lcn_segment_infos_add_info( index_writer->segment_infos,
                                                    lcn_segment_info_directory( si ),
                                                    lcn_segment_info_name( si ),
@@ -1515,15 +1534,15 @@ lcn_index_writer_seg_string( lcn_index_writer_t *index_writer,
         for( i = 0; i < lcn_segment_infos_size( segment_infos ); i++ )
         {
             char *seg_info;
-            lcn_segment_info_t *segment_info;
+            lcn_segment_info_per_commit_t *segment_info_pc;
 
             if ( 0 < lcn_string_buffer_length( sb ) )
             {
                 LCNCE( lcn_string_buffer_append( sb, " " ));
             }
 
-            LCNCE( lcn_segment_infos_get( segment_infos, &segment_info, i ));
-            LCNCE( lcn_index_writer_seg_string_info( index_writer, segment_info, cp ));
+            LCNCE( lcn_segment_infos_get( segment_infos, &segment_info_pc, i ));
+            LCNCE( lcn_index_writer_seg_string_info( index_writer, &seg_info, segment_info_pc, cp ));
             LCNCE( lcn_string_buffer_append( sb, seg_info ));
         }
 
@@ -1544,7 +1563,7 @@ lcn_index_writer_seg_string( lcn_index_writer_t *index_writer,
 apr_status_t
 lcn_index_writer_seg_string_info( lcn_index_writer_t *index_writer,
                                   char **str,
-                                  lcn_segment_info_t *segment_info,
+                                  lcn_segment_info_per_commit_t *segment_info,
                                   apr_pool_t *pool )
 {
     apr_status_t s = APR_SUCCESS;

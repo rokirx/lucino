@@ -21,12 +21,6 @@ test_segment_infos(CuTest* tc)
         LCN_TEST( lcn_segment_infos_create( &infos, si_pool ) );
         CuAssertIntEquals(tc, 0, lcn_segment_infos_size( infos ) );
 
-        /**
-         * According to APR-Coding guidelines, input values to functions
-         * are not checked
-         * LCN_ERR( lcn_segment_infos_get( infos, &info, 0 ), LCN_ERR_INDEX_OUT_OF_RANGE );
-         */
-
         LCN_TEST( lcn_segment_infos_get_next_name( infos, &name, si_pool ) );
         CuAssertStrEquals(tc, "_0", name );
         LCN_TEST( lcn_segment_infos_get_next_name( infos, &name, si_pool ) );
@@ -42,6 +36,7 @@ test_segment_infos(CuTest* tc)
         apr_pool_t *si_pool;
         lcn_segment_infos_t *infos;
         lcn_segment_info_t *info;
+        lcn_segment_info_per_commit_t *info_pc;
         char *name;
 
         LCN_TEST( apr_pool_create( &si_pool, pool ) );
@@ -49,17 +44,20 @@ test_segment_infos(CuTest* tc)
         LCN_TEST( lcn_segment_infos_read_directory( infos, dir ) );
         CuAssertIntEquals(tc, 0, lcn_segment_infos_size( infos ) );
         CuAssertIntEquals(tc, 1, lcn_segment_infos_version( infos ) );
-        /*
-          LCN_ERR( lcn_segment_infos_get( infos, &info, 0 ), LCN_ERR_INDEX_OUT_OF_RANGE );
-        */
+
         LCN_TEST( lcn_segment_infos_get_next_name( infos, &name, si_pool ) );
         CuAssertStrEquals(tc, "_2", name );
+
         LCN_TEST( lcn_segment_infos_get_next_name( infos, &name, si_pool ) );
         CuAssertStrEquals(tc, "_3", name );
+
         LCN_TEST( lcn_segment_infos_add_info( infos, dir, name, 23 ));
         CuAssertIntEquals(tc, 1, lcn_segment_infos_size( infos ) );
-        LCN_TEST( lcn_segment_infos_get( infos, &info, 0 ) );
+
+        LCN_TEST( lcn_segment_infos_get( infos, &info_pc, 0 ) );
+        info = lcn_segment_info_per_commit_info( info_pc );
         CuAssertStrEquals(tc, "_3", lcn_segment_info_name( info ) );
+
         LCN_TEST( lcn_segment_infos_write( infos, dir ) );
         CuAssertIntEquals(tc, 2, lcn_segment_infos_version( infos ) );
 
@@ -70,6 +68,7 @@ test_segment_infos(CuTest* tc)
         apr_pool_t *si_pool;
         lcn_segment_infos_t *infos;
         lcn_segment_info_t *info;
+        lcn_segment_info_per_commit_t *info_pc;
         char *name;
 
         LCN_TEST( apr_pool_create( &si_pool, pool ) );
@@ -77,17 +76,17 @@ test_segment_infos(CuTest* tc)
         LCN_TEST( lcn_segment_infos_read_directory( infos, dir ) );
         CuAssertIntEquals(tc, 1, lcn_segment_infos_size( infos ) );
         CuAssertIntEquals(tc, 2, lcn_segment_infos_version( infos ) );
-        /*
-          LCN_ERR( lcn_segment_infos_get( infos, &info, 1 ), LCN_ERR_INDEX_OUT_OF_RANGE );
-        */
-        LCN_TEST( lcn_segment_infos_get( infos, &info, 0 ) );
+
+        LCN_TEST( lcn_segment_infos_get( infos, &info_pc, 0 ) );
+        info = lcn_segment_info_per_commit_info( info_pc );
         LCN_TEST( lcn_segment_infos_get_next_name( infos, &name, si_pool ) );
         CuAssertStrEquals(tc, "_4", name );
         LCN_TEST( lcn_segment_infos_get_next_name( infos, &name, si_pool ) );
         CuAssertStrEquals(tc, "_5", name );
         LCN_TEST( lcn_segment_infos_add_info( infos, dir, name, 12 ));
         CuAssertIntEquals(tc, 2, lcn_segment_infos_size( infos ) );
-        LCN_TEST( lcn_segment_infos_get( infos, &info, 1 ) );
+        LCN_TEST( lcn_segment_infos_get( infos, &info_pc, 1 ) );
+        info = lcn_segment_info_per_commit_info( info_pc );
         CuAssertStrEquals(tc, "_5", lcn_segment_info_name( info ) );
         LCN_TEST( lcn_segment_infos_write( infos, dir ) );
         CuAssertIntEquals(tc, 3, lcn_segment_infos_version( infos ) );

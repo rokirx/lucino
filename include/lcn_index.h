@@ -13,6 +13,8 @@
 typedef struct lcn_norm_t lcn_norm_t;
 typedef struct lcn_term_docs_t lcn_term_docs_t;
 typedef struct lcn_fs_field_t lcn_fs_field_t;
+typedef struct lcn_segment_infos_t lcn_segment_infos_t;
+typedef struct lcn_segment_info_per_commit_t lcn_segment_info_per_commit_t;
 
 /**
  * @defgroup field_type FieldType
@@ -684,6 +686,15 @@ lcn_index_writer_seg_string( lcn_index_writer_t *index_writer,
                              char **str,
                              lcn_segment_infos_t *segment_infos,
                              apr_pool_t *pool );
+
+/**
+ * Returns a string description of the specified segment, for debugging.
+ */
+apr_status_t
+lcn_index_writer_seg_string_info( lcn_index_writer_t *index_writer,
+                                  char **str,
+                                  lcn_segment_info_per_commit_t *segment_info,
+                                  apr_pool_t *pool );
 
 void
 lcn_index_writer_set_log_stream( lcn_index_writer_t *index_writer,
