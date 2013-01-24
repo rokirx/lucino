@@ -13,7 +13,6 @@
 typedef struct lcn_norm_t lcn_norm_t;
 typedef struct lcn_term_docs_t lcn_term_docs_t;
 typedef struct lcn_fs_field_t lcn_fs_field_t;
-typedef struct lcn_segment_infos_t lcn_segment_infos_t;
 
 /**
  * @defgroup field_type FieldType

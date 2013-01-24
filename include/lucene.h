@@ -326,7 +326,6 @@ typedef struct lcn_document_t lcn_document_t;
 typedef struct lcn_field_info_t lcn_field_info_t;
 typedef struct lcn_field_t lcn_field_t;
 typedef struct lcn_index_input_t lcn_index_input_t;
-typedef struct lcn_index_input_t lcn_index_input_t;
 typedef struct lcn_list_t lcn_list_t;
 typedef struct lcn_ostream_t lcn_ostream_t;
 typedef struct lcn_ram_file_t lcn_ram_file_t;
@@ -334,6 +333,7 @@ typedef struct lcn_similarity_t lcn_similarity_t;
 typedef struct lcn_term_enum_t lcn_term_enum_t;
 typedef struct lcn_term_info_t lcn_term_info_t;
 typedef struct lcn_term_t lcn_term_t;
+typedef struct lcn_segment_infos_t lcn_segment_infos_t;
 
 typedef struct _lcn_index_writer_config_t lcn_index_writer_config_t;
 

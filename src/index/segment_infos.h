@@ -5,7 +5,6 @@
 #include "term.h"
 
 typedef struct lcn_segment_info_t lcn_segment_info_t;
-typedef struct lcn_segment_infos_t lcn_segment_infos_t;
 
 
 #define LCN_SEGMENT_INFOS_FORMAT (-1)
@@ -17,7 +16,7 @@ struct lcn_segment_info_t {
     unsigned int doc_count;
 };
 
-struct lcn_segment_infos_t{
+struct lcn_segment_infos_t {
 
     int format;
     unsigned int counter;
