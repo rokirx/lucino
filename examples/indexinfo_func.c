@@ -64,7 +64,7 @@ lcn_index_reader_show_fields_overview( lcn_index_reader_t* index_reader,
 
         for( i = 0; i < list_size; i++ )
         {
-            field_info = lcn_list_get( field_info_list, i );
+            field_info = (lcn_field_info_t *) lcn_list_get( field_info_list, i );
             name_str = lcn_field_info_name( field_info );
 
             if ( strlen( name_str) > max_fname_len )
@@ -81,7 +81,7 @@ lcn_index_reader_show_fields_overview( lcn_index_reader_t* index_reader,
 
         for( i = 0; i < list_size; i++)
         {
-            lcn_field_info_t *field_info = lcn_list_get( field_info_list, i );
+            lcn_field_info_t *field_info = (lcn_field_info_t *) lcn_list_get( field_info_list, i );
             const char* name_str = lcn_field_info_name( field_info );
             lcn_bool_t is_indexed = lcn_field_info_is_indexed( field_info );
             lcn_bool_t omit_norms = lcn_field_info_omit_norms( field_info );

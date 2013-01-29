@@ -6,7 +6,7 @@
 #include "lcn_index.h"
 #include "indexinfo_func.h"
 
-FILE* lcn_log_stream;
+/* FILE* lcn_log_stream; */
 
 #define LIST_FIELDS  (1)
 #define TERM_ENUM    (2)
