@@ -2,6 +2,7 @@
 #include "test_all.h"
 #include "term_infos_reader.h"
 #include "term_infos_writer.h"
+#include "lcn_index.h"
 
 #define LCN_WRITE_TI( FIELD, TEXT, FREQ, FPTR, PPTR, FNUM )                             \
     LCN_TEST( lcn_term_create( &term, FIELD, TEXT, 0, p ) );                            \
@@ -54,7 +55,7 @@ test_term_infos_writer(CuTest* tc)
         term_info.prox_pointer = 3;
 
         LCN_ERR( lcn_term_infos_writer_add_term( ti_writer, term, &term_info, 5 ), LCN_ERR_PROX_POINTER_OUT_OF_ORDER );
-        
+
         LCN_WRITE_TI( "xid", "bfg", 3, 6, 9, 0 );
         LCN_WRITE_TI( "xid", "bzag", 3, 8, 11, 0 );
         LCN_WRITE_TI( "xid", "copf", 1, 11, 19, 0 );
@@ -72,7 +73,7 @@ test_term_infos_writer(CuTest* tc)
 
 
         LCN_TEST( apr_pool_create( &p, main_pool ) );
-        
+
         LCN_TEST( lcn_fs_directory_create( &dir, WRITE_DIR, LCN_FALSE, p ) );
 
         LCN_TEST( lcn_field_infos_create( &f_infos, p ) );
@@ -107,86 +108,53 @@ test_term_infos_writer(CuTest* tc)
 
         apr_pool_destroy( p );
     }
+}
 
+static void
+test_long_terms(CuTest* tc)
+{
+    apr_pool_t *pool;
+    lcn_directory_t *dir;
+    lcn_index_writer_t *index_writer;
+    char *buf;
+    int i = 0;
 
+    LCN_TEST( apr_pool_create( &pool, main_pool ) );
+    LCN_TEST( lcn_ram_directory_create( &dir, pool ) );
+    LCN_TEST( lcn_index_writer_create_by_directory( &index_writer, dir, LCN_TRUE, pool ));
 
+    buf = apr_pcalloc(pool, 2000);
 
-#if 0
-    s_infos->read( s_infos, t_dir );
-    f_infos = t_dir->read_field_infos( t_dir, s_infos->first_info->name );
+    for( i=0; i < 1100; i++)
+    {
+        buf[i] = 'a';
+    }
 
-    CuAssertTrue(tc, strcmp( "", f_infos->first_info->name ) == 0);
-    CuAssertTrue(tc, 0 == f_infos->first_info->number);
-    CuAssertTrue(tc, strcmp( "xid", f_infos->first_info->next->name ) == 0);
-    CuAssertTrue(tc, 1 == f_infos->first_info->next->number); 
-    CuAssertTrue(tc, strcmp( "volltext", f_infos->first_info->next->next->name ) == 0);
-    CuAssertTrue(tc, 2 == f_infos->first_info->next->next->number);
-    CuAssertTrue(tc, 0 == f_infos->field_number( f_infos, "" ));
-    CuAssertTrue(tc, 1 == f_infos->field_number( f_infos, "xid" ));
-    CuAssertTrue(tc, 2 == f_infos->field_number( f_infos, "volltext" ));
-    writer = create_TermInfosWriter( wr_dir, "_k", f_infos );
+    /* prior to 5969a24d6 there is segmentation fault after 999 iterations */
 
-##########
-    
-    writer->add_term( writer, t, ti );
+    for( i=0; i< 3000; i++)
+    {
+        lcn_document_t *document;
+        lcn_field_t *field;
 
-    t->text[2] = 'd';
-    ti->doc_freq = 3;
-    ti->freq_pointer = 17;
-    ti->prox_pointer = 27;
+        LCN_TEST( lcn_document_create( &document, pool ) );
+        apr_snprintf( buf+1100, 10, "%d", i );
+        flog( stderr, "S %s\n", buf );
+        LCN_TEST( lcn_field_create( &field, "text", buf, LCN_FIELD_INDEXED, LCN_FIELD_VALUE_COPY, pool ));
+        LCN_TEST( lcn_document_add_field( document, field, pool ));
+        LCN_TEST( lcn_index_writer_add_document( index_writer, document ));
+    }
 
-    writer->add_term( writer, t, ti );
-
-    CuAssertTrue(tc, writer->size == 2);
-
-    writer->close( writer );
-    writer->free( writer );
-    free( ti );
-    free_Term( t );
-
-    ti_reader = create_TermInfosReader( wr_dir, s_infos->first_info->name, f_infos );
-
-    CuAssertTrue(tc, ti_reader->size == 2);
-
-    t_enum = ti_reader->terms( ti_reader );
-    CuAssertTrue(tc, t_enum->size == 2);
-    CuAssertTrue(tc, 1 == t_enum->next( t_enum ));
-    CuAssertTrue(tc, strcmp( "xid", t_enum->term->field ) == 0);
-    CuAssertTrue(tc, strcmp( "abc", t_enum->term->text   ) == 0);
-    CuAssertTrue(tc, 2 == t_enum->term_info->doc_freq);
-    CuAssertTrue(tc, 5 == t_enum->term_info->freq_pointer);
-    CuAssertTrue(tc, 7 == t_enum->term_info->prox_pointer);
-
-    CuAssertTrue(tc, 1 == t_enum->next( t_enum ));
-    CuAssertTrue(tc, strcmp( "xid", t_enum->term->field ) == 0);
-    CuAssertTrue(tc, strcmp( "abd", t_enum->term->text   ) == 0);
-    CuAssertTrue(tc, 3 == t_enum->term_info->doc_freq);
-    CuAssertTrue(tc, 17 == t_enum->term_info->freq_pointer);
-    CuAssertTrue(tc, 27 == t_enum->term_info->prox_pointer);
-
-    t_enum->free( t_enum );
-    ti_reader->free( ti_reader );
-    f_infos->free( f_infos );
-    s_infos->free( s_infos );
-
-    apr_pool_create( &pool, NULL );
-
-    apr_file_remove( "temp_index/_k.tii", pool );
-    apr_file_remove( "temp_index/_k.tis", pool );
-
-    apr_pool_destroy( pool );
-
-    t_dir->close( t_dir );
-    wr_dir->close( wr_dir );
-#endif
+    LCN_TEST( lcn_index_writer_close( index_writer ));
 }
 
 CuSuite *
 make_term_infos_writer_suite (void)
-{	
+{
     CuSuite *s= CuSuiteNew();
 
     SUITE_ADD_TEST(s, test_term_infos_writer );
+    SUITE_ADD_TEST(s, test_long_terms );
 
     return s;
 }

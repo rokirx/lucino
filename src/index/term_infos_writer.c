@@ -6,9 +6,9 @@
 #include "term_infos_writer.h"
 
 static apr_status_t
-lcn_term_infos_writer_write_term ( lcn_term_infos_writer_t *term_infos_writer,
-                                   const lcn_term_t *term,
-                                   unsigned int field_number )
+lcn_term_infos_writer_write_term( lcn_term_infos_writer_t *term_infos_writer,
+                                  const lcn_term_t *term,
+                                  unsigned int field_number )
 {
     apr_status_t s;
 
@@ -70,7 +70,7 @@ lcn_term_infos_writer_write_term ( lcn_term_infos_writer_t *term_infos_writer,
  * Called to complete TermInfos creation.
  */
 apr_status_t
-lcn_term_infos_writer_close ( lcn_term_infos_writer_t *term_infos_writer )
+lcn_term_infos_writer_close( lcn_term_infos_writer_t *term_infos_writer )
 {
     apr_status_t s;
     lcn_ostream_t *out = term_infos_writer->output;
@@ -101,10 +101,10 @@ lcn_term_infos_writer_close ( lcn_term_infos_writer_t *term_infos_writer )
 }
 
 apr_status_t
-lcn_term_infos_writer_add_term ( lcn_term_infos_writer_t *term_infos_writer,
-                                 const lcn_term_t *term,
-                                 lcn_term_info_t *term_info,
-                                 unsigned int field_number )
+lcn_term_infos_writer_add_term( lcn_term_infos_writer_t *term_infos_writer,
+                                const lcn_term_t *term,
+                                lcn_term_info_t *term_info,
+                                unsigned int field_number )
 {
     apr_status_t s;
     lcn_ostream_t *out ;
@@ -176,12 +176,12 @@ lcn_term_infos_writer_add_term ( lcn_term_infos_writer_t *term_infos_writer,
 }
 
 static apr_status_t
-lcn_term_infos_writer_initialize ( lcn_term_infos_writer_t *term_infos_writer,
-                                   lcn_directory_t *directory,
-                                   const char *seg_name,
-                                   unsigned int interval,
-                                   lcn_bool_t is_index,
-                                   apr_pool_t *pool )
+lcn_term_infos_writer_initialize( lcn_term_infos_writer_t *term_infos_writer,
+                                  lcn_directory_t *directory,
+                                  const char *seg_name,
+                                  unsigned int interval,
+                                  lcn_bool_t is_index,
+                                  apr_pool_t *pool )
 {
     apr_status_t s;
 
