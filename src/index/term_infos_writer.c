@@ -185,6 +185,8 @@ lcn_term_infos_writer_initialize ( lcn_term_infos_writer_t *term_infos_writer,
 {
     apr_status_t s;
 
+    term_infos_writer->pool = pool;
+
     term_infos_writer->is_open = 1;
     term_infos_writer->last_index_pointer = 0;
 
@@ -240,8 +242,6 @@ lcn_term_infos_writer_create( lcn_term_infos_writer_t **term_infos_writer,
                (lcn_term_infos_writer_t*)
                apr_pcalloc( pool, sizeof(lcn_term_infos_writer_t) ),
                APR_ENOMEM );
-
-        (*term_infos_writer)->pool = pool;
 
         LCNCE( lcn_term_infos_writer_initialize( *term_infos_writer,
                                                  directory,
