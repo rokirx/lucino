@@ -37,7 +37,7 @@ lcn_compound_file_copy( lcn_compound_file_writer_t *cfw,
         istream_length_remainder = istream_length;
 
         while( istream_length_remainder > 0) {
-            unsigned int len = MIN(chunck, istream_length_remainder);
+            unsigned int len = LCN_MIN(chunck, istream_length_remainder);
             LCNCE( lcn_index_input_read_bytes(istream, buffer, 0, &len ) );
             LCNCE( lcn_ostream_write_bytes(os, buffer, len));
             istream_length_remainder -= len;

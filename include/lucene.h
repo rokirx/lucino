@@ -113,6 +113,13 @@ typedef struct file_entry lcn_file_entry_t;
 
 #define lcn_object_create( TYPE, POOL ) ((TYPE*) apr_pcalloc( (POOL), sizeof( TYPE ) ) )
 
+/**
+ * Macros for min/max.
+ */
+#define LCN_MIN(a,b) (((a)<(b))?(a):(b))
+#define LCN_MAX(a,b) (((a)>(b))?(a):(b))
+
+
 #ifdef _LCNTRACE
 
 #define LCNLOG( MSG )                                          \
@@ -474,9 +481,9 @@ lcn_document_get_binary_field_value( lcn_document_t *document,
  * @param pool       APR pool
  */
 apr_status_t
-lcn_document_get_binary_field_values( lcn_document_t* document, 
-                                      const char* field_name, 
-                                      lcn_list_t** list_binary_values,  
+lcn_document_get_binary_field_values( lcn_document_t* document,
+                                      const char* field_name,
+                                      lcn_list_t** list_binary_values,
                                       apr_pool_t* pool );
 
 /**
@@ -896,7 +903,7 @@ lcn_fs_directory_create ( lcn_directory_t **new_dir,
                           apr_pool_t *pool );
 
 
-apr_status_t 
+apr_status_t
 lcn_cfs_directory_create( lcn_directory_t **new_dir,
                           lcn_directory_t *cf_base_dir,
                           const char *cf_name,
