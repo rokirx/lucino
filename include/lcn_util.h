@@ -129,6 +129,17 @@ lcn_list_clone( lcn_list_t* list,
                 lcn_list_t** clone,
                 void* (*element_clone_func)( const void*, apr_pool_t* ),
                 apr_pool_t* pool );
+
+/**
+ * @brief Returns last element of the list
+ *
+ * @oaram list list-object
+ *
+ * @return last element of the list
+ */
+void*
+lcn_list_last( lcn_list_t* list );
+
 /** @} */
 
 /**

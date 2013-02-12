@@ -46,31 +46,31 @@ lcn_list_remove( lcn_list_t *list, unsigned int n )
 
     if( n < list->size )
     {
-	for( i = n; i < ( list->size - 1); i++ )
-	{
-	    unsigned int j;
+        for( i = n; i < ( list->size - 1); i++ )
+        {
+            unsigned int j;
             unsigned int act_bs;
 
-	    /* current block */
-	    act_bs = i / list->block_size;
+            /* current block */
+            act_bs = i / list->block_size;
 
-	    /* current element in block */
-	    j = i;
-	    j = j % list->block_size;
+            /* current element in block */
+            j = i;
+            j = j % list->block_size;
 
-	    /* all blocks are shifted to left */
-	    if( j < list->block_size - 1 )
-	    {
-		list->blocks[ act_bs ][ j ] = list->blocks[ act_bs ][ j + 1 ];
-	    }
-	    /* first element of the next block becomes last element of the current block */
-	    else
-	    {
-		list->blocks[ act_bs ][ j ] = list->blocks[ act_bs + 1 ][ 0 ];
-	    }
-	}
+            /* all blocks are shifted to left */
+            if( j < list->block_size - 1 )
+            {
+                list->blocks[ act_bs ][ j ] = list->blocks[ act_bs ][ j + 1 ];
+            }
+            /* first element of the next block becomes last element of the current block */
+            else
+            {
+                list->blocks[ act_bs ][ j ] = list->blocks[ act_bs + 1 ][ 0 ];
+            }
+        }
 
-	list->size--;
+        list->size--;
     }
 }
 
@@ -172,11 +172,11 @@ lcn_list_swap( lcn_list_t *list,
 
     do
     {
-	void *temp;
+        void *temp;
 
-	LCNASSERT( (a < list->size && b < list->size), LCN_ERR_INVALID_ARGUMENT );
+        LCNASSERT( (a < list->size && b < list->size), LCN_ERR_INVALID_ARGUMENT );
 
-	/* Block von a und b ermitteln */
+        /* Block von a und b ermitteln */
         temp = list->blocks[ a >> list->size_log ] [ a & (list->block_size - 1) ];
         list->blocks[ a >> list->size_log ] [ a & (list->block_size - 1) ] =
             list->blocks[ b >> list->size_log ] [ b & (list->block_size - 1) ];
@@ -328,6 +328,19 @@ lcn_list_uniquify( lcn_list_t **new_list,
     }
 
     return s;
+}
+
+void*
+lcn_list_last( lcn_list_t* list )
+{
+    void *result = NULL;
+
+    if( list->size > 0 )
+    {
+        result = lcn_list_get( list, (list->size - 1) );
+    }
+
+    return result;
 }
 
 
