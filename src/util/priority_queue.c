@@ -26,6 +26,7 @@ lcn_priority_queue_down_heap( lcn_priority_queue_t *queue )
     unsigned int j = i << 1;                /* find smaller child */
     unsigned int k = j + 1;
 
+
     if ( k <= queue->size && queue->less_than( queue, queue->heap[k], queue->heap[j] ) )
     {
         j = k;
@@ -33,16 +34,18 @@ lcn_priority_queue_down_heap( lcn_priority_queue_t *queue )
 
     while ( j <= queue->size && queue->less_than( queue, queue->heap[j], node) )
     {
+
         queue->heap[i] = queue->heap[j];          /* shift up child */
         i = j;
         j = i << 1;
         k = j + 1;
+
         if ( k <= queue->size && queue->less_than( queue, queue->heap[k], queue->heap[j]) )
         {
             j = k;
         }
-    }
 
+    }
     queue->heap[i] = node;                        /* install saved node */
 }
 
@@ -88,12 +91,19 @@ lcn_priority_queue_max( lcn_priority_queue_t *queue )
 }
 
 
-void
+apr_status_t
 lcn_priority_queue_put( lcn_priority_queue_t *queue, void *element)
 {
+
+    if (queue->size >= queue->max_size)
+    {
+        return LCN_PRIORITY_QUEUE_MAX_SIZE_EXCEEDED;
+    }
+
     queue->size++;
     queue->heap[ queue->size ] = element;
     lcn_priority_queue_up_heap( queue );
+    return APR_SUCCESS;
 }
 
 apr_status_t
@@ -133,8 +143,7 @@ lcn_priority_queue_insert( lcn_priority_queue_t *queue, void *element)
     else if ( queue->size > 0 &&
               /* if queue->size > 0 it is safe to assume */
               /* that top returns not null               */
-              ! queue->less_than( queue, element,
-                                  (el = lcn_priority_queue_top( queue )) ) )
+              ! queue->less_than( queue, element, (el = lcn_priority_queue_top( queue )) ) )
     {
         queue->heap[ 1 ] = element;
         lcn_priority_queue_down_heap( queue );
@@ -173,6 +182,18 @@ lcn_priority_queue_pop( lcn_priority_queue_t *queue )
 void
 lcn_priority_queue_clear( lcn_priority_queue_t *queue )
 {
+    int i;
+
+    /* http://svn.apache.org/viewvc/lucene/dev/trunk/lucene/core/src/java/org/apache/lucene/util/PriorityQueue.java?revision=1386681&view=markup line 220 */
+
+    for(i=0; i <= queue->size; i++ )
+    {
+        if( queue->heap != NULL )
+        {
+            queue->heap[i] = NULL;
+        }
+    }
+
     queue->size = 0;
 }
 

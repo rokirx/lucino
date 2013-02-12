@@ -588,7 +588,7 @@ lcn_priority_queue_adjust_top( lcn_priority_queue_t* queue );
  *
  * TODO: Must set errno and check it in client code
  */
-void
+apr_status_t
 lcn_priority_queue_put( lcn_priority_queue_t *, void *element );
 
 /**

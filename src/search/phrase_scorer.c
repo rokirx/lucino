@@ -221,6 +221,10 @@ lcn_phrase_scorer_skip_to( lcn_scorer_t* scorer, unsigned int target )
     lcn_phrase_positions_t* pp;
     lcn_scorer_private_t* p = scorer->priv;
 
+
+    /* http://svn.apache.org/viewvc/lucene/java/trunk/src/java/org/apache/lucene/search/PhraseScorer.java?diff_format=h&revision=531733&view=markup&pathrev=531733 line 111 */
+    p->first_time = LCN_FALSE;
+
     for( pp = p->first; p->more && ( pp != NULL ); pp = pp->next )
     {
         p->more = ( APR_SUCCESS == lcn_phrase_positions_skip_to( pp, target ) );
@@ -657,6 +661,10 @@ lcn_eps_phrase_freq( lcn_scorer_t* scorer, float* result )
 
     lcn_scorer_private_t* p = scorer->priv;
 
+    /* http://svn.apache.org/viewvc/lucene/java/trunk/src/java/org/apache/lucene/search/ExactPhraseScorer.java?view=markup&pathrev=531733 line 32 */
+
+    lcn_priority_queue_clear( p->pq ) ;
+
     for( pp = p->first; pp != NULL; pp = pp->next )
     {
         s = lcn_phrase_positions_first_position( pp );
@@ -667,8 +675,14 @@ lcn_eps_phrase_freq( lcn_scorer_t* scorer, float* result )
             return APR_SUCCESS;
         }
 
-        lcn_priority_queue_put( p->pq, pp );
+        /* throws exception in origin Lucene, so we do */
+
+        if ( APR_SUCCESS != ( s = lcn_priority_queue_put( p->pq, pp ) ) )
+        {
+            return s;
+        }
     }
+
 
     lcn_phrase_scorer_pq_to_list( scorer );
 
@@ -694,8 +708,8 @@ lcn_eps_phrase_freq( lcn_scorer_t* scorer, float* result )
         freq++;
     }
     while( APR_SUCCESS == ( s = lcn_phrase_positions_next_position( p->last ) ) );
-    while( APR_SUCCESS ==
-           ( s = lcn_phrase_positions_next_position( p->last ) ) );
+
+    while( APR_SUCCESS == ( s = lcn_phrase_positions_next_position( p->last ) ) );
 
     *result = (float)freq;
 

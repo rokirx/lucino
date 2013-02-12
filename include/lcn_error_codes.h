@@ -213,6 +213,9 @@ LCN_ERRDEF( LCN_ERR_ALREADY_CLOSED,
 LCN_ERRDEF( LCN_ERR_INDEX_NOT_FOUND,
             57, "No segments* file found in directory" )
 
+LCN_ERRDEF( LCN_PRIORITY_QUEUE_MAX_SIZE_EXCEEDED,
+            58, "Priority queue max size exceeded." )
+
 LCN_ERROR_END
 
 
