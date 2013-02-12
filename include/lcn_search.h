@@ -557,6 +557,11 @@ void
 lcn_searcher_set_hit_collector_initial_size( lcn_searcher_t *searcher,
                                              unsigned int hc_initial_size );
 
+apr_status_t
+lcn_searcher_set_boost_bitvector( lcn_searcher_t *searcher,
+                                  lcn_bitvector_t *query_bitvector,
+                                  double boost );
+
 lcn_similarity_t*
 lcn_searcher_similarity( lcn_searcher_t* searcher );
 

@@ -60,6 +60,14 @@ lcn_index_searcher_search_top_docs_by_collector( lcn_searcher_t* index_searcher,
             collector->query_bitvector = index_searcher->query_bitvector;
         }
 
+        /* prepare boost bitvector */
+
+        if ( NULL != index_searcher->boost_bitvector )
+        {
+            collector->boost_bitvector = index_searcher->boost_bitvector;
+            collector->boost_bitvector_boost = index_searcher->boost_bitvector_boost;
+        }
+
         /* prepare split group value funcion */
 
         if ( NULL != index_searcher->is_split_group_val )
@@ -301,6 +309,8 @@ lcn_index_searcher_init( lcn_searcher_t* index_searcher )
     index_searcher->doc_freq        = lcn_index_searcher_doc_freq;
     index_searcher->doc             = lcn_index_searcher_doc;
 
+    index_searcher->boost_bitvector_boost = 1.0;
+
     index_searcher->order_by_flag   = LCN_ORDER_BY_RELEVANCE;
     index_searcher->hit_collector_initial_size = LCN_HIT_COLLECTOR_INITIAL_SIZE;
 }
@@ -311,12 +321,13 @@ lcn_index_searcher_create_by_directory( lcn_searcher_t** index_searcher,
                                         apr_pool_t* pool )
 {
 
-    apr_status_t s;
+    apr_status_t s = APR_SUCCESS;
 
     do
     {
         LCNPV( *index_searcher = apr_pcalloc( pool, sizeof( lcn_searcher_t ) ), APR_ENOMEM );
         (*index_searcher)->pool = pool;
+
         LCNCE( lcn_index_reader_create_by_directory( &((*index_searcher)->reader), dir, LCN_TRUE, pool ) );
         LCNCE( lcn_default_similarity_create( &((*index_searcher)->similarity ), pool ) );
         lcn_index_searcher_init( *index_searcher );

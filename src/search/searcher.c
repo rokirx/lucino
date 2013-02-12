@@ -200,6 +200,16 @@ lcn_searcher_set_query_bitvector( lcn_searcher_t *searcher,
 }
 
 apr_status_t
+lcn_searcher_set_boost_bitvector( lcn_searcher_t *searcher,
+                                  lcn_bitvector_t *bitvector,
+                                  double boost )
+{
+    searcher->boost_bitvector = bitvector;
+    searcher->boost_bitvector_boost = boost;
+    return APR_SUCCESS;
+}
+
+apr_status_t
 lcn_searcher_set_boost_field( lcn_searcher_t *searcher,
                               const char *boost_field_name )
 {

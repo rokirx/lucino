@@ -42,6 +42,9 @@ struct lcn_hit_collector_t
 
     lcn_bitvector_t *query_bitvector;
 
+    lcn_bitvector_t *boost_bitvector;
+    double boost_bitvector_boost;
+
     lcn_bitvector_t **counting_bitvectors;
     unsigned int counting_bitvectors_size;
 

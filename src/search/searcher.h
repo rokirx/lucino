@@ -19,6 +19,9 @@ struct lcn_searcher_t
     lcn_list_t *counting_bitvector_list;
     lcn_bitvector_t *query_bitvector;
 
+    lcn_bitvector_t *boost_bitvector;
+    double boost_bitvector_boost;
+
     apr_status_t (*custom_counter)( void* custom_data,
                                     unsigned int doc );
     void* custom_data;

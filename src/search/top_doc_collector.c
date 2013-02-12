@@ -535,6 +535,12 @@ lcn_top_doc_collector_collect( lcn_hit_collector_t* collector,
             LCNCE( lcn_bitvector_set_bit( collector->query_bitvector, doc ));
         }
 
+        if ( NULL != collector->boost_bitvector &&
+             lcn_bitvector_get_bit( collector->boost_bitvector, doc ))
+        {
+            score.float_val *= collector->boost_bitvector_boost;
+        }
+
         if ( NULL != collector->counting_bitvectors )
         {
             lcn_tdc_init_bitvector_counts( collector, doc );
