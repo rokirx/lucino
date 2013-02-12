@@ -194,12 +194,7 @@ lcn_bs_make_counting_sum_scorer_some_req( lcn_scorer_t* scorer,
             }
             else
             {
-                LCNCE( lcn_counting_conjunction_sum_scorer_create(
-                           &rcss,
-                           scorer,
-                           req_s,
-                           scorer->pool )
-                    );
+                LCNCE( lcn_bs_counting_conjunction_sum_scorer( scorer, req_s, &rcss ));
             }
 
             if( p->min_nr_should_match > 0 )

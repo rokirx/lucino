@@ -137,3 +137,4 @@ ELSE( NOT WIN32 )
 ENDIF( NOT WIN32 )
 
 add_subdirectory( test )
+add_subdirectory( examples )
