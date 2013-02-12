@@ -89,8 +89,6 @@ test_binary_field( CuTest* tc )
     lcn_document_t* doc;
     lcn_field_type_t ft;
     lcn_field_t *string_field = NULL;
-    lcn_field_t *binary_field, *binary_field2;
-    lcn_list_t *list;
 
     apr_pool_create( &pool, main_pool );
 

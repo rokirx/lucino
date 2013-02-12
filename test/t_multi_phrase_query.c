@@ -516,7 +516,7 @@ test_failing_query( CuTest* tc )
         LCN_TEST( lcn_searcher_search( searcher, &hits, phrase_query, NULL, pool ) );
         hits_len = lcn_hits_length( hits );
         CuAssertIntEquals( tc, 1, hits_len );
-   
+
         for( i = 0; i < lcn_hits_length( hits ); i++ )
         {
             char* str;
@@ -644,10 +644,6 @@ test_phrase_bug_1( CuTest* tc )
     setup_ram_dir_test_index( tc, &dir, phrase_list, pool );
 
     {
-        lcn_hits_t* hits;
-        lcn_query_t *pq;
-        lcn_term_t *term;
-        lcn_searcher_t *searcher;
         lcn_index_reader_t *reader;
 
         LCN_TEST( lcn_index_reader_create_by_directory( &reader, dir, LCN_TRUE, pool ));
@@ -764,14 +760,10 @@ test_gap_query( CuTest* tc )
 {
     apr_pool_t* pool, *cp;
     lcn_searcher_t* searcher;
-    unsigned int i;
-    char* query_str;
     lcn_query_t* query;
     lcn_hits_t* hits;
     lcn_list_t* terms;
-    lcn_document_t* doc;
-    char* id;
-    lcn_term_t *term1, *term2;
+    lcn_term_t *term1;
 
     apr_pool_create( &pool, main_pool );
     apr_pool_create( &cp, pool );

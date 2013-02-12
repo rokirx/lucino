@@ -162,7 +162,7 @@ lcn_phrase_scorer_do_next( lcn_scorer_t* scorer )
         if( p->more )
         {
             /* ignore return value */
-	    (void) p->phrase_freq( scorer, &(p->freq) );
+            (void) p->phrase_freq( scorer, &(p->freq) );
 
             if( p->freq == 0.0f )
             {

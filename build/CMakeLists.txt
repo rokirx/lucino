@@ -107,8 +107,6 @@ ADD_LIBRARY( lucino
              ../src/util/to_string_utils
              ../src/util/util )
 
-LINK_DIRECTORIES( ../build/examples )
-
 INCLUDE_DIRECTORIES( ${APR_INCLUDE}
                      ../include
                      ../src
@@ -121,7 +119,7 @@ INCLUDE_DIRECTORIES( ${APR_INCLUDE}
                      ../examples/
                      ../src/query_parser )
 
-ADD_DEFINITIONS( -D_LCNTRACE )
+#ADD_DEFINITIONS( -D_LCNTRACE )
 
 IF( NOT WIN32 )
     ADD_EXECUTABLE(
@@ -138,4 +136,4 @@ ELSE( NOT WIN32 )
     TARGET_LINK_LIBRARIES( lucino ${APR_LIB} )
 ENDIF( NOT WIN32 )
 
-SUBDIRS( test examples )
+add_subdirectory( test )

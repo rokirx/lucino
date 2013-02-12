@@ -60,14 +60,11 @@ lcn_index_input_fs_read_internal ( lcn_index_input_t *istream,
 
     do
     {
-        apr_pool_t *pool;
-        apr_pool_create( &pool, NULL );
 
         LCNCE( apr_file_seek( istream->_file_desc, APR_SET, &(istream->position) ) );
         LCNCE( apr_file_read( istream->_file_desc, buffer + offset, &nbytes ) );
 
         istream->position += (apr_off_t)len;
-        apr_pool_destroy( pool );
     }
     while(0);
 

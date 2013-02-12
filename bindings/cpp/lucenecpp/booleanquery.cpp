@@ -15,11 +15,11 @@ void
 BooleanQuery::add( const Query& query, Occur occur )
 {
     lcn_boolean_query_add( *this, query,
-			   occurFromCType( occur ) );
+                           occurFromCType( occur ) );
     assertNotNull();
 }
 
-BooleanQuery::Occur 
+BooleanQuery::Occur
 BooleanQuery::occurFromCType( lcn_boolean_clause_occur_t occur )
 {
     switch( occur )
@@ -32,6 +32,9 @@ BooleanQuery::occurFromCType( lcn_boolean_clause_occur_t occur )
 
     case LCN_BOOLEAN_CLAUSE_MUST_NOT:
         return MustNot;
+
+    default:
+        return Undefined;
     }
 }
 

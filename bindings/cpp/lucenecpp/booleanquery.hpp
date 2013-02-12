@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2006 Sebastian Morawietz
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -31,7 +31,8 @@ public:
     {
         Should,
         Must,
-        MustNot
+        MustNot,
+        Undefined
     };
 
     void add( const Query& query, Occur occur );

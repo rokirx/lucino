@@ -253,6 +253,13 @@ test_random_files( CuTest* tc )
     char* segment = "seq_file";
     int chunk = 1024, i = 0; // internal buffer size used by the stream
     lcn_directory_t *dir;
+    char *data[] = {
+            ".zero", ".one", ".ten", ".hundred", ".big1", ".big2", ".big3",
+            ".big4", ".big5", ".big6", ".big7"
+    };
+    int data_size = 11;
+    lcn_compound_file_writer_t *cfw;
+    lcn_compound_file_reader_t *cfr;
 
     apr_pool_t *pool;
     apr_pool_create( &pool, NULL );

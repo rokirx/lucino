@@ -23,7 +23,6 @@ lcn_next_token_impl ( lcn_query_tokenizer_t *query_tokenizer,
                       lcn_query_token_t *token )
 {
     char *q;
-    char *ctx;
     char *token_start = (char*) query_tokenizer->text;
     token->token_id = -1;
 

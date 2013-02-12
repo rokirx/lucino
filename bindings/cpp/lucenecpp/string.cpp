@@ -37,7 +37,7 @@ String::String( const String& other )
     operator=( other );
 }
 
-char& 
+char&
 String::operator[]( int i ) const
 {
     return _bytes[i];
@@ -49,6 +49,7 @@ String::operator const char*() const
     {
         return "";
     }
+
     return _bytes;
 }
 
@@ -59,10 +60,11 @@ String::c_str() const
     {
         return "";
     }
+
     return _bytes;
 }
 
-String& 
+String&
 String::operator=( const String& other )
 {
     if( other._bytes == _bytes )
@@ -79,14 +81,14 @@ String::operator=( const String& other )
     _length   = other._length;
 
     _bytes = new char[_capacity];
-    
+
     memcpy( _bytes, other._bytes, other._length );
     _bytes[_length] = 0;
 
     return *this;
 }
 
-String& 
+String&
 String::operator=( const char* c_str )
 {
     if( _bytes == c_str )
@@ -102,27 +104,29 @@ String::operator=( const char* c_str )
         _bytes = new char[_capacity];
         strcpy( _bytes, c_str );
     }
+
+    return *this;
 }
 
-bool 
+bool
 String::isEmpty() const
 {
     return ( isNull() ) ? true : ( _bytes[0] == '\0' );
 }
 
-int 
-String::length() const 
+int
+String::length() const
 {
     return _length;
 }
 
-bool 
-String::isNull() const 
+bool
+String::isNull() const
  {
     return ( NULL == _bytes );
 }
 
-void 
+void
 String::increaseCapacityTo( int nBytes )
 {
     if( ( 0 == nBytes ) || ( nBytes <= _capacity ) )
@@ -133,7 +137,7 @@ String::increaseCapacityTo( int nBytes )
     if( !isNull() )
     {
         char* sav = _bytes;
-        
+
         _bytes = new char[nBytes];
 
         if( _length > 0 )
@@ -151,13 +155,13 @@ String::increaseCapacityTo( int nBytes )
     }
 }
 
-bool 
+bool
 String::operator==( const String& other ) const
 {
     return operator==( other._bytes );
 }
 
-bool 
+bool
 String::operator==( const char* other ) const
 {
     if( isNull() )
@@ -166,6 +170,7 @@ String::operator==( const char* other ) const
         {
             return true;
         }
+
         return false;
     }
 
@@ -173,7 +178,7 @@ String::operator==( const char* other ) const
     {
         return false;
     }
-    
+
     return (bool)( strcmp( _bytes, other ) == 0 );
 }
 
