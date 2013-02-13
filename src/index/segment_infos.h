@@ -27,6 +27,14 @@ struct lcn_segment_info_t {
     lcn_directory_t *directory;
     char *name;
     unsigned int doc_count;
+
+    /**
+     * Lucene 4.0
+     */
+
+    char* version;
+
+    unsigned int is_compound_file;
 };
 
 struct lcn_segment_infos_t {
@@ -129,6 +137,13 @@ lcn_segment_infos_has_separate_norms( lcn_segment_info_t *segment_info,
  * Lucene 4.0
  */
 
+apr_status_t
+lcn_segment_info_to_string( char** str,
+                            lcn_segment_info_t *segment_info,
+                            lcn_directory_t *dir,
+                            unsigned int del_count,
+                            apr_pool_t *pool);
+
 void
 lcn_segment_infos_changed( lcn_segment_infos_t *segment_infos );
 
@@ -149,9 +164,11 @@ lcn_segment_infos_read_directory( lcn_segment_infos_t *segment_infos,
                                   lcn_directory_t *directory );
 
 apr_status_t
-lcn_segment_info_per_commit_to_string ( lcn_segment_info_per_commit_t *info_pc,
+lcn_segment_info_per_commit_to_string ( char** str,
+                                        lcn_segment_info_per_commit_t *info_pc,
                                         lcn_directory_t *directory,
-                                        int pending_del_count );
+                                        unsigned int pending_del_count,
+                                        apr_pool_t *pool );
 
 char*
 lcn_segment_info_per_commit_to_hash( lcn_segment_info_per_commit_t *info_pc,

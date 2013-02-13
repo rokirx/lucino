@@ -624,7 +624,8 @@ lcn_index_writer_create_impl_neu( lcn_index_writer_t **index_writer,
             create = ! exists;
         }
 
-        LCNCE( lcn_segment_infos_create( &segment_infos, pool ));
+        LCNCE( lcn_segment_infos_create( &segment_infos, pool ) );
+        (*index_writer)->segment_infos = segment_infos;
 
         if ( create )
         {
@@ -1567,22 +1568,32 @@ lcn_index_writer_seg_string_info( lcn_index_writer_t *index_writer,
                                   apr_pool_t *pool )
 {
     apr_status_t s = APR_SUCCESS;
-    //apr_pool_t *cp = NULL;
+    apr_pool_t *cp = NULL;
+    // pool check.
+
 
     do
     {
         unsigned int num_delete_docs;
 
+        LCNCE( apr_pool_create( &cp, pool ) );
         LCNCE( lcn_segment_info_per_commit_num_deleted_docs( &num_delete_docs,
                                                              index_writer,
                                                              segment_info,
-                                                             pool) );
+                                                             cp ) );
 
-        LCNCE( lcn_segment_info_per_commit_to_string( segment_info,
+        LCNCE( lcn_segment_info_per_commit_to_string( str,
+                                                      segment_info,
                                                       index_writer->directory,
-                                                      num_delete_docs - segment_info->del_count ) );
+                                                      num_delete_docs - segment_info->del_count,
+                                                      pool ) );
     }
     while(0);
+
+    if( NULL != cp )
+    {
+        apr_pool_destroy( cp );
+    }
 
     return s;
 }
@@ -1647,23 +1658,23 @@ lcn_index_writer_reader_map_get( lcn_readers_and_live_docs_t *rld,
 
 apr_status_t
 lcn_segment_info_per_commit_num_deleted_docs( unsigned int *del_count,
-                                   lcn_index_writer_t *index_writer,
-                                   lcn_segment_info_per_commit_t *segment_info,
-                                   apr_pool_t *pool )
+                                              lcn_index_writer_t *index_writer,
+                                              lcn_segment_info_per_commit_t *segment_info,
+                                              apr_pool_t *pool )
 {
     apr_status_t s;
     lcn_readers_and_live_docs_t *rld = NULL;
 
-    LCNASSERTR( ! index_writer->closed, LCN_ERR_ALREADY_CLOSED );
+    LCNASSERTR( !index_writer->closed, LCN_ERR_ALREADY_CLOSED );
     *del_count = segment_info->del_count;
 
     LCNCR( lcn_index_writer_reader_map_get( rld,
-                                     index_writer,
-                                     segment_info,
-                                     LCN_FALSE,
-                                     pool ) );
+                                            index_writer,
+                                            segment_info,
+                                            LCN_FALSE,
+                                            pool ) );
 
-    if ( rld != NULL )
+    if ( NULL != rld )
     {
         // For threading access pending_delete_count must be save.
         *del_count += rld->pending_delete_count;

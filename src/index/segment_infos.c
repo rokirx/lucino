@@ -41,6 +41,7 @@ lcn_segment_infos_remove( lcn_segment_infos_t *segment_infos, unsigned int i )
 unsigned int
 lcn_segment_infos_size( lcn_segment_infos_t *segment_infos )
 {
+    //return segment_infos ? lcn_list_size( segment_infos->list ) : 0;
     return lcn_list_size( segment_infos->list );
 }
 

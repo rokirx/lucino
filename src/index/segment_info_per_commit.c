@@ -14,12 +14,22 @@ lcn_segment_info_per_commit_info( lcn_segment_info_per_commit_t *info_pc )
 }
 
 apr_status_t
-lcn_segment_info_per_commit_to_string ( lcn_segment_info_per_commit_t *info_pc,
+lcn_segment_info_per_commit_to_string ( char** str,
+                                        lcn_segment_info_per_commit_t *info_pc,
                                         lcn_directory_t *directory,
-                                        int pending_del_count )
+                                        unsigned int pending_del_count,
+                                        apr_pool_t *pool )
 {
-    //TODO impl SegmentInfo.java 192
-    return APR_SUCCESS;
+    apr_status_t s = APR_SUCCESS;
+
+    LCNCR( lcn_segment_info_to_string( str,
+                                       info_pc->segment_info,
+                                       directory,
+                                       pending_del_count,
+                                       pool ) );
+
+
+    return s;
 }
 
 char*

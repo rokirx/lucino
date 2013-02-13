@@ -1088,7 +1088,8 @@ test_index_no_documents( CuTest* tc )
         LCN_TEST( lcn_index_writer_config_create( &iwc, pool ) );
         LCN_TEST( lcn_index_writer_create_by_config( &index_writer, dir, iwc, pool ) );
         LCN_TEST( lcn_index_writer_commit( index_writer ));
-        
+
+        //LCN_TEST( lcn_index_writer_close( index_writer ) );
 #if 0
       writer.commit();
       writer.close();
