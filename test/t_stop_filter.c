@@ -69,7 +69,7 @@ test_stopword_filter( CuTest* tc )
 
     LCN_TEST( lcn_char_tokenizer_create( &ts,
                                                    " eins zwei drei vier"
-                                                   " fünf sechs",
+                                                   " f\374nf sechs",
                                                    pool ) );
 
 
@@ -81,7 +81,7 @@ test_stopword_filter( CuTest* tc )
     
     NEXT_TOKEN( "eins" );
     NEXT_TOKEN( "drei" );
-    NEXT_TOKEN( "fünf" );
+    NEXT_TOKEN( "f\374nf" );
     NEXT_TOKEN( "sechs" );
     END_OF_STREAM;
 
@@ -96,13 +96,13 @@ test_all_tokens_filtered( CuTest* tc )
     lcn_stop_filter_t* stop_filter;
     lcn_token_t* token;
     
-    char* stop_words[] = { "eins", "zwei", "drei", "vier", "fünf", "sechs", 0 };
+    char* stop_words[] = { "eins", "zwei", "drei", "vier", "f\374nf", "sechs", 0 };
 
     apr_pool_create( &pool, main_pool );
 
     LCN_TEST( lcn_char_tokenizer_create( &ts,
                                          " eins zwei drei vier"
-                                         " fünf sechs",
+                                         " f\374nf sechs",
                                          pool ) );
 
 

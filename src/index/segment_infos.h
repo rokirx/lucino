@@ -3,10 +3,11 @@
 
 #include "lucene.h"
 #include "term.h"
+#include "lcn_index.h"
 
 typedef struct lcn_segment_info_t lcn_segment_info_t;
-typedef struct lcn_segment_info_per_commit_t lcn_segment_info_per_commit_t;
-typedef struct lcn_segment_infos_t lcn_segment_infos_t;
+//typedef struct lcn_segment_info_per_commit_t lcn_segment_info_per_commit_t;
+//typedef struct lcn_segment_infos_t lcn_segment_infos_t;
 
 
 #define LCN_SEGMENT_INFOS_FORMAT (-1)

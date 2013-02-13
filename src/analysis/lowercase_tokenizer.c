@@ -1,6 +1,6 @@
 #include "lowercase_tokenizer.h"
 #include "lucene.h"
-
+#include "lcn_util.h"
 
 BEGIN_C_DECLS
 
@@ -9,8 +9,7 @@ extern unsigned char lcn_upper_to_lower_map[256];
 static lcn_bool_t
 lcn_lowercase_tokenizer_is_token_char( char c )
 {
-
-    return (lcn_bool_t)LCN_IS_CHAR( c );
+    return (lcn_bool_t) LCN_IS_CHAR( c );
 }
 
 static char

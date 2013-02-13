@@ -44,10 +44,9 @@ int main (void)
     setbuf(stdout, 0);
 
     CuSuiteAddSuite(sr, make_index_writer_suite());
-
     //CuSuiteAddSuite(sr, make_compound_file_suite());
     //CuSuiteAddSuite(sr, make_compound_file_util_suite());
-#if 1
+#if 1 
     CuSuiteAddSuite(sr, make_array_suite() );
     CuSuiteAddSuite(sr, make_atom_suite());
     CuSuiteAddSuite(sr, make_bitvector_suite());

@@ -32,9 +32,9 @@ test_stem_filter( CuTest* tc )
     LCN_TEST( lcn_simple_analyzer_create( &analyzer, pool ) );
     LCN_TEST( lcn_analyzer_token_stream( analyzer,
                                          &input,
-                                         "Mütter Väter Volker Völker "
-                                         "Gebiss Gebiß heissen Gericht "
-                                         "Schiffahrt Schifffahrt xxxayyyybffffffcfffd trbs trb ä üß radius radium radiums "
+                                         "M\374tter V\344ter Volker V\366lker "
+                                         "Gebiss Gebi\337 heissen Gericht "
+                                         "Schiffahrt Schifffahrt xxxayyyybffffffcfffd trbs trb \344 \374\337 radius radium radiums "
                                          "kenntnisse kenntnisses angebot aufgebot oelform drassstisch",
                                          pool ));
 
@@ -46,8 +46,8 @@ test_stem_filter( CuTest* tc )
     NEXT_TOKEN( "vat" );
     NEXT_TOKEN( "volk" );
     NEXT_TOKEN( "volk" );
-    NEXT_TOKEN( "gebiß" );
-    NEXT_TOKEN( "gebiß" );
+    NEXT_TOKEN( "gebi\337" ); /* szlig */
+    NEXT_TOKEN( "gebi\337" ); /* szlig */
     NEXT_TOKEN( "heis" );
     NEXT_TOKEN( "gerich" );
     NEXT_TOKEN( "schiffahr" );
@@ -55,8 +55,8 @@ test_stem_filter( CuTest* tc )
     NEXT_TOKEN( "xxayybffcffd" );
     NEXT_TOKEN( "trbs" );
     NEXT_TOKEN( "trb" );
-    NEXT_TOKEN( "ä" );
-    NEXT_TOKEN( "üß" );
+    NEXT_TOKEN( "\344" );     /* auml */
+    NEXT_TOKEN( "\374\337" ); /* uuml szlig */
     NEXT_TOKEN( "radie" );
     NEXT_TOKEN( "radie" );
     NEXT_TOKEN( "radie" );
@@ -65,7 +65,7 @@ test_stem_filter( CuTest* tc )
     NEXT_TOKEN( "anb" );
     NEXT_TOKEN( "aufb" );
     NEXT_TOKEN( "olform" );
-    NEXT_TOKEN( "draßtisch" );
+    NEXT_TOKEN( "dra\337tisch" );
     END_OF_STREAM;
 
     apr_pool_destroy( pool );

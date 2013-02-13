@@ -304,17 +304,6 @@ typedef struct file_entry lcn_file_entry_t;
 #define LCNASSERTR( EXPR, ERRCODE ) LCNCR( (    (EXPR)     ? APR_SUCCESS : ERRCODE) )
 #define LCNASSERTM( EXPR, ERRCODE, MSG ) LCNCM( ((EXPR)     ? APR_SUCCESS : ERRCODE), MSG )
 
-#define LCN_IS_CHAR(c)  (                                               \
-                         ( c >= 'a' && c <= 'z' ) ||                    \
-                         ( c >= 'A' && c <= 'Z' ) ||                    \
-                         c == 'ä' || c == 'ü' || c == 'ö' ||            \
-                         c == 'Ä' || c == 'Ü' || c == 'Ö' || c == 'ß' || \
-                         c == 'é' || c == 'á' )
-
-#define LCN_IS_UPPER(c) ( ( c >= 'A' && c <= 'Z' ) || c == 'Ä' || c == 'Ö' || c == 'Ü' )
-
-#define LCN_IS_DIGIT(c) ( c >= '0' && c <= '9' )
-
 #define LCN_IS_WHITESPACE(c) ( ( c == ' ' )  || \
                                ( c == '\t' ) || \
                                ( c == '\n' )  || \

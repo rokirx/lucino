@@ -197,6 +197,7 @@ lcn_mtp_seek_term_info ( lcn_term_docs_t *term_docs,
     apr_status_t s;
 
     LCNCR( LCN_ERR_UNSUPPORTED_OPERATION );
+    return LCN_ERR_UNSUPPORTED_OPERATION;
 }
 
 
@@ -207,6 +208,7 @@ lcn_mtp_seek_term_enum( lcn_term_docs_t *term_docs,
     apr_status_t s;
 
     LCNCR( LCN_ERR_UNSUPPORTED_OPERATION );
+    return LCN_ERR_UNSUPPORTED_OPERATION;
 }
 
 static unsigned int

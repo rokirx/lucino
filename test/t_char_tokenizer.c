@@ -54,7 +54,7 @@ test_lowercase_filter( CuTest* tc )
 
     LCN_TEST( lcn_char_tokenizer_create( &ts,
                                                    " EINS zwei DREI vier "
-                                                   "fünf sechs"
+                                                   "f\374nf sechs"
                                                    " abc-123",
                                                    pool ) );
 
@@ -67,7 +67,7 @@ test_lowercase_filter( CuTest* tc )
     NEXT_FILTER_TOKEN( "zwei" );
     NEXT_FILTER_TOKEN( "drei" );
     NEXT_FILTER_TOKEN( "vier" );
-    NEXT_FILTER_TOKEN( "fünf" );
+    NEXT_FILTER_TOKEN( "f\374nf" );
     NEXT_FILTER_TOKEN( "sechs" );
     NEXT_FILTER_TOKEN( "abc" );
     NEXT_FILTER_TOKEN( "123" );
@@ -128,7 +128,7 @@ test_string( CuTest* tc )
     apr_pool_create( &pool, main_pool );
 
     LCN_TEST( lcn_char_tokenizer_create( &ts,
-                                                   " eins zwei DREI vier fünf sechs"
+                                                   " eins zwei DREI vier f\374nf sechs"
                                                    " abc-123",
                                                    pool ) );
 
@@ -140,7 +140,7 @@ test_string( CuTest* tc )
     CHECK_OFFSETS( 11, 15 );
     NEXT_TOKEN( "vier" );
     CHECK_OFFSETS( 16, 20 );
-    NEXT_TOKEN( "fünf" );
+    NEXT_TOKEN( "f\374nf" );
     CHECK_OFFSETS( 21, 25 );
     NEXT_TOKEN( "sechs" );
     CHECK_OFFSETS( 26, 31 );

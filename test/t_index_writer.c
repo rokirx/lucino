@@ -49,11 +49,7 @@ static void
 test_doc_count(CuTest* tc)
 {
     apr_pool_t *pool;
-    lcn_index_writer_t *index_writer;
-    //lcn_document_t *document;
-    //lcn_field_t *field;
     lcn_directory_t *dir;
-    unsigned int i;
 
     LCN_TEST( apr_pool_create( &pool, main_pool ) );
     LCN_TEST( lcn_ram_directory_create( &dir, pool ) );
@@ -174,26 +170,10 @@ test_adding_empty_document(CuTest* tc)
     apr_pool_t *pool;
     lcn_index_writer_t *index_writer;
     lcn_document_t *document;
-    lcn_field_t *field;
-    apr_status_t s;
 
     delete_files( tc, "test_index_writer" );
     LCN_TEST( apr_pool_create( &pool, main_pool ) );
-#if 0
-    LCN_TEST( lcn_index_writer_create_by_path( &index_writer, "test_index_writer", LCN_TRUE, pool ) );
-    LCN_TEST( lcn_document_create( &document, pool ) );
-
-    s = lcn_index_writer_add_document( index_writer, document );
-    CuAssertIntEquals( tc, LCN_ERR_INDEX_WRITER_ADDING_EMTY_DOCUMENT, s );
-
-    LCN_TEST( lcn_document_create( &document, pool ) );
-    LCN_TEST( lcn_field_create( &field, "text", "open source", LCN_FIELD_STORED, LCN_FIELD_VALUE_COPY, pool ) );
-    LCN_TEST( lcn_document_add_field( document, field, pool ) );
-    LCN_TEST( lcn_index_writer_add_document( index_writer, document ) );
-    LCN_TEST( lcn_index_writer_close( index_writer ) );
-
-    compare_directories(tc, "index_writer/index_01", "test_index_writer" );
-#endif
+    
     delete_files( tc, "test_index_writer" );
     apr_pool_destroy( pool );
 }
@@ -433,9 +413,9 @@ test_indexing_7(CuTest* tc)
 
     LCN_TEST( lcn_field_create_binary( &field1,
                                        "titel",
-                                       "öl maß",
+                                       "\366l ma\337",
                                        LCN_FIELD_VALUE_COPY,
-                                       strlen("öl maß"),
+                                       strlen("\366l ma\337"),
                                        pool ) );
 
     LCN_TEST( lcn_document_add_field( document, field, pool ) );
@@ -467,7 +447,7 @@ test_indexing_7(CuTest* tc)
                                                  &len,
                                                  pool ));
         CuAssertIntEquals( tc, 6, len );
-        CuAssertIntEquals( tc, 0, strncmp( buf, "öl maß", 6 ));
+        CuAssertIntEquals( tc, 0, strncmp( buf, "\366l ma\337", 6 ));
     }
 
     delete_files( tc, "test_index_writer" );
@@ -494,9 +474,9 @@ test_indexing_8(CuTest* tc)
 
     LCN_TEST( lcn_field_create_binary( &field,
                                        "text",
-                                       "öaß",
+                                       "\366a\337",
                                        LCN_FIELD_VALUE_COPY,
-                                       strlen("öaß"),
+                                       strlen("\366a\337"),
                                        pool ) );
 
 
@@ -602,8 +582,8 @@ test_indexing_9(CuTest* tc)
     LCN_TEST( lcn_index_writer_create_by_path( &index_writer, "test_index_writer", LCN_TRUE, pool ) );
     LCN_TEST( lcn_simple_analyzer_create( &analyzer, pool ) );
 
-    add_document( tc, index_writer, "öaß", "first", pool );
-    add_document( tc, index_writer, "123Ö", "second", pool );
+    add_document( tc, index_writer, "\366a\337", "first", pool );
+    add_document( tc, index_writer, "123\326", "second", pool );
 
     LCN_TEST( lcn_index_writer_close( index_writer ) );
     compare_directories(tc, "index_writer/index_09", "test_index_writer" );
@@ -630,11 +610,11 @@ test_indexing_10(CuTest* tc)
 
     LCN_TEST( lcn_simple_analyzer_create( &analyzer, pool ) );
 
-    add_document( tc, index_writer, "öaß", "first", pool );
-    add_document( tc, index_writer, "123Ö", "second", pool );
+    add_document( tc, index_writer, "\366a\337", "first", pool );
+    add_document( tc, index_writer, "123\326", "second", pool );
     add_document( tc, index_writer, "$%&", "third", pool );
-    add_document( tc, index_writer, "ö1ß", "4th", pool );
-    add_document( tc, index_writer, "133Ö", "5th", pool );
+    add_document( tc, index_writer, "\3661\337", "4th", pool );
+    add_document( tc, index_writer, "133\326", "5th", pool );
     LCN_TEST( lcn_index_writer_close( index_writer ) );
     compare_directories(tc, "index_writer/index_09", "test_index_writer" );
     delete_files( tc, "test_index_writer" );
@@ -656,8 +636,8 @@ test_indexing_11(CuTest* tc)
     LCN_TEST( lcn_index_writer_create_by_path( &index_writer, "test_index_writer", LCN_TRUE, pool ) );
     LCN_TEST( lcn_simple_analyzer_create( &analyzer, pool ) );
 
-    add_document( tc, index_writer, "öaß", "first", pool );
-    add_document( tc, index_writer, "123Ö", "second", pool );
+    add_document( tc, index_writer, "\366a\337", "first", pool );
+    add_document( tc, index_writer, "123\326", "second", pool );
 
     LCN_TEST( lcn_index_writer_close( index_writer ) );
 

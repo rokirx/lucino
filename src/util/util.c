@@ -42,7 +42,7 @@ lcn_string_to_lower( char *s )
 
     while( *ls )
     {
-        *ls = (char) lcn_upper_to_lower_map[ (unsigned char) *ls ];
+        *ls = (char) lcn_upper_to_lower_map[ (unsigned char) (*ls) ];
         ls++;
     }
 
@@ -264,7 +264,7 @@ lcn_string_escape( char** result,
         {
             const char* found;
 
-            if( ( c == escape_char ) )
+            if( c == escape_char )
             {
                 LCNCE( lcn_string_buffer_append_format( sb, "%c%c",
                                                         escape_char,

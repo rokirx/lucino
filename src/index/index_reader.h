@@ -7,6 +7,7 @@
 #include "term_infos_reader.h"
 #include "segment_infos.h"
 #include "fs_field.h"
+#include "lcn_index.h"
 
 /**
  * @defgroup lcn_index_priv Index

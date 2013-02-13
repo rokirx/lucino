@@ -699,12 +699,18 @@ lcn_smallfloat_byte315_to_float( lcn_byte_t b );
 void
 lcn_to_string_boost( char* buf, unsigned int buf_len, float boost );
 
-#define LCN_IS_CHAR(c)  (                                       \
-             ( c >= 'a' && c <= 'z' ) ||                        \
-             ( c >= 'A' && c <= 'Z' ) ||                        \
-             c == 'ä' || c == 'ü' || c == 'ö' ||                \
-             c == 'Ä' || c == 'Ü' || c == 'Ö' || c == 'ß' ||    \
-             c == 'é' || c == 'á' )
+#define LCN_IS_CHAR(c)  (                                \
+                          ( c >= 'a' && c <= 'z' ) ||    \
+                          ( c >= 'A' && c <= 'Z' ) ||    \
+                          c == '\344' ||                 \
+                          c == '\374' ||                 \
+                          c == '\366' ||		 \
+			  c == '\304' ||                 \
+                          c == '\334' ||                 \
+                          c == '\326' ||                 \
+                          c == '\337' ||                 \
+                          c == '\341' ||                 \
+                          c == '\351' )
 
 #define LCN_IS_UPPER(c) ( ( c >= 'A' && c <= 'Z' ) || c == 'Ä' || c == 'Ö' || c == 'Ü' )
 

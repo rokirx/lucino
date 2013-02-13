@@ -673,6 +673,7 @@ test_norms( CuTest *tc )
     LCN_TEST( lcn_index_reader_close( index_reader ) );
 }
 
+#if 0
 static void
 test_empty_dir(CuTest* tc)
 {
@@ -683,6 +684,7 @@ test_empty_dir(CuTest* tc)
     LCN_TEST( apr_pool_create( &pool, main_pool ));
     LCN_TEST( lcn_index_reader_create_by_path( &index_reader, "test_index_writer", pool ) );
 }
+#endif
 
 static void
 setup()

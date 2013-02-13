@@ -446,8 +446,8 @@ test_write_string(CuTest* tc)
         apr_pool_t *pool;
         LCN_TEST( apr_pool_create( &pool, main_pool ) );
         LCN_TEST( lcn_fs_ostream_create( &out, "test_file", pool ) );
-        LCN_TEST( lcn_ostream_write_string( out, "Teste Sonderzeichen: ouml: ö, auml: ä,"
-                                                  "uuml: ü, Ouml: Ö, Auml: Ä, Uuml: Ü, szlig: ß" ) );
+        LCN_TEST( lcn_ostream_write_string( out, "Teste Sonderzeichen: ouml: \366, auml: \344,"
+                                                  "uuml: \374, Ouml: \326, Auml: \304, Uuml: \334, szlig: \337" ) );
         LCN_TEST( lcn_ostream_close( out ) );
         apr_pool_destroy( pool );
     }
@@ -463,8 +463,8 @@ test_write_string(CuTest* tc)
         LCN_TEST( lcn_index_input_close( in ) );
         apr_pool_destroy( pool );
 
-        CuAssertStrEquals(tc, buf, "Teste Sonderzeichen: ouml: ö, auml: ä,"
-                          "uuml: ü, Ouml: Ö, Auml: Ä, Uuml: Ü, szlig: ß" );
+        CuAssertStrEquals(tc, buf, "Teste Sonderzeichen: ouml: \366, auml: \344,"
+                          "uuml: \374, Ouml: \326, Auml: \304, Uuml: \334, szlig: \337" );
         apr_pool_destroy( str_pool );
     }
 
@@ -477,8 +477,8 @@ test_write_string(CuTest* tc)
             apr_pool_t *os_pool;
             LCN_TEST( apr_pool_create( &os_pool, main_pool ) );
             LCN_TEST( lcn_ram_ostream_create( &out, file, os_pool ) );
-            LCN_TEST( lcn_ostream_write_string( out, "Teste Sonderzeichen: ouml: ö, "
-                                                      "auml: ä, uuml: ü, Ouml: Ö, Auml: Ä, Uuml: Ü, szlig: ß" ) );
+            LCN_TEST( lcn_ostream_write_string( out, "Teste Sonderzeichen: ouml: \366, "
+                                                      "auml: \344, uuml: \374, Ouml: \326, Auml: \304, Uuml: \334, szlig: \337" ) );
             LCN_TEST( lcn_ostream_close( out ) );
             apr_pool_destroy( os_pool );
         }
@@ -493,8 +493,8 @@ test_write_string(CuTest* tc)
             LCN_TEST( lcn_index_input_close( in ) );
             apr_pool_destroy( is_pool );
 
-            CuAssertStrEquals(tc, buf, "Teste Sonderzeichen: ouml: ö, auml: ä, uuml: ü,"
-                              " Ouml: Ö, Auml: Ä, Uuml: Ü, szlig: ß");
+            CuAssertStrEquals(tc, buf, "Teste Sonderzeichen: ouml: \366, auml: \344, uuml: \374,"
+                              " Ouml: \326, Auml: \304, Uuml: \334, szlig: \337" );
             apr_pool_destroy( str_pool );
         }
 
@@ -548,8 +548,8 @@ test_index_input_clone(CuTest* tc)
 
     LCN_TEST( lcn_index_input_read_string( in, &buf, &len, pool ) );
     CuAssertStrEquals(tc, buf, "Teste Sonderzeichen: ouml: "
-                               "ö, auml: ä, uuml: ü, Ouml: "
-                               "Ö, Auml: Ä, Uuml: Ü, szlig: ß");
+                               "\366, auml: \344, uuml: \374, Ouml: "
+                               "\326, Auml: \304, Uuml: \334, szlig: \337");
 
     LCN_TEST( lcn_index_input_read_string( clone, &buf, &len, pool ) );
     CuAssertIntEquals(tc, len, 26);
@@ -564,8 +564,8 @@ test_index_input_clone(CuTest* tc)
 
     LCN_TEST( lcn_index_input_read_string( in, &buf, &len, pool ) );
     CuAssertStrEquals(tc, buf, "Teste Sonderzeichen: ouml: "
-                               "ö, auml: ä, uuml: ü, Ouml: "
-                               "Ö, Auml: Ä, Uuml: Ü, szlig: ß");
+                               "\366, auml: \344, uuml: \374, Ouml: "
+                               "\326, Auml: \304, Uuml: \334, szlig: \337");
 
     LCN_TEST( lcn_index_input_seek( in, 0 ));
     LCN_TEST( lcn_index_input_read_string( clone, &buf, &len, pool ) );
@@ -573,8 +573,8 @@ test_index_input_clone(CuTest* tc)
 
     LCN_TEST( lcn_index_input_read_string( clone, &buf, &len, pool ) );
     CuAssertStrEquals(tc, buf, "Teste Sonderzeichen: ouml: "
-                               "ö, auml: ä, uuml: ü, Ouml: "
-                               "Ö, Auml: Ä, Uuml: Ü, szlig: ß");
+                               "\366, auml: \344, uuml: \374, Ouml: "
+                               "\326, Auml: \304, Uuml: \334, szlig: \337");
 
     LCN_TEST( lcn_index_input_read_string( in, &buf, &len, pool ) );
     CuAssertIntEquals(tc, len, 26);

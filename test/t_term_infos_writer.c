@@ -139,7 +139,6 @@ test_long_terms(CuTest* tc)
 
         LCN_TEST( lcn_document_create( &document, pool ) );
         apr_snprintf( buf+1100, 10, "%d", i );
-        flog( stderr, "S %s\n", buf );
         LCN_TEST( lcn_field_create( &field, "text", buf, LCN_FIELD_INDEXED, LCN_FIELD_VALUE_COPY, pool ));
         LCN_TEST( lcn_document_add_field( document, field, pool ));
         LCN_TEST( lcn_index_writer_add_document( index_writer, document ));

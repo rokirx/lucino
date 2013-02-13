@@ -29,7 +29,7 @@ lcn_german_stemmer_replace_ending ( lcn_stemmer_t *stemmer, char *term )
 
     if ( l > 5 )
     {
-        char *c = strstr( term, "ßs" );
+        char *c = strstr( term, "\337s" ); /* 337 is german szlig */
 
         if ( NULL != c )
         {
@@ -70,7 +70,7 @@ lcn_german_stemmer_replace_ending ( lcn_stemmer_t *stemmer, char *term )
     if ( l > 5 && NULL != (oepos = strstr( term, "oe" )))
     {
         char *c = oepos + 2;
-        *oepos = 'ö';
+        *oepos = '\366'; /* ouml */
 
         while((*(c-1) = *c))
         {
@@ -179,10 +179,11 @@ lcn_german_stemmer_substitute ( lcn_stemmer_t *stemmer, char *term )
 
     for ( t = term; ( *buf = *t ); t++, buf++)
     {
-        if      ( *t == 'ä' ) { *buf = 'a'; }
-        else if ( *t == 'ö' ) { *buf = 'o'; }
-        else if ( *t == 'é' ) { *buf = 'e'; }
-        else if ( *t == 'ü' ) { *buf = 'u'; }
+        if      ( *t == '\344' ) { *buf = 'a'; } /* auml */
+        else if ( *t == '\366' ) { *buf = 'o'; } /* ouml */
+        else if ( *t == '\351' ) { *buf = 'e'; } /* e accent aigu */
+        else if ( *t == '\374' ) { *buf = 'u'; } /* uuml */
+        else if ( *t == '\341' ) { *buf = 'a'; } /* a accent aigu */
 
         if ( *t == *(t+1) )
         {
@@ -214,7 +215,7 @@ lcn_german_stemmer_substitute ( lcn_stemmer_t *stemmer, char *term )
         }
         else if ( *t == 'c' && *(t+1) == 'h' )
         {
-            *buf = '§';
+            *buf = '\247'; /* paragraph */
             subst_count++;
             t++;
         }
@@ -329,7 +330,7 @@ lcn_german_stemmer_resubstitute( lcn_stemmer_t *stemmer, char *target  )
         case '*' :
             if ( *(buf-1) == 's' )
             {
-                *(--target) = 'ß';
+                *(--target) = '\337'; /* it's szlig */
             }else{
                 *target = *(buf-1);
             }
@@ -343,7 +344,7 @@ lcn_german_stemmer_resubstitute( lcn_stemmer_t *stemmer, char *target  )
             *target = 'h';
             break;
 
-        case '§' :
+        case '\247' :  /* paragraph */
             *target = 'c';
             target++;
             *target = 'h';
@@ -421,9 +422,9 @@ lcn_german_stemmer_has_vocals( const char *term )
         case 'u':
         case 'i':
         case 'e':
-        case 'ä':
-        case 'ö':
-        case 'ü':
+        case '\344': /* auml */
+        case '\366': /* ouml */
+        case '\374': /* uuml */
             return LCN_TRUE;
         }
 

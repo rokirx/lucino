@@ -1,6 +1,7 @@
 #include "lcn_analysis.h"
 #include "char_tokenizer.h"
 #include "token.h"
+#include "lcn_util.h"
 
 BEGIN_C_DECLS
 

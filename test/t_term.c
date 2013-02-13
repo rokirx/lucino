@@ -41,26 +41,26 @@ TestCuTerm(CuTest* tc)
     CuAssertTrue(tc, strcmp( "a", "z" ) < 0);
     CuAssertTrue(tc, strcmp( "z", "a" ) > 0);
 
-    CuAssertTrue(tc, strcmp( "z", "Ä" ) < 0);
-    CuAssertTrue(tc, strcmp( "Ä", "z" ) > 0);
+    CuAssertTrue(tc, strcmp( "z", "\304" ) < 0); /* Auml */
+    CuAssertTrue(tc, strcmp( "\304", "z" ) > 0);
 
-    CuAssertTrue(tc, strcmp( "Ä", "Ö" ) < 0);
-    CuAssertTrue(tc, strcmp( "Ö", "Ä" ) > 0);
+    CuAssertTrue(tc, strcmp( "\304", "\326" ) < 0); /* Auml Ouml */
+    CuAssertTrue(tc, strcmp( "\326", "\304" ) > 0);
 
-    CuAssertTrue(tc, strcmp( "Ö", "Ü" ) < 0);
-    CuAssertTrue(tc, strcmp( "Ü", "Ö" ) > 0);
+    CuAssertTrue(tc, strcmp( "\326", "\334" ) < 0);
+    CuAssertTrue(tc, strcmp( "\334", "\326" ) > 0);
 
-    CuAssertTrue(tc, strcmp( "Ü", "ß" ) < 0);
-    CuAssertTrue(tc, strcmp( "ß", "Ü" ) > 0);
+    CuAssertTrue(tc, strcmp( "\334", "\337" ) < 0);
+    CuAssertTrue(tc, strcmp( "\337", "\334" ) > 0);
 
-    CuAssertTrue(tc, strcmp( "ß", "ä" ) < 0);
-    CuAssertTrue(tc, strcmp( "ä", "ß" ) > 0);
+    CuAssertTrue(tc, strcmp( "\337", "\344") < 0);
+    CuAssertTrue(tc, strcmp( "\344", "\337" ) > 0);
 
-    CuAssertTrue(tc, strcmp( "ä", "ö" ) < 0);
-    CuAssertTrue(tc, strcmp( "ö", "ä" ) > 0);
+    CuAssertTrue(tc, strcmp( "\344", "\366" ) < 0);
+    CuAssertTrue(tc, strcmp( "\366", "\344" ) > 0);
 
-    CuAssertTrue(tc, strcmp( "ö", "ü" ) < 0);
-    CuAssertTrue(tc, strcmp( "ü", "ö" ) > 0);
+    CuAssertTrue(tc, strcmp( "\366", "\374" ) < 0);
+    CuAssertTrue(tc, strcmp( "\374", "\366" ) > 0);
 
     apr_pool_destroy( p );
 }

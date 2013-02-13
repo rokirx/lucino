@@ -7,9 +7,11 @@
 static void
 test_cu_to_lower(CuTest* tc)
 {
-    char s[] = "ABCDEFH ִײÜֱ";
+    apr_pool_t *pool;
+    (void) apr_pool_create( &pool, NULL );
+    char *s = apr_pstrdup( pool, "ABCDEFH \304\326\334\301");
     lcn_string_to_lower( s );
-    CuAssertTrue(tc, strcmp("abcdefh הצüב", s ) == 0);
+    CuAssertTrue(tc, strcmp("abcdefh \344\366\374\341",s) == 0);
 }
 
 static void

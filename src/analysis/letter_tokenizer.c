@@ -1,4 +1,5 @@
 #include "char_tokenizer.h"
+#include "lcn_util.h"
 
 static lcn_bool_t
 lcn_letter_tokenizer_is_token_char( char c )
