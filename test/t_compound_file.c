@@ -282,14 +282,7 @@ test_random_files( CuTest* tc )
     LCN_TEST( create_random_file(tc, dir, apr_pstrcat(pool, segment, ".notIn", NULL), 50, pool) );
     LCN_TEST( create_random_file(tc, dir, apr_pstrcat(pool, segment, ".notIn2", NULL), 51, pool) );
 
-    lcn_compound_file_writer_t *cfw;
     LCN_TEST( lcn_compound_file_writer_create ( &cfw, dir, cf_name, pool ) );
-
-    char *data[] = {
-            ".zero", ".one", ".ten", ".hundred", ".big1", ".big2", ".big3",
-            ".big4", ".big5", ".big6", ".big7"
-    };
-    int data_size = 11;
 
     for (i = 0; i < data_size; i++)
     {
@@ -297,7 +290,6 @@ test_random_files( CuTest* tc )
     }
     lcn_compound_file_writer_close(cfw);
 
-    lcn_compound_file_reader_t *cfr;
     LCN_TEST( lcn_compound_file_reader_create ( &cfr, dir, cf_name, pool ) );
 
     for (i = 0; i < data_size; i++)
