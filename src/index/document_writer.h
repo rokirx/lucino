@@ -60,6 +60,12 @@ struct lcn_document_writer_t {
     lcn_term_t *term;
 
     lcn_similarity_t *similarity;
+
+    /**
+     * Lucene 4.0
+     */
+
+    //lcn_reader_pool_t *reader_pool;
 };
 
 apr_status_t

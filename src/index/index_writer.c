@@ -8,11 +8,12 @@
 #include "segment_infos.h"
 #include "index_writer_config.h"
 #include "io_context.h"
+#include "readers_and_live_docs.h"
 
 #define IW_INFO(MSG)                                    \
 if (NULL != index_writer->info_stream)                  \
 {                                                       \
-    fprintf( index_writer->info_stream, MSG "\n");      \
+    fprintf( index_writer->info_stream, "%s\n", MSG );  \
 }
 
 
@@ -598,8 +599,8 @@ lcn_index_writer_create_impl_neu( lcn_index_writer_t **index_writer,
         LCNCE( apr_pool_create( &cp, pool ));
         LCNPV( *index_writer = lcn_object_create( lcn_index_writer_t, pool ), APR_ENOMEM );
         (*index_writer)->info_stream = stderr;
-
         (*index_writer)->pool = pool;
+        (*index_writer)->reader_map = apr_hash_make( pool );
 
         lcn_index_writer_set_config( *index_writer, iwc );
 
@@ -1222,7 +1223,7 @@ lcn_index_writer_optimize( lcn_index_writer_t *index_writer )
 }
 
 /**
- * Erzeugt zuerst einen optimierten Index, welcher als Basis fŸr den compound file Index genutzt wird.
+ * optimize index and create compound file
  */
 apr_status_t
 lcn_index_writer_cf_optimize( lcn_index_writer_t *index_writer )
@@ -1246,8 +1247,7 @@ lcn_index_writer_cf_optimize( lcn_index_writer_t *index_writer )
         LCNCE( apr_pool_create( &child_pool, index_writer->pool ));
 
         /**
-         * optimize index erzeugt eine Index, welcher aus mehreren Datein besteht.
-         * Diese müssen nun in ein cp-File überführt werden.
+         * put the segment files of the optimized index into compound file
          */
 
         int segment_size = lcn_segment_infos_size( index_writer->segment_infos );
@@ -1567,15 +1567,110 @@ lcn_index_writer_seg_string_info( lcn_index_writer_t *index_writer,
                                   apr_pool_t *pool )
 {
     apr_status_t s = APR_SUCCESS;
+    //apr_pool_t *cp = NULL;
 
     do
     {
+        unsigned int num_delete_docs;
+
+        LCNCE( lcn_segment_info_per_commit_num_deleted_docs( &num_delete_docs,
+                                                             index_writer,
+                                                             segment_info,
+                                                             pool) );
+
+        LCNCE( lcn_segment_info_per_commit_to_string( segment_info,
+                                                      index_writer->directory,
+                                                      num_delete_docs - segment_info->del_count ) );
     }
     while(0);
 
     return s;
 }
 
+apr_status_t
+lcn_index_writer_reader_map_get( lcn_readers_and_live_docs_t *rld,
+                                 lcn_index_writer_t *index_writer,
+                                 lcn_segment_info_per_commit_t *info,
+                                 lcn_bool_t create,
+                                 apr_pool_t *pool )
+{
+    apr_status_t s;
+
+    //TODO implement assert
+    // assert info.info.dir == directory : "info.dir=" + info.info.dir + " vs " + directory;
+
+    do
+    {
+        char* key = lcn_segment_info_per_commit_to_hash( info,
+                                                         pool );
+
+        rld = apr_hash_get( index_writer->reader_map,
+                            key,
+                            APR_HASH_KEY_STRING);
+
+        if ( rld == NULL )
+        {
+            if( !create )
+            {
+                return APR_SUCCESS;
+            }
+
+            LCNCE( lcn_readers_and_live_docs_create( &rld,
+                                                     index_writer,
+                                                     info,
+                                                     pool ) );
+
+            apr_hash_set( index_writer->reader_map,
+                          key,
+                          APR_HASH_KEY_STRING,
+                          rld );
+        }
+
+        /** TODO implement assert
+         * else {
+         *       assert rld.info == info: "rld.info=" + rld.info + " info=" + info + " isLive?=" + infoIsLive(rld.info) + " vs " + infoIsLive(info);
+         *   }
+         */
+
+        if( create )
+        {
+            //return ref to caller:
+            lcn_readers_and_live_docs_increment( rld );
+        }
+
+    }
+    while(0);
+
+    // Check for pool cleaning
+    return s;
+}
+
+apr_status_t
+lcn_segment_info_per_commit_num_deleted_docs( unsigned int *del_count,
+                                   lcn_index_writer_t *index_writer,
+                                   lcn_segment_info_per_commit_t *segment_info,
+                                   apr_pool_t *pool )
+{
+    apr_status_t s;
+    lcn_readers_and_live_docs_t *rld = NULL;
+
+    LCNASSERTR( ! index_writer->closed, LCN_ERR_ALREADY_CLOSED );
+    *del_count = segment_info->del_count;
+
+    LCNCR( lcn_index_writer_reader_map_get( rld,
+                                     index_writer,
+                                     segment_info,
+                                     LCN_FALSE,
+                                     pool ) );
+
+    if ( rld != NULL )
+    {
+        // For threading access pending_delete_count must be save.
+        *del_count += rld->pending_delete_count;
+    }
+
+    return s;
+}
 
 static apr_status_t
 lcn_index_writer_prepare_commit_internal( lcn_index_writer_t* index_writer )
@@ -1592,13 +1687,18 @@ lcn_index_writer_prepare_commit_internal( lcn_index_writer_t* index_writer )
 
     do
     {
+        char* seg_string;
+
         LCNCE( apr_pool_create( &cp, index_writer->pool ));
 
         IW_INFO("prepare_commit: flush");
-        // IW_INFO("  index before flush "
 
+        lcn_index_writer_seg_string_all( index_writer, &seg_string, cp );
+
+        IW_INFO( apr_pstrcat( cp, " index before flush ", seg_string, NULL ) );
     }
     while(0);
+
 #if 0
       if (infoStream.isEnabled("IW")) {
         infoStream.message("IW", "prepareCommit: flush");
@@ -1624,7 +1724,7 @@ lcn_index_writer_prepare_commit_internal( lcn_index_writer_t* index_writer )
 
       try {
 
-        synchronized (fullFlushLock) {
+            synchronized (fullFlushLock) {
           boolean flushSuccess = false;
           boolean success = false;
           try {
