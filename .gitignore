@@ -16,3 +16,5 @@ CMakeScripts
 TAGS
 WindowsProjekte
 *.dSYM
+tmp
+

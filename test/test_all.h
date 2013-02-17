@@ -121,6 +121,7 @@ CuSuite* make_index_reader_suite(void);
 CuSuite* make_index_searcher_suite( void );
 CuSuite* make_index_writer_bugs_suite (void);
 CuSuite* make_index_writer_suite(void);
+CuSuite* make_50_index_writer_suite( void );
 CuSuite* make_input_stream_suite(void);
 CuSuite* make_linked_list_suite( void );
 CuSuite* make_lucene_list_suite(void);

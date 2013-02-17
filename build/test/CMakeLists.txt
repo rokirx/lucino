@@ -30,6 +30,7 @@ ADD_EXECUTABLE(
     ../../test/t_index_reader.c
     ../../test/t_index_searcher.c
     ../../test/t_index_writer.c
+    ../../test/t_50_index_writer.c
     ../../test/t_index_writer_bugs.c
     ../../test/t_input_stream.c
     ../../test/t_linked_list.c

@@ -43,10 +43,9 @@ int main (void)
 
     setbuf(stdout, 0);
 
-    CuSuiteAddSuite(sr, make_index_writer_suite());
-    //CuSuiteAddSuite(sr, make_compound_file_suite());
-    //CuSuiteAddSuite(sr, make_compound_file_util_suite());
-#if 1 
+    CuSuiteAddSuite(sr, make_50_index_writer_suite());
+
+#if 1
     CuSuiteAddSuite(sr, make_array_suite() );
     CuSuiteAddSuite(sr, make_atom_suite());
     CuSuiteAddSuite(sr, make_bitvector_suite());
@@ -55,7 +54,7 @@ int main (void)
     CuSuiteAddSuite(sr, make_char_tokenizer_suite() );
     CuSuiteAddSuite(sr, make_compatibility_suite());
     CuSuiteAddSuite(sr, make_compound_file_suite());
-    CuSuiteAddSuite(sr, make_compound_file_suite());
+    CuSuiteAddSuite(sr, make_compound_file_util_suite());
     CuSuiteAddSuite(sr, make_custom_hit_queue_suite() );
     CuSuiteAddSuite(sr, make_directory_suite());
     CuSuiteAddSuite(sr, make_document_suite() );
