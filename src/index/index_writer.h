@@ -60,6 +60,10 @@ struct lcn_index_writer_t {
     lcn_segment_infos_t *pending_commit;
 
     /**
+     * Lucene 5.0
+     */
+
+    /**
      * Holds shared SegmentReader instances. IndexWriter uses
      * SegmentReaders for 1) applying deletes, 2) doing
      * merges, 3) handing out a real-time reader.  This pool
@@ -68,6 +72,19 @@ struct lcn_index_writer_t {
      * has been called on this instance).
      */
     apr_hash_t *reader_map;
+
+    /**
+     * A hook for extending classes to execute operations before pending added and
+     * deleted documents are flushed to the Directory.
+     */
+    void (*do_before_flush) (void);
+
+    /**
+     * A hook for extending classes to execute operations after pending added and
+     * deleted documents have been flushed to the Directory but before the change
+     * is committed (new segments_N file written).
+     */
+    void (*do_after_flush) (void);
 };
 
 #endif /* INDEX_WRITER_H */

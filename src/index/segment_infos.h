@@ -164,19 +164,20 @@ lcn_segment_infos_read_directory( lcn_segment_infos_t *segment_infos,
                                   lcn_directory_t *directory );
 
 apr_status_t
-lcn_segment_info_per_commit_to_string ( char** str,
-                                        lcn_segment_info_per_commit_t *info_pc,
-                                        lcn_directory_t *directory,
-                                        unsigned int pending_del_count,
-                                        apr_pool_t *pool );
-
+lcn_segment_info_per_commit_to_string( char** str,
+                                       lcn_segment_info_per_commit_t *info_pc,
+                                       lcn_directory_t *directory,
+                                       unsigned int pending_del_count,
+                                       apr_pool_t *pool );
 char*
 lcn_segment_info_per_commit_to_hash( lcn_segment_info_per_commit_t *info_pc,
                                      apr_pool_t *pool);
+
 apr_status_t
-lcn_segment_info_per_commit_num_deleted_docs( unsigned int *del_count,
+lcn_segment_info_per_commit_num_deleted_docs( lcn_segment_info_per_commit_t *segment_info,
+                                              unsigned int *del_count,
                                               lcn_index_writer_t *index_writer,
-                                              lcn_segment_info_per_commit_t *segment_info,
                                               apr_pool_t *pool );
 
 #endif
+

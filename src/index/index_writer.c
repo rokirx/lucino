@@ -20,6 +20,21 @@ if (NULL != index_writer->info_stream)                  \
 char* lcn_index_extensions[] = { "cfs", "fnm", "fdx", "fdt", "tii", "tis", "frq",
     "prx", "del", "tvx", "tvd", "tvf", "tvp" };
 
+/**
+ * A hook for extending classes to execute operations before pending added and
+ * deleted documents are flushed to the Directory.
+ */
+static void
+lcn_index_writer_do_before_flush(void){}
+
+/**
+ * A hook for extending classes to execute operations after pending added and
+ * deleted documents have been flushed to the Directory but before the change
+ * is committed (new segments_N file written).
+ */
+static void
+lcn_index_writer_do_after_flush(void){}
+
 void
 lcn_index_writer_set_log_stream( lcn_index_writer_t *index_writer,
                                  FILE *log_stream )
@@ -598,9 +613,12 @@ lcn_index_writer_create_impl_neu( lcn_index_writer_t **index_writer,
 
         LCNCE( apr_pool_create( &cp, pool ));
         LCNPV( *index_writer = lcn_object_create( lcn_index_writer_t, pool ), APR_ENOMEM );
+        (*index_writer)->directory = directory;
         (*index_writer)->info_stream = stderr;
         (*index_writer)->pool = pool;
         (*index_writer)->reader_map = apr_hash_make( pool );
+        (*index_writer)->do_before_flush = lcn_index_writer_do_before_flush;
+        (*index_writer)->do_after_flush = lcn_index_writer_do_after_flush;
 
         lcn_index_writer_set_config( *index_writer, iwc );
 
@@ -672,6 +690,12 @@ lcn_index_writer_create_impl_neu( lcn_index_writer_t **index_writer,
         }
 #endif
       }
+
+
+        /* init fixed sized fields */
+
+        LCNPV( ( *index_writer )->fs_fields = apr_hash_make( pool ), APR_ENOMEM );
+        LCNCE( lcn_directory_fs_field_read_field_infos( ( *index_writer )->fs_fields, directory, pool ));
     }
     while ( 0 );
 
@@ -1115,6 +1139,151 @@ lcn_index_writer_flush_fixed_size_fields( lcn_index_writer_t *index_writer )
     return s;
 }
 
+static apr_status_t
+lcn_index_writer_do_flush( lcn_index_writer_t *index_writer,
+                           lcn_bool_t apply_all_deletes,
+                           lcn_bool_t *success)
+{
+    apr_status_t s;
+    apr_pool_t *cp = NULL;
+
+    do
+    {
+        char* seg_string;
+
+        apr_pool_create( &cp, index_writer->pool );
+
+        index_writer->do_before_flush();
+        *success = LCN_FALSE;
+
+        IW_INFO( apr_pstrcat( cp, " start flush: apply_all_delete=", (apply_all_deletes ? "true" : "false"), NULL ) );
+
+        LCNCE( lcn_index_writer_seg_string_all( index_writer,
+                                                &seg_string,
+                                                cp ) );
+
+        IW_INFO( apr_pstrcat( cp, " index before flush ", seg_string, NULL) );
+
+        /**
+         * Notice: Excluded different threading stuff.
+         * look for docWriter.flushAllThreads() and flushCount
+         */
+
+        /**
+         * TODO: Implement docWriter.finishFullFlush(flushSuccess)
+         */
+
+        /**
+         * TODO: Implement maybeApplyDeletes(applyAllDeletes) because
+         * still working on indexNoDocumentsTest so delete is not recommended.
+         */
+
+        LCNCE( lcn_index_writer_flush_fixed_size_fields( index_writer ));
+        LCNCE( lcn_index_writer_flush_ram_segments( index_writer ));
+
+        index_writer->do_after_flush();
+
+        /**
+         * This flag becomes more importent if docWriter stuff is implemented.
+         * It just shows that no error occurred, so apr_status_t 's' works to.
+         */
+        *success = LCN_TRUE;
+
+    }
+    while(0);
+
+    if ( NULL != cp )
+    {
+        apr_pool_destroy( cp );
+    }
+
+    if(!success)
+    {
+        IW_INFO( "hit exception during flush" );
+    }
+
+    return s;
+}
+
+/**
+ * Flush all in-memory buffered updates (adds and deletes)
+ * to the Directory.
+ * @param triggerMerge if true, we may merge segments (if
+ *  deletes or docs were flushed) if necessary
+ * @param applyAllDeletes whether pending deletes should also
+ */
+static apr_status_t
+lcn_index_writer_flush( lcn_index_writer_t *index_writer,
+                        lcn_bool_t trigger_merge,
+                        lcn_bool_t apply_all_deletes )
+{
+    apr_status_t s;
+
+    do
+    {
+        lcn_bool_t do_flush_success = LCN_FALSE;
+
+        // We can be called during close, when closing==true,
+        // so we must pass false to ensureOpen:
+        LCNASSERT( !index_writer->closed, LCN_ERR_ALREADY_CLOSED );
+
+        LCNCE( lcn_index_writer_do_flush( index_writer,
+                                          apply_all_deletes,
+                                          &do_flush_success ) );
+
+        if( do_flush_success && trigger_merge )
+        {
+            /**
+             * TODO implement:
+             *
+             * maybeMerge(MergeTrigger.FULL_FLUSH, UNBOUNDED_MAX_MERGE_SEGMENTS);
+             */
+        }
+    }
+    while(0);
+
+    return s;
+}
+
+static apr_status_t
+lcn_index_writer_close_internal( lcn_index_writer_t* index_writer,
+                                 lcn_bool_t wait_for_merges,
+                                 lcn_bool_t do_flush )
+{
+    apr_status_t s;
+
+    do
+    {
+        /*
+         * lcn_index_writer_close should always called after lcn_indexwriter_commit.
+         * Thus, pendingCommit ist always NULL.
+         *
+            if (pendingCommit != null) {
+              throw new IllegalStateException("cannot close: prepareCommit was already called with no corresponding call to commit");
+            }
+         */
+
+        /*
+         * 'waitForMerges' is not needed because it is alsways false.
+         * This version of lucene uses no threads.
+         */
+        IW_INFO( "now flush at close" );
+
+        /*
+         * TODO implement docWriter.close();
+         */
+
+        // Booleanwerte richtig setzten !!
+        LCNCE( lcn_index_writer_flush( index_writer,
+                                wait_for_merges,
+                                LCN_TRUE ) );
+
+    }
+    while ( 0 );
+
+    return s;
+}
+
 apr_status_t
 lcn_index_writer_close( lcn_index_writer_t *index_writer )
 {
@@ -1122,21 +1291,37 @@ lcn_index_writer_close( lcn_index_writer_t *index_writer )
 
     do
     {
-        LCNCE( lcn_index_writer_flush_fixed_size_fields( index_writer ));
-        LCNCE( lcn_index_writer_flush_ram_segments( index_writer ));
-        LCNCE( lcn_directory_close( index_writer->ram_directory ));
-        LCNCE( lcn_fs_field_close_fields_in_hash( index_writer->fs_fields ));
-
 #if 0
-        if ( writeLock != null )
-        {
-            writeLock.release( ); // release write lock
-            writeLock = null;
-        }
-        if ( closeDir )
-            directory.close( );
+        Excluded threading go forward with closeInternal(waitForMerges, true)
+
+        // Ensure that only one thread actually gets to do the
+        // closing, and make sure no commit is also in progress:
+        synchronized(commitLock) {
+          if (shouldClose()) {
+            // If any methods have hit OutOfMemoryError, then abort
+            // on close, in case the internal state of IndexWriter
+            // or DocumentsWriter is corrupt
+            if (hitOOM) {
+              rollbackInternal();
+            } else {
+              closeInternal(waitForMerges, true);
+            }
+          }
 #endif
 
+        /*
+         * waiting_for_merge is always false because close() should called after
+         * commit(). After commit() the index is merged.
+         *
+         * do_flush is true because we want to flush :) Possibly later
+         * configurable.
+         */
+        LCNCE( lcn_index_writer_close_internal( index_writer,
+                                                LCN_FALSE,
+                                                LCN_TRUE) );
+
+        LCNCE( lcn_directory_close( index_writer->ram_directory ));
+        LCNCE( lcn_fs_field_close_fields_in_hash( index_writer->fs_fields ));
     }
     while ( 0 );
 
@@ -1577,9 +1762,9 @@ lcn_index_writer_seg_string_info( lcn_index_writer_t *index_writer,
         unsigned int num_delete_docs;
 
         LCNCE( apr_pool_create( &cp, pool ) );
-        LCNCE( lcn_segment_info_per_commit_num_deleted_docs( &num_delete_docs,
+        LCNCE( lcn_segment_info_per_commit_num_deleted_docs( segment_info,
+                                                             &num_delete_docs,
                                                              index_writer,
-                                                             segment_info,
                                                              cp ) );
 
         LCNCE( lcn_segment_info_per_commit_to_string( str,
@@ -1657,9 +1842,9 @@ lcn_index_writer_reader_map_get( lcn_readers_and_live_docs_t *rld,
 }
 
 apr_status_t
-lcn_segment_info_per_commit_num_deleted_docs( unsigned int *del_count,
+lcn_segment_info_per_commit_num_deleted_docs( lcn_segment_info_per_commit_t *segment_info,
+                                              unsigned int *del_count,
                                               lcn_index_writer_t *index_writer,
-                                              lcn_segment_info_per_commit_t *segment_info,
                                               apr_pool_t *pool )
 {
     apr_status_t s;
@@ -1852,6 +2037,11 @@ lcn_index_writer_commit( lcn_index_writer_t *index_writer )
     {
         LCNASSERTR( ! index_writer->closed, LCN_ERR_ALREADY_CLOSED );
         LCNCE( lcn_index_writer_commit_internal( index_writer ));
+
+        /**
+         * After successful commit we can set pending_commit NULL.
+         */
+        index_writer->pending_commit = NULL;
     }
     while(0);
 
