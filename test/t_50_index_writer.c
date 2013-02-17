@@ -17,17 +17,26 @@ test_index_no_documents( CuTest* tc )
         lcn_directory_t *dir;
         lcn_index_writer_t *index_writer;
         lcn_index_writer_config_t *iwc;
-
+        //lcn_index_reader_t *index_reader;
+        
         LCN_TEST( apr_pool_create( &pool, main_pool ) );
         LCN_TEST( lcn_ram_directory_create( &dir, pool ) );
         LCN_TEST( lcn_index_writer_config_create( &iwc, pool ) );
         LCN_TEST( lcn_index_writer_create_by_config( &index_writer, dir, iwc, pool ) );
         LCN_TEST( lcn_index_writer_commit( index_writer ) );
         LCN_TEST( lcn_index_writer_close( index_writer ) );
+        
+        /*
+        LCN_TEST( lcn_index_reader_create_by_directory( &index_reader,
+                                                        dir,
+                                                        LCN_FALSE,
+                                                        pool ) );
 
+       LCN_TEST( 0 == lcn_index_reader_max_doc( index_reader ) );
+       LCN_TEST( 0 == lcn_index_reader_num_docs( index_reader ) );
+       LCN_TEST( lcn_index_reader_close( index_reader ) );
+       */
 #if 0
-      writer.commit();
-      writer.close();
 
       IndexReader reader = DirectoryReader.open(dir);
       assertEquals(0, reader.maxDoc());

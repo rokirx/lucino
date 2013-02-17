@@ -43,8 +43,6 @@ int main (void)
 
     setbuf(stdout, 0);
 
-    CuSuiteAddSuite(sr, make_50_index_writer_suite());
-
 #if 1
     CuSuiteAddSuite(sr, make_array_suite() );
     CuSuiteAddSuite(sr, make_atom_suite());
@@ -68,6 +66,8 @@ int main (void)
     CuSuiteAddSuite(sr, make_german_stem_filter_suite());
     CuSuiteAddSuite(sr, make_group_search_suite());
     CuSuiteAddSuite(sr, make_index_reader_suite());
+    CuSuiteAddSuite(sr, make_index_writer_suite());
+    CuSuiteAddSuite(sr, make_50_index_writer_suite());
     CuSuiteAddSuite(sr, make_index_searcher_suite() );
     CuSuiteAddSuite(sr, make_index_writer_bugs_suite());
     CuSuiteAddSuite(sr, make_input_stream_suite());
@@ -107,8 +107,8 @@ int main (void)
     CuSuiteAddSuite(sr, make_term_suite());
     CuSuiteAddSuite(sr, make_top_doc_collector_suite() );
 #endif
-    CuSuiteRun(sr);
 
+    CuSuiteRun(sr);
     CuSuiteSummary(sr, output);
     CuSuiteDetails(sr, output);
     printf("%s\n", output->buffer);

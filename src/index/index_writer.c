@@ -270,6 +270,181 @@ lcn_index_writer_delete_segments( lcn_index_writer_t *index_writer,
     return s;
 }
 
+static apr_status_t
+lcn_index_writer_prepare_commit_internal( lcn_index_writer_t* index_writer )
+{
+    apr_status_t s = APR_SUCCESS;
+    apr_pool_t *cp = NULL;
+
+
+#if 0
+    /* TODO: locking */
+    synchronized(commitLock) {
+      ensureOpen(false);
+#endif
+
+    do
+    {
+        char* seg_string;
+
+        LCNCE( apr_pool_create( &cp, index_writer->pool ));
+
+        LCNCE( lcn_index_writer_seg_string_all( index_writer, &seg_string, cp ) );
+        IW_INFO("prepare_commit: flush");
+        IW_INFO( apr_pstrcat( cp, " index before flush ", seg_string, NULL ) );
+
+        index_writer->do_before_flush;
+
+
+    }
+    while(0);
+
+#if 0
+
+      doBeforeFlush();
+      assert testPoint("startDoFlush");
+      SegmentInfos toCommit = null;
+      boolean anySegmentsFlushed = false;
+
+      // This is copied from doFlush, except it's modified to
+      // clone & incRef the flushed SegmentInfos inside the
+      // sync block:
+
+      try {
+
+            synchronized (fullFlushLock) {
+          boolean flushSuccess = false;
+          boolean success = false;
+          try {
+            anySegmentsFlushed = docWriter.flushAllThreads();
+            if (!anySegmentsFlushed) {
+              // prevent double increment since docWriter#doFlush increments the flushcount
+              // if we flushed anything.
+              flushCount.incrementAndGet();
+            }
+            flushSuccess = true;
+
+            synchronized(this) {
+              maybeApplyDeletes(true);
+
+              readerPool.commit(segmentInfos);
+
+              // Must clone the segmentInfos while we still
+              // hold fullFlushLock and while sync'd so that
+              // no partial changes (eg a delete w/o
+              // corresponding add from an updateDocument) can
+              // sneak into the commit point:
+              toCommit = segmentInfos.clone();
+
+              pendingCommitChangeCount = changeCount;
+
+              // This protects the segmentInfos we are now going
+              // to commit.  This is important in case, eg, while
+              // we are trying to sync all referenced files, a
+              // merge completes which would otherwise have
+              // removed the files we are now syncing.
+              filesToCommit = toCommit.files(directory, false);
+              deleter.incRef(filesToCommit);
+            }
+            success = true;
+          } finally {
+            if (!success) {
+              if (infoStream.isEnabled("IW")) {
+                infoStream.message("IW", "hit exception during prepareCommit");
+              }
+            }
+            // Done: finish the full flush!
+            docWriter.finishFullFlush(flushSuccess);
+            doAfterFlush();
+          }
+        }
+      } catch (OutOfMemoryError oom) {
+        handleOOM(oom, "prepareCommit");
+      }
+
+      boolean success = false;
+      try {
+        if (anySegmentsFlushed) {
+          maybeMerge(MergeTrigger.FULL_FLUSH, UNBOUNDED_MAX_MERGE_SEGMENTS);
+        }
+        success = true;
+      } finally {
+        if (!success) {
+          synchronized (this) {
+            deleter.decRef(filesToCommit);
+            filesToCommit = null;
+          }
+        }
+      }
+
+      startCommit(toCommit);
+    }
+#endif
+
+    return s;
+}
+
+static apr_status_t
+lcn_index_writer_finish_commit( lcn_index_writer_t *index_writer )
+{
+    apr_status_t s;
+    apr_pool_t *cp = NULL;
+
+    do
+    {
+        char* seg_string;
+
+        LCNASSERT( !index_writer->closed, LCN_ERR_ALREADY_CLOSED );
+
+        apr_pool_create( &cp, index_writer->pool );
+
+
+    }
+    while(0);
+
+    if( NULL != cp )
+    {
+        apr_pool_destroy( cp );
+    }
+
+    return s;
+}
+
+static apr_status_t
+lcn_index_writer_commit_internal( lcn_index_writer_t *index_writer )
+{
+    apr_status_t s = APR_SUCCESS;
+
+    do
+    {
+        IW_INFO("commit: start");
+
+#if 0
+        /* TODO: if ever to support multi threading */
+        synchronized(commitLock) {
+            ensureOpen(false);
+            if (infoStream.isEnabled("IW")) {
+                infoStream.message("IW", "commit: enter lock");
+            }}
+#endif
+
+        if ( NULL == index_writer->pending_commit )
+        {
+            IW_INFO("commit: now prepare");
+            lcn_index_writer_prepare_commit_internal( index_writer );
+        }
+        else
+        {
+            IW_INFO("commit: already_prepared");
+        }
+
+      //finishCommit();
+    }
+    while(0);
+
+    return s;
+}
+
 lcn_similarity_t *
 lcn_index_writer_get_similarity( lcn_index_writer_t *index_writer )
 {
@@ -552,6 +727,8 @@ lcn_index_writer_create_impl( lcn_index_writer_t **index_writer,
         ( *index_writer )->close_dir = close_dir;
         ( *index_writer )->directory = directory;
 
+        // ===========
+
         ( *index_writer )->max_field_length = LCN_INDEX_WRITER_DEFAULT_MAX_FIELD_LENGTH;
         ( *index_writer )->term_index_interval = LCN_INDEX_WRITER_DEFAULT_TERM_INDEX_INTERVAL;
         ( *index_writer )->max_buffered_docs = LCN_INDEX_WRITER_DEFAULT_MAX_BUFFERED_DOCS;
@@ -585,6 +762,16 @@ lcn_index_writer_create_impl( lcn_index_writer_t **index_writer,
 
         LCNPV( ( *index_writer )->fs_fields = apr_hash_make( pool ), APR_ENOMEM );
         LCNCE( lcn_directory_fs_field_read_field_infos( ( *index_writer )->fs_fields, directory, pool ));
+
+
+        /*
+         *
+         * Just a quick fix. The index_writer_create functions will be merged.
+         *
+         */
+        (*index_writer)->reader_map = apr_hash_make( pool );
+        (*index_writer)->do_before_flush = lcn_index_writer_do_before_flush;
+        (*index_writer)->do_after_flush = lcn_index_writer_do_after_flush;
     }
     while ( 0 );
 
@@ -690,12 +877,30 @@ lcn_index_writer_create_impl_neu( lcn_index_writer_t **index_writer,
         }
 #endif
       }
-
-
-        /* init fixed sized fields */
+        /*
+         * Fixed sized fields aren't part of java lucene.
+         * init fixed sized fields
+         */
 
         LCNPV( ( *index_writer )->fs_fields = apr_hash_make( pool ), APR_ENOMEM );
         LCNCE( lcn_directory_fs_field_read_field_infos( ( *index_writer )->fs_fields, directory, pool ));
+
+        /**
+         * *********************************************************************
+         *                          OLD CODE SECTION
+         * *********************************************************************
+         *
+         * TODO: replace with new Lucene funcktions.
+         */
+
+        LCNCE( apr_pool_create( &( ( *index_writer )->ram_dir_subpool ), pool ));
+        LCNCE( lcn_ram_directory_create( &( ( *index_writer )->ram_directory ), ( *index_writer )->ram_dir_subpool ));
+#if 0
+        LCNCE( lcn_segment_infos_create( &( ( *index_writer )->segment_infos ), si_pool ));
+        LCNCE( lcn_default_similarity_create( &( ( *index_writer )->similarity ), pool ));
+
+        ( *index_writer )->close_dir = close_dir;
+#endif
     }
     while ( 0 );
 
@@ -1162,7 +1367,7 @@ lcn_index_writer_do_flush( lcn_index_writer_t *index_writer,
                                                 &seg_string,
                                                 cp ) );
 
-        IW_INFO( apr_pstrcat( cp, " index before flush ", seg_string, NULL) );
+        IW_INFO( apr_pstrcat( cp, " index before flush ", seg_string, NULL ) );
 
         /**
          * Notice: Excluded different threading stuff.
@@ -1245,15 +1450,25 @@ lcn_index_writer_flush( lcn_index_writer_t *index_writer,
     return s;
 }
 
+/**
+ *
+ * @param wait_for_merges is always false.
+ *
+ */
 static apr_status_t
 lcn_index_writer_close_internal( lcn_index_writer_t* index_writer,
                                  lcn_bool_t wait_for_merges,
                                  lcn_bool_t do_flush )
 {
     apr_status_t s;
+    apr_pool_t *cp = NULL;
 
     do
     {
+        char* seg_string;
+
+        apr_pool_create( &cp, index_writer->pool );
+
         /*
          * lcn_index_writer_close should always called after lcn_indexwriter_commit.
          * Thus, pendingCommit ist always NULL.
@@ -1272,14 +1487,54 @@ lcn_index_writer_close_internal( lcn_index_writer_t* index_writer,
         /*
          * TODO implement docWriter.close();
          */
+        if ( do_flush )
+        {
+            LCNCE( lcn_index_writer_flush( index_writer,
+                                           wait_for_merges,
+                                           LCN_TRUE ) );
+        }
+        else
+        {
+            // docWriter.abort() // already closed
+        }
 
-        // Booleanwerte richtig setzten !!
-        LCNCE( lcn_index_writer_flush( index_writer,
-                                wait_for_merges,
-                                LCN_TRUE ) );
+        /**
+         * Notice: Exclude several threading and mergeing stuff.
+         */
 
+        IW_INFO( "now call final commit()" );
+
+        if( do_flush )
+        {
+            lcn_index_writer_commit_internal( index_writer );
+        }
+
+        LCNCE( lcn_index_writer_seg_string_all( index_writer, &seg_string, cp ) );
+
+        IW_INFO( apr_pstrcat( cp, "at close: ", seg_string, NULL) );
+
+        /*
+         * TODO: implement DocumentsWriter.
+         *
+            // used by assert below
+            final DocumentsWriter oldWriter = docWriter;
+            synchronized(this) {
+              readerPool.dropAll(true);
+              docWriter = null;
+              deleter.close();
+            }
+         */
+
+        /**
+         * Notice: Exclude several threading because it is not supportetd.
+         */
     }
     while ( 0 );
+
+    if( NULL != cp )
+    {
+        apr_pool_destroy( cp );
+    }
 
     return s;
 }
@@ -1313,7 +1568,7 @@ lcn_index_writer_close( lcn_index_writer_t *index_writer )
          * waiting_for_merge is always false because close() should called after
          * commit(). After commit() the index is merged.
          *
-         * do_flush is true because we want to flush :) Possibly later
+         * do_flush is true because we want to flush. Possibly later
          * configurable.
          */
         LCNCE( lcn_index_writer_close_internal( index_writer,
@@ -1797,8 +2052,7 @@ lcn_index_writer_reader_map_get( lcn_readers_and_live_docs_t *rld,
 
     do
     {
-        char* key = lcn_segment_info_per_commit_to_hash( info,
-                                                         pool );
+        char* key = lcn_segment_info_per_commit_to_hash( info, pool );
 
         rld = apr_hash_get( index_writer->reader_map,
                             key,
@@ -1867,166 +2121,6 @@ lcn_segment_info_per_commit_num_deleted_docs( lcn_segment_info_per_commit_t *seg
 
     return s;
 }
-
-static apr_status_t
-lcn_index_writer_prepare_commit_internal( lcn_index_writer_t* index_writer )
-{
-    apr_status_t s = APR_SUCCESS;
-    apr_pool_t *cp = NULL;
-
-
-#if 0
-    /* TODO: locking */
-    synchronized(commitLock) {
-      ensureOpen(false);
-#endif
-
-    do
-    {
-        char* seg_string;
-
-        LCNCE( apr_pool_create( &cp, index_writer->pool ));
-
-        IW_INFO("prepare_commit: flush");
-
-        lcn_index_writer_seg_string_all( index_writer, &seg_string, cp );
-
-        IW_INFO( apr_pstrcat( cp, " index before flush ", seg_string, NULL ) );
-    }
-    while(0);
-
-#if 0
-      if (infoStream.isEnabled("IW")) {
-        infoStream.message("IW", "prepareCommit: flush");
-        infoStream.message("IW", "  index before flush " + segString());
-      }
-
-      if (hitOOM) {
-        throw new IllegalStateException("this writer hit an OutOfMemoryError; cannot commit");
-      }
-
-      if (pendingCommit != null) {
-        throw new IllegalStateException("prepareCommit was already called with no corresponding call to commit");
-      }
-
-      doBeforeFlush();
-      assert testPoint("startDoFlush");
-      SegmentInfos toCommit = null;
-      boolean anySegmentsFlushed = false;
-
-      // This is copied from doFlush, except it's modified to
-      // clone & incRef the flushed SegmentInfos inside the
-      // sync block:
-
-      try {
-
-            synchronized (fullFlushLock) {
-          boolean flushSuccess = false;
-          boolean success = false;
-          try {
-            anySegmentsFlushed = docWriter.flushAllThreads();
-            if (!anySegmentsFlushed) {
-              // prevent double increment since docWriter#doFlush increments the flushcount
-              // if we flushed anything.
-              flushCount.incrementAndGet();
-            }
-            flushSuccess = true;
-
-            synchronized(this) {
-              maybeApplyDeletes(true);
-
-              readerPool.commit(segmentInfos);
-
-              // Must clone the segmentInfos while we still
-              // hold fullFlushLock and while sync'd so that
-              // no partial changes (eg a delete w/o
-              // corresponding add from an updateDocument) can
-              // sneak into the commit point:
-              toCommit = segmentInfos.clone();
-
-              pendingCommitChangeCount = changeCount;
-
-              // This protects the segmentInfos we are now going
-              // to commit.  This is important in case, eg, while
-              // we are trying to sync all referenced files, a
-              // merge completes which would otherwise have
-              // removed the files we are now syncing.
-              filesToCommit = toCommit.files(directory, false);
-              deleter.incRef(filesToCommit);
-            }
-            success = true;
-          } finally {
-            if (!success) {
-              if (infoStream.isEnabled("IW")) {
-                infoStream.message("IW", "hit exception during prepareCommit");
-              }
-            }
-            // Done: finish the full flush!
-            docWriter.finishFullFlush(flushSuccess);
-            doAfterFlush();
-          }
-        }
-      } catch (OutOfMemoryError oom) {
-        handleOOM(oom, "prepareCommit");
-      }
-
-      boolean success = false;
-      try {
-        if (anySegmentsFlushed) {
-          maybeMerge(MergeTrigger.FULL_FLUSH, UNBOUNDED_MAX_MERGE_SEGMENTS);
-        }
-        success = true;
-      } finally {
-        if (!success) {
-          synchronized (this) {
-            deleter.decRef(filesToCommit);
-            filesToCommit = null;
-          }
-        }
-      }
-
-      startCommit(toCommit);
-    }
-#endif
-
-    return s;
-}
-
-static apr_status_t
-lcn_index_writer_commit_internal( lcn_index_writer_t *index_writer )
-{
-    apr_status_t s = APR_SUCCESS;
-
-    do
-    {
-        IW_INFO("commit: start");
-
-#if 0
-        /* TODO: if ever to support multi threading */
-        synchronized(commitLock) {
-            ensureOpen(false);
-            if (infoStream.isEnabled("IW")) {
-                infoStream.message("IW", "commit: enter lock");
-            }}
-#endif
-
-        if ( NULL == index_writer->pending_commit )
-        {
-            IW_INFO("commit: now prepare");
-            lcn_index_writer_prepare_commit_internal( index_writer );
-        }
-        else
-        {
-            IW_INFO("commit: already_prepared");
-        }
-
-      //finishCommit();
-    }
-    while(0);
-
-    return s;
-}
-
 
 apr_status_t
 lcn_index_writer_commit( lcn_index_writer_t *index_writer )
