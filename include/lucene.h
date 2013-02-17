@@ -329,7 +329,6 @@ typedef struct lcn_similarity_t lcn_similarity_t;
 typedef struct lcn_term_enum_t lcn_term_enum_t;
 typedef struct lcn_term_info_t lcn_term_info_t;
 typedef struct lcn_term_t lcn_term_t;
-typedef struct lcn_segment_infos_t lcn_segment_infos_t;
 
 typedef struct _lcn_index_writer_config_t lcn_index_writer_config_t;
 

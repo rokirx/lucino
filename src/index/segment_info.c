@@ -97,8 +97,5 @@ lcn_segment_info_to_string( char** str,
         apr_pool_destroy( cp );
     }
 
-    fprintf(stderr, "\n to_string: %s \n ", (*str));
-    exit(0);
-
     return s;
 }

@@ -9,6 +9,10 @@ test_less_than( lcn_priority_queue_t *pq, void* a, void* b )
     return (lcn_bool_t)( *((int*)a) < *((int*)b));
 }
 
+/**
+ * Function not in used.
+ */
+#if 0
 static char*
 queue_to_string( lcn_priority_queue_t *queue, apr_pool_t *pool )
 {
@@ -23,6 +27,7 @@ queue_to_string( lcn_priority_queue_t *queue, apr_pool_t *pool )
 
     return s;
 }
+#endif
 
 static void
 test_priority_queue( CuTest* tc )

@@ -54,7 +54,7 @@ struct lcn_token_t
     /**
      * The Text of the Term
      */
-    char* term_text;
+    const char* term_text;
 
     /**
      * Start in the source Text

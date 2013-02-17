@@ -163,7 +163,7 @@ test_multi_reader( CuTest *tc )
     compare_index_readers( tc, r1, or1, pool );
     compare_index_readers( tc, r2, or2, pool );
     compare_index_readers( tc, r,  or,  pool );
-    
+
 
     LCN_TEST( lcn_list_add( list, or1 ));
     LCN_TEST( lcn_list_add( list, or2 ));
@@ -221,8 +221,10 @@ test_multi_seek_enum( CuTest* tc )
 CuSuite *make_multi_reader_suite (void)
 {
     CuSuite *s= CuSuiteNew();
-    //SUITE_ADD_TEST( s, test_multi_reader );
+
+    SUITE_ADD_TEST( s, test_multi_reader );
     SUITE_ADD_TEST( s, test_doc_ids );
-    //SUITE_ADD_TEST( s, test_multi_seek_enum );
+    SUITE_ADD_TEST( s, test_multi_seek_enum );
+
     return s;
 }
