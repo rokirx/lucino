@@ -43,7 +43,11 @@ int main (void)
 
     setbuf(stdout, 0);
 
+    //CuSuiteAddSuite(sr, make_50_document_writer_suite() );
+
 #if 1
+    CuSuiteAddSuite(sr, make_50_document_writer_suite() );
+    CuSuiteAddSuite(sr, make_50_index_writer_suite());
     CuSuiteAddSuite(sr, make_array_suite() );
     CuSuiteAddSuite(sr, make_atom_suite());
     CuSuiteAddSuite(sr, make_bitvector_suite());
@@ -66,10 +70,9 @@ int main (void)
     CuSuiteAddSuite(sr, make_german_stem_filter_suite());
     CuSuiteAddSuite(sr, make_group_search_suite());
     CuSuiteAddSuite(sr, make_index_reader_suite());
-    CuSuiteAddSuite(sr, make_index_writer_suite());
-    CuSuiteAddSuite(sr, make_50_index_writer_suite());
     CuSuiteAddSuite(sr, make_index_searcher_suite() );
     CuSuiteAddSuite(sr, make_index_writer_bugs_suite());
+    CuSuiteAddSuite(sr, make_index_writer_suite());
     CuSuiteAddSuite(sr, make_input_stream_suite());
     CuSuiteAddSuite(sr, make_linked_list_suite() );
     CuSuiteAddSuite(sr, make_lucene_list_suite());

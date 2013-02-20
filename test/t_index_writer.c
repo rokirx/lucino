@@ -171,7 +171,7 @@ test_adding_empty_document(CuTest* tc)
 
     delete_files( tc, "test_index_writer" );
     LCN_TEST( apr_pool_create( &pool, main_pool ) );
-    
+
     delete_files( tc, "test_index_writer" );
     apr_pool_destroy( pool );
 }
@@ -648,7 +648,7 @@ test_indexing_11(CuTest* tc)
 }
 
 /**
- * TODO: Check Test is not running 
+ * TODO: Check Test is not running
  */
 static void
 TestCuStress(CuTest* tc)

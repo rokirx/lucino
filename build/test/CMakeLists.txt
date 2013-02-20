@@ -5,7 +5,10 @@ endif(COMMAND cmake_policy)
 
 ADD_EXECUTABLE(
     test_lcn
+    ../../src/index/doc_helper.c
     ../../test/CuTest.c
+    ../../test/t_50_document_writer.c
+    ../../test/t_50_index_writer.c
     ../../test/t_array.c
     ../../test/t_atom.c
     ../../test/t_bitvector.c
@@ -30,7 +33,6 @@ ADD_EXECUTABLE(
     ../../test/t_index_reader.c
     ../../test/t_index_searcher.c
     ../../test/t_index_writer.c
-    ../../test/t_50_index_writer.c
     ../../test/t_index_writer_bugs.c
     ../../test/t_input_stream.c
     ../../test/t_linked_list.c

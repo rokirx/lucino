@@ -96,6 +96,8 @@ create_index_by_dump( CuTest *tc,
 void setup_test_dir(void);
 void teardown_test_dir(void);
 
+CuSuite* make_50_document_writer_suite( void );
+CuSuite* make_50_index_writer_suite( void );
 CuSuite* make_array_suite( void );
 CuSuite* make_atom_suite(void);
 CuSuite* make_bitvector_suite( void );
@@ -121,7 +123,6 @@ CuSuite* make_index_reader_suite(void);
 CuSuite* make_index_searcher_suite( void );
 CuSuite* make_index_writer_bugs_suite (void);
 CuSuite* make_index_writer_suite(void);
-CuSuite* make_50_index_writer_suite( void );
 CuSuite* make_input_stream_suite(void);
 CuSuite* make_linked_list_suite( void );
 CuSuite* make_lucene_list_suite(void);
