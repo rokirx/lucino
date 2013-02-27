@@ -46,6 +46,7 @@ ADD_LIBRARY( lucino
              ../src/index/term_infos_reader
              ../src/index/term_infos_writer
              ../src/index/index_writer_config
+             ../src/index/index_file_names
              ../src/index/readers_and_live_docs
              ../src/query_parser/query_parser
              ../src/query_parser/query_tokenizer

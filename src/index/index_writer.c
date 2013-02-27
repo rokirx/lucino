@@ -20,21 +20,6 @@ if (NULL != index_writer->info_stream)                  \
 char* lcn_index_extensions[] = { "cfs", "fnm", "fdx", "fdt", "tii", "tis", "frq",
     "prx", "del", "tvx", "tvd", "tvf", "tvp" };
 
-/**
- * A hook for extending classes to execute operations before pending added and
- * deleted documents are flushed to the Directory.
- */
-static void
-lcn_index_writer_do_before_flush(void){}
-
-/**
- * A hook for extending classes to execute operations after pending added and
- * deleted documents have been flushed to the Directory but before the change
- * is committed (new segments_N file written).
- */
-static void
-lcn_index_writer_do_after_flush(void){}
-
 void
 lcn_index_writer_set_log_stream( lcn_index_writer_t *index_writer,
                                  FILE *log_stream )
@@ -286,26 +271,38 @@ lcn_index_writer_prepare_commit_internal( lcn_index_writer_t* index_writer )
     do
     {
         char* seg_string;
-
+        
         LCNCE( apr_pool_create( &cp, index_writer->pool ));
-
+        
         LCNCE( lcn_index_writer_seg_string_all( index_writer, &seg_string, cp ) );
         IW_INFO("prepare_commit: flush");
         IW_INFO( apr_pstrcat( cp, " index before flush ", seg_string, NULL ) );
-
-        index_writer->do_before_flush;
-
-
+        
+        /**
+         * Notice: Excluded different threading stuff.
+         * look for docWriter.flushAllThreads()
+         */
+        
+        /**
+         * TODO: docWriter.flushAllThreads()
+         * Then flush_count counts correctly. Actual just lcn_index_writer_do_flush
+         * increments fluch_count.
+         * 
+         * index_writer->flush_count++;
+         */
+        
+        /**
+         * TODO: Implement maybeApplyDeletes(true) 
+         * TODO: Implement readerPool.commit(segmentsInfos) 
+         */
+        
+        index_writer->pending_commit_change_count = index_writer->change_count;
+                
+        
     }
     while(0);
 
 #if 0
-
-      doBeforeFlush();
-      assert testPoint("startDoFlush");
-      SegmentInfos toCommit = null;
-      boolean anySegmentsFlushed = false;
-
       // This is copied from doFlush, except it's modified to
       // clone & incRef the flushed SegmentInfos inside the
       // sync block:
@@ -770,8 +767,6 @@ lcn_index_writer_create_impl( lcn_index_writer_t **index_writer,
          *
          */
         (*index_writer)->reader_map = apr_hash_make( pool );
-        (*index_writer)->do_before_flush = lcn_index_writer_do_before_flush;
-        (*index_writer)->do_after_flush = lcn_index_writer_do_after_flush;
     }
     while ( 0 );
 
@@ -804,8 +799,6 @@ lcn_index_writer_create_impl_neu( lcn_index_writer_t **index_writer,
         (*index_writer)->info_stream = stderr;
         (*index_writer)->pool = pool;
         (*index_writer)->reader_map = apr_hash_make( pool );
-        (*index_writer)->do_before_flush = lcn_index_writer_do_before_flush;
-        (*index_writer)->do_after_flush = lcn_index_writer_do_after_flush;
 
         lcn_index_writer_set_config( *index_writer, iwc );
 
@@ -1358,7 +1351,6 @@ lcn_index_writer_do_flush( lcn_index_writer_t *index_writer,
 
         apr_pool_create( &cp, index_writer->pool );
 
-        index_writer->do_before_flush();
         *success = LCN_FALSE;
 
         IW_INFO( apr_pstrcat( cp, " start flush: apply_all_delete=", (apply_all_deletes ? "true" : "false"), NULL ) );
@@ -1371,9 +1363,16 @@ lcn_index_writer_do_flush( lcn_index_writer_t *index_writer,
 
         /**
          * Notice: Excluded different threading stuff.
-         * look for docWriter.flushAllThreads() and flushCount
+         * look for docWriter.flushAllThreads()
+         * 
+         * TODO: docWriter.flushAllThreads()
          */
-
+        
+        /**
+         * For Threading this schould atomic. 
+         */
+        index_writer->flush_count++;
+        
         /**
          * TODO: Implement docWriter.finishFullFlush(flushSuccess)
          */
@@ -1385,9 +1384,7 @@ lcn_index_writer_do_flush( lcn_index_writer_t *index_writer,
 
         LCNCE( lcn_index_writer_flush_fixed_size_fields( index_writer ));
         LCNCE( lcn_index_writer_flush_ram_segments( index_writer ));
-
-        index_writer->do_after_flush();
-
+        
         /**
          * This flag becomes more importent if docWriter stuff is implemented.
          * It just shows that no error occurred, so apr_status_t 's' works to.
