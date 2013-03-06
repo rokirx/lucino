@@ -119,11 +119,15 @@ create_index_impl( CuTest *tc,
     lcn_index_writer_t *index_writer;
     unsigned int i;
     lcn_analyzer_t *analyzer;
+    lcn_field_type_t text_type = {0};
+    lcn_field_type_t stored_type = {0};
 
     LCN_TEST( lcn_simple_analyzer_create( &analyzer, pool ));
 
     delete_files( tc, path );
     LCN_TEST( lcn_index_writer_create_by_path( &index_writer, path, LCN_TRUE, pool ));
+    lcn_field_type_text( &text_type );
+    lcn_field_type_set_stored( &stored_type, LCN_TRUE );
 
     for ( i = start; i < end; i++ )
     {
@@ -133,31 +137,26 @@ create_index_impl( CuTest *tc,
         LCN_TEST( lcn_document_create( &document, pool ) );
         LCN_TEST( lcn_field_create( &field,
                                     "text",
-                                    data[i],
-                                    LCN_FIELD_INDEXED | LCN_FIELD_TOKENIZED | LCN_FIELD_STORED,
-                                    LCN_FIELD_VALUE_COPY,
+                                    apr_pstrdup( pool, data[i]),
+                                    &text_type,
                                     pool ));
         lcn_field_set_analyzer( field, analyzer );
-        LCN_TEST( lcn_document_add_field( document, field, pool ));
+        LCN_TEST( lcn_document_add_field( document, field ));
 
         LCN_TEST( lcn_field_create( &field,
                                     "id",
                                     apr_pstrcat( pool, "K", apr_itoa( pool, i ), NULL ),
-                                    LCN_FIELD_STORED,
-                                    LCN_FIELD_NO_VALUE_COPY,
+                                    &stored_type,
                                     pool ));
 
-        LCN_TEST( lcn_document_add_field( document, field, pool ));
-
         LCN_TEST( lcn_field_create( &field,
-                            "content",
-                            data[i],
-                            LCN_FIELD_STORED,
-                            LCN_FIELD_VALUE_COPY,
-                            pool ));
+                                    "content",
+                                    apr_pstrdup( pool, data[i] ),
+                                    &stored_type,
+                                    pool ));
 
-        LCN_TEST( lcn_document_add_field( document, field, pool ));
-
+        LCN_TEST( lcn_document_add_field( document, field ));
+        LCN_TEST( lcn_document_add_field( document, field ));
         LCN_TEST( lcn_index_writer_add_document( index_writer, document ));
     }
 

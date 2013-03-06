@@ -7,12 +7,13 @@
 
 
 static void
-TestCuIndexingSegfault(CuTest* tc)
+test_indexing_segfault(CuTest* tc)
 {
     apr_pool_t *pool;
     lcn_index_writer_t *index_writer;
     lcn_document_t *document;
     lcn_field_t *field;
+    lcn_field_type_t indexed_type = {0};
     lcn_analyzer_t *analyzer;
     char *buf;
     unsigned int i;
@@ -34,15 +35,15 @@ TestCuIndexingSegfault(CuTest* tc)
 
     LCN_TEST( lcn_index_writer_create_by_path( &index_writer, "test_index_writer", LCN_TRUE, pool ) );
     LCN_TEST( lcn_simple_analyzer_create( &analyzer, pool ) );
-
+    LCN_TEST( lcn_field_type_set_indexed( &indexed_type, LCN_TRUE ));
     LCN_TEST( lcn_document_create( &document, pool ) );
 
     LCN_TEST( lcn_field_create( &field,
                                 "titel",
                                 "FC",
-                                LCN_FIELD_INDEXED,
-                                LCN_FIELD_VALUE_COPY, pool ) );
-    LCN_TEST( lcn_document_add_field( document, field, pool ) );
+                                &indexed_type,
+                                pool ));
+    LCN_TEST( lcn_document_add_field( document, field ));
     LCN_TEST( lcn_index_writer_add_document( index_writer, document ) );
 
 
@@ -50,9 +51,9 @@ TestCuIndexingSegfault(CuTest* tc)
     LCN_TEST( lcn_field_create( &field,
                                 "titel",
                                 buf,
-                                LCN_FIELD_INDEXED,
-                                LCN_FIELD_VALUE_COPY, pool ) );
-    LCN_TEST( lcn_document_add_field( document, field, pool ) );
+                                &indexed_type,
+                                pool ) );
+    LCN_TEST( lcn_document_add_field( document, field ));
     LCN_TEST( lcn_index_writer_add_document( index_writer, document ) );
 
     LCN_TEST( lcn_index_writer_close( index_writer ) );
@@ -67,6 +68,6 @@ TestCuIndexingSegfault(CuTest* tc)
 CuSuite *make_index_writer_bugs_suite (void)
 {
     CuSuite *s= CuSuiteNew();
-    SUITE_ADD_TEST(s,TestCuIndexingSegfault);
+    SUITE_ADD_TEST(s, test_indexing_segfault);
     return s;
 }

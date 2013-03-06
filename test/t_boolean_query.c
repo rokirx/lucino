@@ -37,6 +37,7 @@ test_failing_disjunction(CuTest* tc)
     lcn_field_t *field;
     lcn_analyzer_t *analyzer;
     lcn_searcher_t *searcher;
+    lcn_field_type_t field_type = {0};
 
     LCN_TEST( apr_pool_create( &pool, main_pool ) );
 
@@ -48,16 +49,18 @@ test_failing_disjunction(CuTest* tc)
 
     LCN_TEST( lcn_document_create( &document, pool ) );
 
+    lcn_field_type_set_indexed( &field_type, LCN_TRUE );
+    lcn_field_type_set_tokenized( &field_type, LCN_TRUE );
+
     LCN_TEST( lcn_field_create( &field,
                                 "text",
-                                "test",
-                                LCN_FIELD_INDEXED |
-                                LCN_FIELD_TOKENIZED,
-                                LCN_FIELD_VALUE_COPY, pool ) );
+                                apr_pstrdup( pool, "test"),
+                                &field_type,
+                                pool ));
 
     LCN_TEST( lcn_simple_analyzer_create( &analyzer, pool ) );
     lcn_field_set_analyzer( field, analyzer );
-    LCN_TEST( lcn_document_add_field( document, field, pool ) );
+    LCN_TEST( lcn_document_add_field( document, field ) );
     LCN_TEST( lcn_index_writer_add_document( index_writer, document ) );
     LCN_TEST( lcn_index_writer_close( index_writer ) );
 
@@ -669,6 +672,7 @@ test_stack_overflow( CuTest* tc )
     lcn_document_t *document;
     lcn_field_t *field;
     unsigned int i;
+    lcn_field_type_t indexed_type = {0};
 
     char *data[][2] = {
         { "dstz",  "2000" },
@@ -683,6 +687,8 @@ test_stack_overflow( CuTest* tc )
 
     LCN_TEST( lcn_index_writer_create_by_path( &index_writer, "test_index_writer", LCN_TRUE, pool ) );
 
+    lcn_field_type_set_indexed( &indexed_type, LCN_TRUE );
+
     i=0;
 
     while( data[i][0] != NULL )
@@ -692,17 +698,18 @@ test_stack_overflow( CuTest* tc )
         LCN_TEST( lcn_field_create( &field,
                                     "titel",
                                     data[i][0],
-                                    LCN_FIELD_INDEXED,
-                                    LCN_FIELD_VALUE_COPY, pool ) );
-        LCN_TEST( lcn_document_add_field( document, field, pool ) );
+                                    &indexed_type,
+                                    pool ));
+
+        LCN_TEST( lcn_document_add_field( document, field ));
 
         LCN_TEST( lcn_field_create( &field,
                                     "jahr",
                                     data[i][1],
-                                    LCN_FIELD_INDEXED,
-                                    LCN_FIELD_VALUE_COPY, pool ) );
-        LCN_TEST( lcn_document_add_field( document, field, pool ) );
+                                    &indexed_type,
+                                    pool ));
 
+        LCN_TEST( lcn_document_add_field( document, field ));
         LCN_TEST( lcn_index_writer_add_document( index_writer, document ) );
 
         i++;

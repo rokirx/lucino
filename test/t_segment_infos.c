@@ -108,6 +108,7 @@ test_combining_field_infos( CuTest* tc )
     {
         lcn_analyzer_t *sa;
         lcn_field_t *field;
+        lcn_field_type_t text_stored = {0};
         lcn_index_writer_t *index_writer;
 
         LCN_TEST( lcn_ram_directory_create( &dir1, pool ) );
@@ -121,14 +122,12 @@ test_combining_field_infos( CuTest* tc )
         LCN_TEST( lcn_field_create( &field,
                                     "text",
                                     "sf foo bar sf",
-                                    LCN_FIELD_INDEXED |
-                                    LCN_FIELD_TOKENIZED |
-                                    LCN_FIELD_STORED,
-                                    LCN_FIELD_VALUE_COPY, pool ) );
+                                    lcn_field_type_text_stored( &text_stored ),
+                                    pool ));
 
         LCN_TEST( lcn_simple_analyzer_create( &sa, pool ) );
         lcn_field_set_analyzer( field, sa );
-        LCN_TEST( lcn_document_add_field( document, field, pool ) );
+        LCN_TEST( lcn_document_add_field( document, field ));
         LCN_TEST( lcn_index_writer_add_document( index_writer, document ) );
 
         LCN_TEST( lcn_index_writer_close( index_writer) );
@@ -139,6 +138,7 @@ test_combining_field_infos( CuTest* tc )
         lcn_analyzer_t *sa;
         lcn_field_t *field;
         lcn_index_writer_t *index_writer;
+        lcn_field_type_t stored_type = {0};
 
         LCN_TEST( lcn_ram_directory_create( &dir2, pool ) );
         LCN_TEST( lcn_index_writer_create_by_directory( &index_writer,
@@ -148,15 +148,16 @@ test_combining_field_infos( CuTest* tc )
 
         LCN_TEST( lcn_document_create( &document, pool ) );
 
+        LCN_TEST( lcn_field_type_set_stored( &stored_type, LCN_TRUE ));
         LCN_TEST( lcn_field_create( &field,
                                     "text",
                                     "sf foo bar sf",
-                                    LCN_FIELD_STORED,
-                                    LCN_FIELD_VALUE_COPY, pool ) );
+                                    &stored_type,
+                                    pool ));
 
         LCN_TEST( lcn_simple_analyzer_create( &sa, pool ) );
         lcn_field_set_analyzer( field, sa );
-        LCN_TEST( lcn_document_add_field( document, field, pool ) );
+        LCN_TEST( lcn_document_add_field( document, field ));
         LCN_TEST( lcn_index_writer_add_document( index_writer, document ) );
 
         LCN_TEST( lcn_index_writer_close( index_writer) );

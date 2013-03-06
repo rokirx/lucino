@@ -29,7 +29,6 @@ compare_index_readers( CuTest *tc,
     while( APR_SUCCESS == lcn_term_enum_next( te_a ))
     {
         apr_status_t x;
-        const lcn_term_t *t;
 
         CuAssertIntEquals( tc, APR_SUCCESS, lcn_term_enum_next( te_b ));
 
@@ -41,7 +40,7 @@ compare_index_readers( CuTest *tc,
                           lcn_term_text( lcn_term_enum_term( te_a )),
                           lcn_term_text( lcn_term_enum_term( te_b )) );
 
-        t = lcn_term_enum_term( te_a );
+        //t = lcn_term_enum_term( te_a );
         //fprintf(stderr, "term %s:%s\n", lcn_term_field(t), lcn_term_text(t));
 
         LCN_TEST( lcn_term_docs_seek_term( tp_a, lcn_term_enum_term( te_a ) ));
@@ -204,8 +203,6 @@ test_multi_seek_enum( CuTest* tc )
 
     while( APR_SUCCESS == (next = lcn_term_enum_next( term_enum )))
     {
-        lcn_term_t *t;
-        t = (lcn_term_t*)lcn_term_enum_term( term_enum );
         LCN_TEST( lcn_term_docs_seek_term_enum( term_docs, term_enum ));
     }
 

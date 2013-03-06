@@ -143,6 +143,7 @@ test_indexing_terms( CuTest* tc )
     lcn_document_t *doc;
     lcn_field_t *field;
     lcn_index_writer_t *index_writer;
+    lcn_field_type_t indexed_type = {0};
 
     apr_pool_create( &pool, main_pool );
 
@@ -154,10 +155,9 @@ test_indexing_terms( CuTest* tc )
                                                pool  ));
 
     LCN_TEST( lcn_document_create( &doc, pool ));
-    LCN_TEST( lcn_field_create( &field, "text", "a",
-                                LCN_FIELD_INDEXED,
-                                LCN_FIELD_VALUE_COPY, pool ));
-    LCN_TEST( lcn_document_add_field( doc, field, pool ) );
+    LCN_TEST( lcn_field_type_set_indexed( &indexed_type, LCN_TRUE ));
+    LCN_TEST( lcn_field_create( &field, "text", "a", &indexed_type, pool ));
+    LCN_TEST( lcn_document_add_field( doc, field ));
     LCN_TEST( lcn_index_writer_add_document( index_writer, doc ));
 
     lcn_index_writer_close( index_writer ) ;

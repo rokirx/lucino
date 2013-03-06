@@ -4,6 +4,9 @@
 #include "lucene.h"
 #include "lcn_util.h"
 
+BEGIN_C_DECLS
+
+
 /**
  * @defgroup lcn_index Index
  * @ingroup lucene
@@ -51,7 +54,7 @@ typedef struct lcn_segment_info_per_commit_t lcn_segment_info_per_commit_t;
 #define LCN_FIELD_TYPE_BINARY                      (   0x1)
 #define LCN_FIELD_TYPE_COPY_VALUE                  (   0x2)
 #define LCN_FIELD_TYPE_FIXED_SIZE                  (   0x4)
-#define LCN_FIELD_TYPE_FROSEN                      (   0x8)
+#define LCN_FIELD_TYPE_FROZEN                      (   0x8)
 #define LCN_FIELD_TYPE_INDEXED                     (  0x10)
 #define LCN_FIELD_TYPE_OMIT_NORMS                  (  0x20)
 #define LCN_FIELD_TYPE_STORED                      (  0x40)
@@ -77,10 +80,24 @@ typedef struct lcn_segment_info_per_commit_t lcn_segment_info_per_commit_t;
 #define LCN_FIELD_VALUE_COPY    (0)
 #define LCN_FIELD_NO_VALUE_COPY (1)
 
+/**
+ * @brief Sets indexed and tokenized properties of the field_type
+ *
+ * @param ft  result field type
+ */
+lcn_field_type_t *
+lcn_field_type_text( lcn_field_type_t *ft );
+
+lcn_field_type_t *
+lcn_field_type_text_stored( lcn_field_type_t *ft );
+
+lcn_field_type_t *
+lcn_field_type_binary( lcn_field_type_t *ft );
+
+
 
 /** @} */
 
-BEGIN_C_DECLS
 
 /**
  * @defgroup lcn_term_docs TermDocs
@@ -260,7 +277,7 @@ lcn_field_type_set_##NAME( lcn_field_type_t *ft,        \
                            lcn_bool_t val );            \
                                                         \
 lcn_bool_t                                              \
-lcn_field_type_is_##NAME( lcn_field_type_t ft );
+lcn_field_type_is_##NAME( lcn_field_type_t *ft );
 
 
 /**
@@ -277,9 +294,6 @@ LCN_FIELD_TYPE_SETTER_DECL( store_term_vector_offsets   )
 LCN_FIELD_TYPE_SETTER_DECL( store_term_vector_positions )
 LCN_FIELD_TYPE_SETTER_DECL( tokenized                   )
 
-
-apr_status_t
-lcn_field_type_init( lcn_field_type_t *ft );
 
 #if 0
 /**

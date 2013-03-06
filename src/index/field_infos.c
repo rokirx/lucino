@@ -186,7 +186,7 @@ lcn_field_infos_field_number( lcn_field_infos_t *field_infos,
 }
 
 static unsigned char
-lcn_convert_field_to_field_info_bits( int field_bits )
+lcn_convert_field_to_field_info_bits( lcn_field_type_t ft )
 {
     unsigned char bits = 0;
 
@@ -199,32 +199,32 @@ lcn_convert_field_to_field_info_bits( int field_bits )
      * LCN_FIELD_STORED
      */
 
-    if ( field_bits & LCN_FIELD_INDEXED )
+    if ( lcn_field_type_is_indexed( &ft ))
     {
         bits |= LCN_FIELD_INFO_IS_INDEXED;
     }
 
-    if (field_bits & LCN_FIELD_STORE_TERM_VECTOR )
+    if ( lcn_field_type_is_store_term_vectors( &ft ))
     {
         bits |= LCN_FIELD_INFO_STORE_TERM_VECTOR;
     }
 
-    if ( field_bits & LCN_FIELD_STORE_POSITION_WITH_TV )
+    if ( lcn_field_type_is_store_term_vector_positions( &ft ))
     {
         bits |= LCN_FIELD_INFO_STORE_POSITION_WITH_TERM_VECTOR;
     }
 
-    if ( field_bits & LCN_FIELD_STORE_OFFSET_WITH_TV )
+    if ( lcn_field_type_is_store_term_vector_offsets( &ft ))
     {
         bits |= LCN_FIELD_INFO_STORE_OFFSET_WITH_TERM_VECTOR;
     }
 
-    if ( field_bits & LCN_FIELD_OMIT_NORMS )
+    if ( lcn_field_type_is_omit_norms( &ft ))
     {
         bits |= LCN_FIELD_INFO_OMIT_NORMS;
     }
 
-    if ( field_bits & LCN_FIELD_FIXED_SIZE )
+    if ( lcn_field_type_is_fixed_size( &ft ))
     {
         bits |= LCN_FIELD_INFO_FIXED_SIZE;
     }
@@ -450,7 +450,7 @@ lcn_field_infos_add_document( lcn_field_infos_t *field_infos,
 
         LCNCE( lcn_field_infos_add_field_info( field_infos,
                                                field->name,
-                                               lcn_convert_field_to_field_info_bits( field->flags ) ));
+                                               lcn_convert_field_to_field_info_bits( field->field_type ) ));
     }
 
     return s;

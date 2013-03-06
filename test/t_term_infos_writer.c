@@ -118,8 +118,10 @@ test_long_terms(CuTest* tc)
     lcn_index_writer_t *index_writer;
     char *buf;
     int i = 0;
+    lcn_field_type_t indexed_type = {0};
 
     LCN_TEST( apr_pool_create( &pool, main_pool ) );
+    LCN_TEST( lcn_field_type_set_indexed( &indexed_type, LCN_TRUE ));
     LCN_TEST( lcn_ram_directory_create( &dir, pool ) );
     LCN_TEST( lcn_index_writer_create_by_directory( &index_writer, dir, LCN_TRUE, pool ));
 
@@ -139,8 +141,8 @@ test_long_terms(CuTest* tc)
 
         LCN_TEST( lcn_document_create( &document, pool ) );
         apr_snprintf( buf+1100, 10, "%d", i );
-        LCN_TEST( lcn_field_create( &field, "text", buf, LCN_FIELD_INDEXED, LCN_FIELD_VALUE_COPY, pool ));
-        LCN_TEST( lcn_document_add_field( document, field, pool ));
+        LCN_TEST( lcn_field_create( &field, "text", buf, &indexed_type, pool ));
+        LCN_TEST( lcn_document_add_field( document, field ));
         LCN_TEST( lcn_index_writer_add_document( index_writer, document ));
     }
 

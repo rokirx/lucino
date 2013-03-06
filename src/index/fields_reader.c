@@ -22,8 +22,7 @@ lcn_fields_reader_create( lcn_fields_reader_t **fields_reader,
 
     do
     {
-        LCNPV( *fields_reader = (lcn_fields_reader_t*) apr_pcalloc( pool, sizeof(lcn_fields_reader_t) ),
-               APR_ENOMEM );
+        LCNPV( *fields_reader = (lcn_fields_reader_t*) apr_pcalloc( pool, sizeof(lcn_fields_reader_t) ), APR_ENOMEM );
 
         (*fields_reader)->field_infos = field_infos;
 
@@ -68,25 +67,6 @@ lcn_fields_reader_size( lcn_fields_reader_t *fields_reader )
     return fields_reader->size;
 }
 
-static unsigned char
-lcn_field_reader_convert_to_old_format( unsigned char bits )
-{
-    unsigned char new_bits = 0;
-
-    if ( bits & 0x4 ) /* LUCENE_FIELD_BINARY */
-    {
-        new_bits |= LCN_FIELD_BINARY;
-    }
-
-    if ( bits & 0x1 ) /* LUCENE_FIELD_TOKENIZED */
-    {
-        new_bits |= LCN_FIELD_TOKENIZED;
-    }
-
-    return new_bits;
-}
-
-
 apr_status_t
 lcn_fields_reader_doc( lcn_fields_reader_t *fields_reader,
                        lcn_document_t **document,
@@ -118,81 +98,96 @@ lcn_fields_reader_doc( lcn_fields_reader_t *fields_reader,
             lcn_field_info_t *f_info;
             unsigned char bits;
             lcn_field_t *field;
+            lcn_field_type_t field_type = {0};
 
-            LCNCE( lcn_index_input_read_vint( f_in,
-                                          &field_number ) );
-            LCNCE( lcn_field_infos_by_number( fields_reader->field_infos,
-                                              &f_info,
-                                              field_number ) );
-
+            LCNCE( lcn_index_input_read_vint( f_in, &field_number ) );
+            LCNCE( lcn_field_infos_by_number( fields_reader->field_infos, &f_info, field_number ) );
             LCNCE( lcn_index_input_read_byte( f_in, &bits ) );
 
             if ( 0 == fields_reader->format )
             {
-                bits = lcn_field_reader_convert_to_old_format( bits );
+                if ( bits & 0x4 ) /* LUCENE_FIELD_BINARY */
+                {
+                    (void) lcn_field_type_set_binary( &field_type, LCN_TRUE );
+                }
+
+                if ( bits & 0x1 ) /* LUCENE_FIELD_TOKENIZED */
+                {
+                    (void) lcn_field_type_set_tokenized( &field_type, LCN_TRUE );
+                }
+            }
+            else
+            {
+                if ( bits & LCN_FIELD_BINARY )
+                {
+                    (void) lcn_field_type_set_binary( &field_type, LCN_TRUE );
+                }
+
+                if ( ( 0 != (LCN_FIELD_TOKENIZED & bits ) ) )
+                {
+                    lcn_field_type_set_tokenized( &field_type, LCN_TRUE );
+                }
             }
 
-            if ( bits & LCN_FIELD_BINARY )
+            if ( lcn_field_type_is_binary( &field_type ) )
             {
                 unsigned int binary_len;
                 char *buf;
 
-                LCNCE( lcn_index_input_read_vint( f_in,
-                                              &binary_len ) );
-                LCNPV( buf = (char*) apr_palloc( pool,
-                                                 sizeof(char) * binary_len ),
-                       APR_ENOMEM );
+                LCNCE( lcn_index_input_read_vint( f_in, &binary_len ) );
+                LCNPV( buf = (char*) apr_palloc( pool, sizeof(char) * binary_len ), APR_ENOMEM );
                 LCNCE( lcn_index_input_read_bytes( f_in, buf, 0, &binary_len ) );
                 LCNCE( lcn_field_create_binary( &field,
                                                 f_info->name,
                                                 buf,
-                                                LCN_FIELD_NO_VALUE_COPY,
                                                 binary_len,
-                                                pool ) );
+                                                pool ));
             }
             else
             {
                 unsigned int len;
                 char *buf = NULL;
 
-                bits |= LCN_FIELD_STORED;
+                LCNCE( lcn_field_type_set_stored( &field_type, LCN_TRUE ));
+
+                if ( lcn_field_info_fixed_size( f_info ) )
+                {
+                    lcn_field_type_set_fixed_size( &field_type, LCN_TRUE );
+                }
 
                 if ( lcn_field_info_is_indexed( f_info ) )
                 {
-                    bits |= LCN_FIELD_INDEXED;
+                    LCNCE( lcn_field_type_set_indexed( &field_type, LCN_TRUE ));
                 }
 
                 if ( lcn_field_info_omit_norms( f_info ) )
                 {
-                    bits |= LCN_FIELD_OMIT_NORMS;
+                    LCNCE( lcn_field_type_set_omit_norms( &field_type, LCN_TRUE ));
                 }
 
                 if ( lcn_field_info_store_term_vector( f_info ) )
                 {
-                    bits |= LCN_FIELD_STORE_TERM_VECTOR;
+                    LCNCE( lcn_field_type_set_store_term_vectors( &field_type, LCN_TRUE ));
                 }
 
                 if ( lcn_field_info_store_position_with_term_vector( f_info ) )
                 {
-                    bits |= LCN_FIELD_STORE_POSITION_WITH_TV;
+                    LCNCE( lcn_field_type_set_store_term_vector_positions( &field_type, LCN_TRUE ));
                 }
+
                 if ( lcn_field_info_store_offset_with_term_vector( f_info ) )
                 {
-                    bits |= LCN_FIELD_STORE_OFFSET_WITH_TV;
+                    LCNCE( lcn_field_type_set_store_term_vector_offsets( &field_type, LCN_TRUE ));
                 }
 
                 LCNCE( lcn_index_input_read_string( f_in, &buf, &len, pool ) );
 
-                LCNCE( lcn_field_create( &field,
-                                         f_info->name,
-                                         buf,
-                                         bits,
-                                         LCN_FIELD_NO_VALUE_COPY,
-                                         pool ) );
+                LCNCE( lcn_field_create( &field, f_info->name, buf, &field_type, pool ));
             }
 
-            LCNCE( lcn_document_add_field( *document, field, NULL ) );
+            LCNCE( lcn_document_add_field( *document, field ));
         }
+
         (*document)->index_pos = n;
     }
     while(0);

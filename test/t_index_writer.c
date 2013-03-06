@@ -32,16 +32,15 @@ add_doc( CuTest* tc,
     lcn_analyzer_t *analyzer;
     apr_pool_t *p;
     lcn_field_t *field;
+    lcn_field_type_t field_type = {0};
 
     LCN_TEST( apr_pool_create( &p, pool ));
     LCN_TEST( lcn_document_create( &doc, p ) );
-    LCN_TEST( lcn_field_create( &field, "content", "aaa",
-                                LCN_FIELD_INDEXED | LCN_FIELD_TOKENIZED,
-                                LCN_FIELD_VALUE_COPY, p ) );
+    LCN_TEST( lcn_field_create( &field, "content", "aaa", lcn_field_type_text( &field_type ), p ));
 
     LCN_TEST( lcn_simple_analyzer_create( &analyzer, p ) );
     lcn_field_set_analyzer( field, analyzer );
-    LCN_TEST( lcn_document_add_field( doc, field, p ) );
+    LCN_TEST( lcn_document_add_field( doc, field ));
     LCN_TEST( lcn_index_writer_add_document( index_writer, doc ) );
 }
 
@@ -131,7 +130,7 @@ test_doc_count(CuTest* tc)
     LCN_TEST( lcn_index_writer_create_by_path( &index_writer, "test_index_writer", LCN_TRUE, pool ) );
     LCN_TEST( lcn_document_create( &document, pool ) );
     LCN_TEST( lcn_field_create( &field, "text", "open source", LCN_FIELD_STORED, LCN_FIELD_VALUE_COPY, pool ) );
-    LCN_TEST( lcn_document_add_field( document, field, pool ) );
+    LCN_TEST( lcn_document_add_field( document, field ));
     LCN_TEST( lcn_index_writer_add_document( index_writer, document ) );
     LCN_TEST( lcn_index_writer_close( index_writer ) );
 
@@ -148,14 +147,16 @@ test_creation(CuTest* tc)
     lcn_index_writer_t *index_writer;
     lcn_document_t *document;
     lcn_field_t *field;
+    lcn_field_type_t field_type = {0};
 
     delete_files( tc, "test_index_writer" );
 
     LCN_TEST( apr_pool_create( &pool, main_pool ) );
     LCN_TEST( lcn_index_writer_create_by_path( &index_writer, "test_index_writer", LCN_TRUE, pool ) );
     LCN_TEST( lcn_document_create( &document, pool ) );
-    LCN_TEST( lcn_field_create( &field, "text", "open source", LCN_FIELD_STORED, LCN_FIELD_VALUE_COPY, pool ) );
-    LCN_TEST( lcn_document_add_field( document, field, pool ) );
+    LCN_TEST( lcn_field_type_set_stored( &field_type, LCN_TRUE ));
+    LCN_TEST( lcn_field_create( &field, "text", "open source", &field_type, pool ));
+    LCN_TEST( lcn_document_add_field( document, field ));
     LCN_TEST( lcn_index_writer_add_document( index_writer, document ) );
     LCN_TEST( lcn_index_writer_close( index_writer ) );
 
@@ -185,6 +186,7 @@ test_merge_terms(CuTest* tc)
     lcn_index_writer_t *index_writer;
     lcn_document_t *document;
     lcn_field_t *field;
+    lcn_field_type_t text_type = {0};
     lcn_analyzer_t *analyzer;
 
     delete_files( tc, "test_index_writer" );
@@ -196,13 +198,12 @@ test_merge_terms(CuTest* tc)
     LCN_TEST( lcn_field_create( &field,
                                 "text",
                                 "open source",
-                                LCN_FIELD_INDEXED |
-                                LCN_FIELD_TOKENIZED,
-                                LCN_FIELD_VALUE_COPY, pool ) );
+                                lcn_field_type_text( &text_type ),
+                                pool ) );
 
     LCN_TEST( lcn_simple_analyzer_create( &analyzer, pool ) );
     lcn_field_set_analyzer( field, analyzer );
-    LCN_TEST( lcn_document_add_field( document, field, pool ) );
+    LCN_TEST( lcn_document_add_field( document, field ));
     LCN_TEST( lcn_index_writer_add_document( index_writer, document ) );
     LCN_TEST( lcn_index_writer_close( index_writer ) );
 
@@ -219,6 +220,7 @@ test_merge_terms_2(CuTest* tc)
     lcn_index_writer_t *index_writer;
     lcn_document_t *document;
     lcn_field_t *field;
+    lcn_field_type_t text_type = {0};
     lcn_analyzer_t *analyzer;
 
     delete_files( tc, "test_index_writer" );
@@ -230,24 +232,22 @@ test_merge_terms_2(CuTest* tc)
     LCN_TEST( lcn_field_create( &field,
                                 "text",
                                 "open source",
-                                LCN_FIELD_INDEXED |
-                                LCN_FIELD_TOKENIZED,
-                                LCN_FIELD_VALUE_COPY, pool ) );
+                                lcn_field_type_text( &text_type ),
+                                pool ));
 
     LCN_TEST( lcn_simple_analyzer_create( &analyzer, pool ) );
     lcn_field_set_analyzer( field, analyzer );
-    LCN_TEST( lcn_document_add_field( document, field, pool ) );
+    LCN_TEST( lcn_document_add_field( document, field ));
     LCN_TEST( lcn_index_writer_add_document( index_writer, document ) );
 
     LCN_TEST( lcn_document_create( &document, pool ) );
     LCN_TEST( lcn_field_create( &field,
                                 "text",
                                 "open source",
-                                LCN_FIELD_INDEXED |
-                                LCN_FIELD_TOKENIZED,
-                                LCN_FIELD_VALUE_COPY, pool ) );
+                                &text_type,
+                                pool ));
     lcn_field_set_analyzer( field, analyzer );
-    LCN_TEST( lcn_document_add_field( document, field, pool ) );
+    LCN_TEST( lcn_document_add_field( document, field ));
     LCN_TEST( lcn_index_writer_add_document( index_writer, document ) );
     LCN_TEST( lcn_index_writer_close( index_writer ) );
 
@@ -264,6 +264,7 @@ test_indexing_4(CuTest* tc)
     lcn_index_writer_t *index_writer;
     lcn_document_t *document;
     lcn_field_t *field;
+    lcn_field_type_t text_field  = {0};
     lcn_analyzer_t *analyzer;
 
     delete_files( tc, "test_index_writer" );
@@ -277,11 +278,10 @@ test_indexing_4(CuTest* tc)
     LCN_TEST( lcn_field_create( &field,
                                 "text",
                                 "open",
-                                LCN_FIELD_INDEXED |
-                                LCN_FIELD_TOKENIZED,
-                                LCN_FIELD_VALUE_COPY, pool ) );
+                                lcn_field_type_text( &text_field ),
+                                pool ) );
     lcn_field_set_analyzer( field, analyzer );
-    LCN_TEST( lcn_document_add_field( document, field, pool ) );
+    LCN_TEST( lcn_document_add_field( document, field ));
     LCN_TEST( lcn_index_writer_add_document( index_writer, document ) );
     LCN_TEST( lcn_index_writer_close( index_writer ) );
     compare_directories(tc, "index_writer/index_04", "test_index_writer" );
@@ -298,6 +298,7 @@ test_indexing_5(CuTest* tc)
     lcn_document_t *document;
     lcn_field_t *field;
     lcn_field_t *field1;
+    lcn_field_type_t text_type = {0};
     lcn_analyzer_t *analyzer;
 
     delete_files( tc, "test_index_writer" );
@@ -311,20 +312,18 @@ test_indexing_5(CuTest* tc)
     LCN_TEST( lcn_field_create( &field,
                                 "text",
                                 "open",
-                                LCN_FIELD_INDEXED |
-                                LCN_FIELD_TOKENIZED,
-                                LCN_FIELD_VALUE_COPY, pool ) );
+                                lcn_field_type_text( &text_type ),
+                                pool ) );
     lcn_field_set_analyzer( field, analyzer );
 
     LCN_TEST( lcn_field_create( &field1,
                                 "titel",
                                 "simple analyzer",
-                                LCN_FIELD_INDEXED   |
-                                LCN_FIELD_TOKENIZED,
-                                LCN_FIELD_VALUE_COPY, pool ) );
+                                &text_type,
+                                pool ) );
     lcn_field_set_analyzer( field1, analyzer );
-    LCN_TEST( lcn_document_add_field( document, field, pool ) );
-    LCN_TEST( lcn_document_add_field( document, field1, pool ) );
+    LCN_TEST( lcn_document_add_field( document, field ));
+    LCN_TEST( lcn_document_add_field( document, field1 ));
     LCN_TEST( lcn_index_writer_add_document( index_writer, document ) );
     LCN_TEST( lcn_index_writer_close( index_writer ) );
 
@@ -343,6 +342,8 @@ test_indexing_6(CuTest* tc)
     lcn_document_t *document;
     lcn_field_t *field;
     lcn_field_t *field1;
+    lcn_field_type_t text_type = {0};
+    lcn_field_type_t omit_norms_type = {0};
     lcn_analyzer_t *analyzer;
 
     delete_files( tc, "test_index_writer" );
@@ -356,23 +357,22 @@ test_indexing_6(CuTest* tc)
     LCN_TEST( lcn_field_create( &field,
                                 "text",
                                 "open",
-                                LCN_FIELD_INDEXED |
-                                LCN_FIELD_TOKENIZED,
-                                LCN_FIELD_VALUE_COPY, pool ) );
+                                lcn_field_type_text( &text_type ),
+                                pool ));
     lcn_field_set_analyzer( field, analyzer );
+
+    (void) lcn_field_type_text_stored( &omit_norms_type );
+    LCN_TEST( lcn_field_type_set_omit_norms( &omit_norms_type, LCN_TRUE ));
 
     LCN_TEST( lcn_field_create( &field1,
                                 "titel",
                                 "simple analyzer",
-                                LCN_FIELD_INDEXED   |
-                                LCN_FIELD_TOKENIZED |
-                                LCN_FIELD_OMIT_NORMS |
-                                LCN_FIELD_STORED,
-                                LCN_FIELD_VALUE_COPY, pool ) );
+                                &omit_norms_type,
+                                pool ));
     lcn_field_set_analyzer( field1, analyzer );
 
-    LCN_TEST( lcn_document_add_field( document, field, pool ) );
-    LCN_TEST( lcn_document_add_field( document, field1, pool ) );
+    LCN_TEST( lcn_document_add_field( document, field ));
+    LCN_TEST( lcn_document_add_field( document, field1 ));
     LCN_TEST( lcn_index_writer_add_document( index_writer, document ) );
 
     LCN_TEST( lcn_index_writer_close( index_writer ) );
@@ -390,6 +390,7 @@ test_indexing_7(CuTest* tc)
     lcn_document_t *document;
     lcn_field_t *field;
     lcn_field_t *field1;
+    lcn_field_type_t text_type = {0};
     lcn_analyzer_t *analyzer;
 
     delete_files( tc, "test_index_writer" );
@@ -404,20 +405,18 @@ test_indexing_7(CuTest* tc)
     LCN_TEST( lcn_field_create( &field,
                                 "text",
                                 "open",
-                                LCN_FIELD_INDEXED |
-                                LCN_FIELD_TOKENIZED,
-                                LCN_FIELD_VALUE_COPY, pool ) );
+                                lcn_field_type_text( &text_type ),
+                                pool ));
     lcn_field_set_analyzer( field, analyzer );
 
     LCN_TEST( lcn_field_create_binary( &field1,
                                        "titel",
                                        "\366l ma\337",
-                                       LCN_FIELD_VALUE_COPY,
                                        strlen("\366l ma\337"),
-                                       pool ) );
+                                       pool ));
 
-    LCN_TEST( lcn_document_add_field( document, field, pool ) );
-    LCN_TEST( lcn_document_add_field( document, field1, pool ) );
+    LCN_TEST( lcn_document_add_field( document, field ));
+    LCN_TEST( lcn_document_add_field( document, field1 ));
     LCN_TEST( lcn_index_writer_add_document( index_writer, document ) );
     LCN_TEST( lcn_index_writer_close( index_writer ) );
     compare_directories(tc, "index_writer/index_07", "test_index_writer" );
@@ -460,6 +459,7 @@ test_indexing_8(CuTest* tc)
     lcn_document_t *document;
     lcn_field_t *field;
     lcn_field_t *field1;
+    lcn_field_type_t indexed_type = {0};
     lcn_analyzer_t *analyzer;
 
     delete_files( tc, "test_index_writer" );
@@ -473,19 +473,17 @@ test_indexing_8(CuTest* tc)
     LCN_TEST( lcn_field_create_binary( &field,
                                        "text",
                                        "\366a\337",
-                                       LCN_FIELD_VALUE_COPY,
                                        strlen("\366a\337"),
-                                       pool ) );
+                                       pool ));
+    LCN_TEST( lcn_document_add_field( document, field ));
 
-
+    LCN_TEST( lcn_field_type_set_indexed( &indexed_type, LCN_TRUE ));
     LCN_TEST( lcn_field_create( &field1,
                                 "titel",
                                 "first",
-                                LCN_FIELD_INDEXED,
-                                LCN_FIELD_VALUE_COPY, pool ) );
-
-    LCN_TEST( lcn_document_add_field( document, field, pool ) );
-    LCN_TEST( lcn_document_add_field( document, field1, pool ) );
+                                &indexed_type,
+                                pool ) );
+    LCN_TEST( lcn_document_add_field( document, field1 ));
     LCN_TEST( lcn_index_writer_add_document( index_writer, document ) );
     LCN_TEST( lcn_index_writer_close( index_writer ) );
 
@@ -503,6 +501,7 @@ test_indexing_8a(CuTest* tc)
     lcn_index_writer_t *index_writer;
     lcn_document_t *document;
     lcn_field_t *field;
+    lcn_field_type_t tokenized_type = {0};
     lcn_analyzer_t *analyzer;
 
     delete_files( tc, "test_index_writer" );
@@ -512,18 +511,18 @@ test_indexing_8a(CuTest* tc)
     LCN_TEST( lcn_simple_analyzer_create( &analyzer, pool ) );
     LCN_TEST( lcn_document_create( &document, pool ) );
 
+    LCN_TEST( lcn_field_type_set_tokenized( &tokenized_type, LCN_TRUE ));
     LCN_TEST( lcn_field_create( &field,
                                 "text",
                                 "a b c",
-                                LCN_FIELD_TOKENIZED,
-                                LCN_FIELD_VALUE_COPY,
-                                pool ) );
+                                &tokenized_type,
+                                pool ));
 
     lcn_field_set_analyzer( field, analyzer );
 
-    LCN_TEST( lcn_document_add_field( document, field, pool ) );
-    LCN_TEST( lcn_index_writer_add_document( index_writer, document ) );
-    LCN_TEST( lcn_index_writer_close( index_writer ) );
+    LCN_TEST( lcn_document_add_field( document, field ));
+    LCN_TEST( lcn_index_writer_add_document( index_writer, document ));
+    LCN_TEST( lcn_index_writer_close( index_writer ));
 
 #if 0
     compare_directories(tc, "index_writer/index_08", "test_index_writer" );
@@ -543,25 +542,26 @@ static void add_document( CuTest* tc,
     apr_pool_t *p;
     lcn_document_t *document;
     lcn_field_t *field, *field1;
+    lcn_field_type_t custom_type = {0};
 
     LCN_TEST( apr_pool_create( &p, pool ) );
     LCN_TEST( lcn_document_create( &document, p ) );
     LCN_TEST( lcn_field_create_binary( &field,
                                        "text",
                                        text_val,
-                                       LCN_FIELD_VALUE_COPY,
                                        strlen(text_val),
-                                       p ) );
+                                       p ));
 
-
+    LCN_TEST( lcn_field_type_set_indexed( &custom_type, LCN_TRUE ));
+    LCN_TEST( lcn_field_type_set_omit_norms( &custom_type, LCN_TRUE ));
     LCN_TEST( lcn_field_create( &field1,
                                 "titel",
                                 title_val,
-                                LCN_FIELD_INDEXED | LCN_FIELD_OMIT_NORMS,
-                                LCN_FIELD_VALUE_COPY, p ) );
+                                &custom_type,
+                                p ));
 
-    LCN_TEST( lcn_document_add_field( document, field, p ) );
-    LCN_TEST( lcn_document_add_field( document, field1, p ) );
+    LCN_TEST( lcn_document_add_field( document, field ));
+    LCN_TEST( lcn_document_add_field( document, field1 ));
     LCN_TEST( lcn_index_writer_add_document( index_writer, document ) );
 
     apr_pool_destroy( p );
@@ -696,6 +696,8 @@ test_empty_field(CuTest* tc)
     lcn_document_t *document;
     lcn_field_t *field;
     lcn_field_t *field1;
+    lcn_field_type_t text_type = {0};
+    lcn_field_type_t omit_type = {0};
     lcn_analyzer_t *analyzer;
 
     delete_files( tc, "test_index_writer" );
@@ -709,23 +711,22 @@ test_empty_field(CuTest* tc)
     LCN_TEST( lcn_field_create( &field,
                                 "text",
                                 "open",
-                                LCN_FIELD_INDEXED |
-                                LCN_FIELD_TOKENIZED,
-                                LCN_FIELD_VALUE_COPY, pool ) );
+                                lcn_field_type_text( &text_type ),
+                                pool ) );
     lcn_field_set_analyzer( field, analyzer );
 
+    lcn_field_type_text( &omit_type );
+    LCN_TEST( lcn_field_type_set_omit_norms( &omit_type, LCN_TRUE ));
+    LCN_TEST( lcn_field_type_set_stored( &omit_type, LCN_TRUE ));
     LCN_TEST( lcn_field_create( &field1,
                                 "titel",
                                 "  ;-)",
-                                LCN_FIELD_INDEXED   |
-                                LCN_FIELD_TOKENIZED |
-                                LCN_FIELD_OMIT_NORMS |
-                                LCN_FIELD_STORED,
-                                LCN_FIELD_VALUE_COPY, pool ) );
+                                &omit_type,
+                                pool ));
     lcn_field_set_analyzer( field1, analyzer );
 
-    LCN_TEST( lcn_document_add_field( document, field, pool ) );
-    LCN_TEST( lcn_document_add_field( document, field1, pool ) );
+    LCN_TEST( lcn_document_add_field( document, field ));
+    LCN_TEST( lcn_document_add_field( document, field1 ));
     LCN_TEST( lcn_index_writer_add_document( index_writer, document ) );
 
     LCN_TEST( lcn_index_writer_close( index_writer ) );
@@ -1076,7 +1077,6 @@ CuSuite *make_index_writer_suite (void)
 {
     CuSuite *s= CuSuiteNew();
 
-#if 1
     SUITE_ADD_TEST(s, test_doc_count             );
     SUITE_ADD_TEST(s, test_adding_empty_document );
     SUITE_ADD_TEST(s, test_creation              );
@@ -1093,7 +1093,6 @@ CuSuite *make_index_writer_suite (void)
     SUITE_ADD_TEST(s, test_merge_terms_2         );
     SUITE_ADD_TEST(s, test_empty_field           );
     SUITE_ADD_TEST(s, test_indexing_11           );
-#endif
 
     //SUITE_ADD_TEST(s, test_add_indexes           );
     //SUITE_ADD_TEST(s, test_indexing_10           );

@@ -48,7 +48,7 @@ lcn_index_reader_add_fs_fields( lcn_index_reader_t *index_reader,
             apr_hash_this( hi, NULL, NULL, &vval );
             fs_field = (lcn_fs_field_t *) vval;
             LCNCE( lcn_fs_field_to_field( fs_field, &field, n, pool ));
-            LCNCE( lcn_document_add_field( document, field, NULL ));
+            LCNCE( lcn_document_add_field( document, field ));
         }
     }
     while(0);

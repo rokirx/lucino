@@ -433,16 +433,12 @@ lcn_document_field_exists( lcn_document_t *document,
  * @brief Adds a field to a document.
  *
  * A field with a name may be added only once, it is an error to
- * add a field a second time. If there is a non NULL pool provided,
- * then the field value is copied to a buffer from pool. If the pool
- * is NULL, then the field value pointer is stored in the document and it
- * is up to client code to assert, that the lifetime of the field value is
- * longer than the lifetime of the document.
+ * add a field a second time. It is up to client code to assert,
+ * that the lifetime of the field value is longer than the lifetime of the document.
  */
 apr_status_t
 lcn_document_add_field( lcn_document_t *document,
-                        lcn_field_t *field,
-                        apr_pool_t *pool);
+                        lcn_field_t *field );
 
 /**
  * @brief Retrieves the content of the first binary field that was found
@@ -738,46 +734,6 @@ lcn_field_flags_set( lcn_field_t* field, unsigned int flags );
 
 
 /**
- * @deprecated
- * @brief Constructs a Field
- *
- * @param field       Stores new field
- * @param name        field name
- * @param value       field value
- * @param flags       a bit mask defining field type
- * @param copy_value
- * @param pool        APR pool
- */
-apr_status_t
-lcn_field_create( lcn_field_t **field,
-                  const char *name,
-                  const char *value,
-                  unsigned int flags,
-                  unsigned int copy_value,
-                  apr_pool_t *pool );
-
-/**
- * @deprecated
- * @brief Constructs a binary field
- *
- * @param field      a field to initialize
- * @param name       field name
- * @param value      field value
- * @param copy_value on  #LCN_FIELD_VALUE_COPY the field value is copied in the field
- *                   on  #LCN_FIELD_NO_VALUE_COPY there is no copiing, the pointer to
- *                   is assigned as it is
- * @param size       size of the field data in bytes
- * @param pool       APR pool
- */
-apr_status_t
-lcn_field_create_binary( lcn_field_t **field,
-                         const char *name,
-                         const char *value,
-                         unsigned int copy_value,
-                         unsigned int size,
-                         apr_pool_t *pool );
-
-/**
  * @brief Constructs a binary field
  *
  * @param field       A field to initialize
@@ -789,12 +745,11 @@ lcn_field_create_binary( lcn_field_t **field,
  * @param pool        APR pool
  */
 apr_status_t
-lcn_field_create_binary_ft( lcn_field_t **field,
-                            const char *name,
-                            const char *value,
-                            unsigned int value_size,
-                            lcn_field_type_t ft,
-                            apr_pool_t *pool );
+lcn_field_create_binary( lcn_field_t **field,
+                         const char *name,
+                         const char *value,
+                         unsigned int value_size,
+                         apr_pool_t *pool );
 
 /**
  * @brief Constructs a string field
@@ -807,11 +762,11 @@ lcn_field_create_binary_ft( lcn_field_t **field,
  * @param pool        APR pool
  */
 apr_status_t
-lcn_field_create_ft( lcn_field_t **field,
-                     const char *name,
-                     const char *value,
-                     lcn_field_type_t ft,
-                     apr_pool_t *pool );
+lcn_field_create( lcn_field_t **field,
+                  const char *name,
+                  const char *value,
+                  lcn_field_type_t *ft,
+                  apr_pool_t *pool );
 
 /**
  * @brief  Create a field object with fixed binary value

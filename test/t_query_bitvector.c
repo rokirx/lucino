@@ -83,7 +83,6 @@ test_query_bitvector( CuTest* tc )
     lcn_searcher_t* searcher;
     lcn_query_t* b_query1, *b_query2;
     lcn_hits_t* hits;
-    unsigned int n_hits1, n_hits2;
     lcn_bitvector_t* bitvector;
 
     apr_pool_create( &pool, main_pool );
@@ -101,9 +100,7 @@ test_query_bitvector( CuTest* tc )
     LCN_TEST( lcn_boolean_query_add_term( b_query2, "text", "is", LCN_BOOLEAN_CLAUSE_SHOULD  ) );
 
     LCN_TEST( lcn_searcher_search( searcher, &hits, b_query1, NULL, pool ) );
-    n_hits1 = lcn_hits_length( hits );
     LCN_TEST( lcn_searcher_search( searcher, &hits, b_query2, NULL, pool ) );
-    n_hits2 = lcn_hits_length( hits );
 
     LCN_TEST( lcn_query_bitvector_create( &bitvector, b_query2, searcher, NULL, pool ) );
     LCN_TEST( lcn_searcher_search( searcher, &hits, b_query1, bitvector, pool ) );

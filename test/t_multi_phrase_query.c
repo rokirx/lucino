@@ -370,6 +370,7 @@ test_stack_overflow( CuTest* tc )
     lcn_index_writer_t *index_writer;
     lcn_document_t *document;
     lcn_field_t *field;
+    lcn_field_type_t indexed_type = {0};
     unsigned int i;
 
     char *data[][2] = {
@@ -387,6 +388,8 @@ test_stack_overflow( CuTest* tc )
 
     i=0;
 
+    LCN_TEST( lcn_field_type_set_indexed( &indexed_type, LCN_TRUE ));
+
     while( data[i][0] != NULL )
     {
         LCN_TEST( lcn_document_create( &document, pool ) );
@@ -394,16 +397,16 @@ test_stack_overflow( CuTest* tc )
         LCN_TEST( lcn_field_create( &field,
                                     "titel",
                                     data[i][0],
-                                    LCN_FIELD_INDEXED,
-                                    LCN_FIELD_VALUE_COPY, pool ) );
-        LCN_TEST( lcn_document_add_field( document, field, pool ) );
+                                    &indexed_type,
+                                    pool ));
+        LCN_TEST( lcn_document_add_field( document, field ));
 
         LCN_TEST( lcn_field_create( &field,
                                     "jahr",
                                     data[i][1],
-                                    LCN_FIELD_INDEXED,
-                                    LCN_FIELD_VALUE_COPY, pool ) );
-        LCN_TEST( lcn_document_add_field( document, field, pool ) );
+                                    &indexed_type,
+                                    pool ) );
+        LCN_TEST( lcn_document_add_field( document, field ));
 
         LCN_TEST( lcn_index_writer_add_document( index_writer, document ) );
 
@@ -426,10 +429,7 @@ test_stack_overflow( CuTest* tc )
 
         lcn_searcher_t *searcher;
 
-        LCN_TEST( lcn_index_searcher_create_by_path( &searcher,
-                                                     "test_index_writer",
-                                                     pool ) );
-
+        LCN_TEST( lcn_index_searcher_create_by_path( &searcher, "test_index_writer", pool ) );
 
         LCN_TEST( lcn_boolean_query_create(&boolquery1, pool));
         LCN_TEST( lcn_boolean_query_create(&boolquery2, pool));
@@ -464,6 +464,7 @@ test_failing_query( CuTest* tc )
     lcn_index_writer_t *index_writer;
     lcn_document_t *document;
     lcn_field_t *field;
+    lcn_field_type_t text_stored = {0};
     lcn_analyzer_t *sa;
 
     LCN_TEST( apr_pool_create( &pool, main_pool ) );
@@ -477,14 +478,12 @@ test_failing_query( CuTest* tc )
     LCN_TEST( lcn_field_create( &field,
                                 "text",
                                 "test njw abc, 622 test",
-                                LCN_FIELD_INDEXED |
-                                LCN_FIELD_TOKENIZED |
-                                LCN_FIELD_STORED,
-                                LCN_FIELD_VALUE_COPY, pool ) );
+                                lcn_field_type_text_stored( &text_stored ),
+                                pool ));
 
     LCN_TEST( lcn_simple_analyzer_create( &sa, pool ) );
     lcn_field_set_analyzer( field, sa );
-    LCN_TEST( lcn_document_add_field( document, field, pool ) );
+    LCN_TEST( lcn_document_add_field( document, field ));
     LCN_TEST( lcn_index_writer_add_document( index_writer, document ) );
 
     LCN_TEST( lcn_index_writer_close( index_writer) );
@@ -497,10 +496,7 @@ test_failing_query( CuTest* tc )
         lcn_term_t *term, *term1;
         lcn_searcher_t *searcher;
 
-        LCN_TEST( lcn_index_searcher_create_by_path( &searcher,
-                                                     "test_index_writer",
-                                                     pool ) );
-
+        LCN_TEST( lcn_index_searcher_create_by_path( &searcher, "test_index_writer", pool ));
         LCN_TEST( lcn_multi_phrase_query_create( &phrase_query, pool ));
 
         LCN_TEST( lcn_term_create( &term, "text", "njw", LCN_TERM_TEXT_COPY, pool ));
@@ -574,6 +570,9 @@ setup_ram_dir_test_index( CuTest *tc,
     int i = 0;
     lcn_index_writer_t *index_writer;
     char *text;
+    lcn_field_type_t text_stored = {0};
+
+    (void) lcn_field_type_text_stored( &text_stored );
 
     LCN_TEST( lcn_ram_directory_create( dir, pool ) );
     LCN_TEST( lcn_simple_analyzer_create( &sa, pool ) );
@@ -589,13 +588,11 @@ setup_ram_dir_test_index( CuTest *tc,
         LCN_TEST( lcn_field_create( &field,
                                     "text",
                                     text,
-                                    LCN_FIELD_INDEXED |
-                                    LCN_FIELD_TOKENIZED |
-                                    LCN_FIELD_STORED,
-                                    LCN_FIELD_VALUE_COPY, pool ) );
+                                    &text_stored,
+                                    pool ) );
 
         lcn_field_set_analyzer( field, sa );
-        LCN_TEST( lcn_document_add_field( document, field, pool ) );
+        LCN_TEST( lcn_document_add_field( document, field ));
         LCN_TEST( lcn_index_writer_add_document( index_writer, document ) );
     }
 

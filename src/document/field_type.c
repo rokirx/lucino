@@ -9,7 +9,7 @@ lcn_field_type_set_##NAME( lcn_field_type_t *ft,        \
 {                                                       \
     unsigned int bm = (unsigned int) *ft;               \
                                                         \
-    if ( bm & LCN_FIELD_TYPE_FROSEN )                   \
+    if ( bm & LCN_FIELD_TYPE_FROZEN )                   \
     {                                                   \
         return LCN_ERR_SETTING_FROZEN_FIELD_TYPE;       \
     }                                                   \
@@ -29,9 +29,9 @@ lcn_field_type_set_##NAME( lcn_field_type_t *ft,        \
 }                                                       \
                                                         \
 lcn_bool_t                                              \
-lcn_field_type_is_##NAME( lcn_field_type_t ft )         \
+lcn_field_type_is_##NAME( lcn_field_type_t *ft )        \
 {                                                       \
-    int bm = (int) ft;                                  \
+    unsigned int bm = (unsigned int) *ft;               \
     return 0 != ( bm & MASK );                          \
 }
 
@@ -58,22 +58,6 @@ lcn_field_type_is_##NAME( lcn_field_type_t ft )         \
 
 #if 0
     /* #### NOT IMPLEMENTED : FieldType(FieldType ref)  */
-
-/*
-  public FieldType(FieldType ref) {
-    this.indexed = ref.indexed();
-    this.stored = ref.stored();
-    this.tokenized = ref.tokenized();
-    this.storeTermVectors = ref.storeTermVectors();
-    this.storeTermVectorOffsets = ref.storeTermVectorOffsets();
-    this.storeTermVectorPositions = ref.storeTermVectorPositions();
-    this.omitNorms = ref.omitNorms();
-    this.indexOptions = ref.indexOptions();
-    this.docValueType = ref.docValueType();
-    this.numericType = ref.numericType();
-    // Do not copy frozen!
-  }
-*/
 #endif
 
 
@@ -89,9 +73,34 @@ LCN_FIELD_TYPE_SETTER( LCN_FIELD_TYPE_STORE_TERM_VECTOR_POSITIONS, store_term_ve
 LCN_FIELD_TYPE_SETTER( LCN_FIELD_TYPE_TOKENIZED,                   tokenized )
 
 
-apr_status_t
-lcn_field_type_init( lcn_field_type_t *ft )
+/**
+ * Some convenience functions
+ */
+
+lcn_field_type_t *
+lcn_field_type_text( lcn_field_type_t *ft )
 {
-    *ft = (lcn_field_type_t) 0;
-    return APR_SUCCESS;
+    (void) lcn_field_type_set_indexed( ft, LCN_TRUE );
+    (void) lcn_field_type_set_tokenized( ft, LCN_TRUE );
+
+    return ft;
+}
+
+lcn_field_type_t *
+lcn_field_type_text_stored( lcn_field_type_t *ft )
+{
+    (void) lcn_field_type_set_indexed( ft, LCN_TRUE );
+    (void) lcn_field_type_set_tokenized( ft, LCN_TRUE );
+    (void) lcn_field_type_set_stored( ft, LCN_TRUE );
+
+    return ft;
+}
+
+lcn_field_type_t *
+lcn_field_type_binary( lcn_field_type_t *ft )
+{
+    (void) lcn_field_type_set_binary( ft, LCN_TRUE );
+    (void) lcn_field_type_set_stored( ft, LCN_TRUE );
+
+    return ft;
 }

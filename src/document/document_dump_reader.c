@@ -48,32 +48,29 @@ lcn_document_dump_iterator_add_excluded_field( lcn_document_dump_iterator_t *ite
 apr_status_t
 lcn_document_read_properties_line( const char* input,
                                    const char** end_pos,
-                                   int* flags )
+                                   lcn_field_type_t* field_type )
 {
     const char* start, *end;
     char buf[MAX_LINE_LEN];
-    int f = 0;
-
-    *flags = 0;
 
     PVR( start = strstr( input, LCN_DOCDUMP_PROPS ) );
     PVR( end = strchr( start, '\n' ) );
 
     apr_snprintf( buf, ( end - start + 1 ), "%s", start );
 
-    if( strstr( buf, "BINARY"     ) )    { f |= LCN_FIELD_BINARY;        }
-    if( strstr( buf, "INDEXED"    ) )    { f |= LCN_FIELD_INDEXED;       }
-    if( strstr( buf, "OMIT_NORMS" ) )    { f |= LCN_FIELD_OMIT_NORMS;    }
-    if( strstr( buf, "STORED"     ) )    { f |= LCN_FIELD_STORED;        }
-    if( strstr( buf, "TOKENIZED"  ) )    { f |= LCN_FIELD_TOKENIZED;     }
-    if( strstr( buf, "FIXED_SIZE" ) )    { f |= LCN_FIELD_FIXED_SIZE;    }
+    if( strstr( buf, "BINARY"     ) )    { lcn_field_type_set_binary( field_type, LCN_TRUE );      }
+    if( strstr( buf, "INDEXED"    ) )    { lcn_field_type_set_indexed( field_type, LCN_TRUE );     }
+    if( strstr( buf, "OMIT_NORMS" ) )    { lcn_field_type_set_omit_norms( field_type, LCN_TRUE );  }
+    if( strstr( buf, "STORED"     ) )    { lcn_field_type_set_stored( field_type, LCN_TRUE );      }
+    if( strstr( buf, "TOKENIZED"  ) )    { lcn_field_type_set_tokenized( field_type, LCN_TRUE );   }
+    if( strstr( buf, "FIXED_SIZE" ) )    { lcn_field_type_set_fixed_size( field_type, LCN_TRUE );  }
 
-    *flags = f;
     *end_pos = ( end + 1 );
 
     return APR_SUCCESS;
 
 }
+
 
 static apr_status_t
 lcn_document_read_document_line( const char* input,
@@ -341,12 +338,12 @@ lcn_document_create_from_dump( lcn_document_t** doc,
         lcn_field_t* field;
         char* name=NULL, *value=NULL;
         lcn_analyzer_t* az = NULL;
-        int flags;
+        lcn_field_type_t field_type = {0};
 
         lcn_document_read_field_line( loop, &name, &loop, pool );
-        lcn_document_read_properties_line( loop, &loop, &flags );
+        lcn_document_read_properties_line( loop, &loop, &field_type );
 
-        if ( flags & LCN_FIELD_FIXED_SIZE )
+        if ( lcn_field_type_is_fixed_size( &field_type ))
         {
             unsigned int size;
             char* data, *def_data = NULL;
@@ -377,16 +374,16 @@ lcn_document_create_from_dump( lcn_document_t** doc,
         }
         else
         {
-            if( flags & LCN_FIELD_TOKENIZED )
+            if( lcn_field_type_is_tokenized( &field_type ))
             {
                 LCNCR( lcn_document_read_analyzer_line( loop, &loop, &az,
                                                         iterator->analyzers ) );
             }
 
-            if( !( flags & LCN_FIELD_BINARY ) )
+            if( !( lcn_field_type_is_binary( &field_type )))
             {
                 LCNCE( lcn_document_read_string_value( loop, &loop, &value, pool ) );
-                LCNCE( lcn_field_create( &field, name, value, flags, 0, pool ) );
+                LCNCE( lcn_field_create( &field, name, apr_pstrdup(pool, value), &field_type, pool ) );
 
                 if( az )
                 {
@@ -405,13 +402,11 @@ lcn_document_create_from_dump( lcn_document_t** doc,
                                                     LCN_DOCDUMP_BINVAL,
                                                     pool ) );
 
-                LCNCE( lcn_field_create_binary ( &field,
-                                                 name,
-                                                 data,
-                                                 0,
-                                                 data_len,
-                                                 pool ) );
-
+                LCNCE( lcn_field_create_binary( &field,
+                                                name,
+                                                data,
+                                                data_len,
+                                                pool ));
             }
         }
 
@@ -420,7 +415,7 @@ lcn_document_create_from_dump( lcn_document_t** doc,
 
         if ( ! lcn_document_dump_iterator_field_is_excluded( iterator, name ) )
         {
-            LCNCE( lcn_document_add_field( result, field, pool ) );
+            LCNCE( lcn_document_add_field( result, field ) );
         }
     }
 

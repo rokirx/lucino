@@ -73,9 +73,8 @@ struct lcn_field_t {
     float boost;
 
     /**
-     * Bit field for holding field properties as flags
+     * Field type
      */
-    unsigned int flags;  /* @depricated */
     lcn_field_type_t field_type;
 
     /**

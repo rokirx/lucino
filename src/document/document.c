@@ -172,56 +172,11 @@ lcn_document_get( lcn_document_t* document,
 
 apr_status_t
 lcn_document_add_field( lcn_document_t *document,
-                        lcn_field_t *field,
-                        apr_pool_t *pool )
+                        lcn_field_t *field )
 {
     apr_status_t s;
-    lcn_field_t *new_field;
 
-    if ( NULL != pool )
-    {
-        if ( lcn_field_is_fixed_size( field ) )
-        {
-            LCNCR( lcn_field_create_fixed_size( &new_field,
-                                                lcn_field_name( field ),
-                                                field->value,
-                                                field->default_value,
-                                                field->size,
-                                                pool ) );
-
-        }
-        else if ( lcn_field_is_binary( field ) )
-        {
-            LCNCR( lcn_field_create_binary( &new_field,
-                                            lcn_field_name( field ),
-                                            lcn_field_value( field ),
-                                            LCN_FIELD_VALUE_COPY,
-                                            field->size,
-                                            pool ));
-        }
-        else
-        {
-            LCNCR( lcn_field_create( &new_field,
-                                     lcn_field_name( field ),
-                                     lcn_field_value( field ),
-                                     field->flags,
-                                     LCN_FIELD_VALUE_COPY,
-                                     pool ));
-        }
-
-        if ( lcn_field_is_tokenized( field ) )
-        {
-            lcn_analyzer_t *analyzer;
-            LCNCR( lcn_field_get_analyzer( field, &analyzer ) );
-            lcn_field_set_analyzer( new_field, analyzer );
-        }
-    }
-    else
-    {
-        new_field = field;
-    }
-
-    LCNCR( lcn_list_add( document->field_list, new_field ) );
+    LCNCR( lcn_list_add( document->field_list, field ) );
 
     return s;
 }

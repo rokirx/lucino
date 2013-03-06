@@ -87,50 +87,44 @@ test_binary_field( CuTest* tc )
 {
     apr_pool_t* pool;
     lcn_document_t* doc;
-    lcn_field_type_t ft;
+    lcn_field_type_t ft = {0};
     lcn_field_t *string_field = NULL;
     lcn_field_t *binary_field, *binary_field2;
     lcn_list_t *list;
-    
+
     apr_pool_create( &pool, main_pool );
 
     LCN_TEST( lcn_document_create ( &doc, pool ) );
-    LCN_TEST( lcn_field_type_init( &ft ) );
-
     LCN_TEST( lcn_field_type_set_stored( &ft, LCN_TRUE ) );
+    CuAssertTrue( tc, lcn_field_type_is_stored( &ft ) );
 
-    CuAssertTrue( tc, lcn_field_type_is_stored( ft ) );
-
-    LCN_TEST( lcn_field_create_ft( &string_field,
-                                   "string",
-                                   bin_val,
-                                   ft,
-                                   pool ) );
+    LCN_TEST( lcn_field_create( &string_field,
+                                "string",
+                                bin_val,
+                                &ft,
+                                pool ) );
 
     CuAssertPtrNotNull( tc, string_field );
     CuAssertTrue( tc, lcn_field_is_stored( string_field ) );
     CuAssertStrEquals( tc, lcn_field_value( string_field ), bin_val );
 
     LCN_TEST( lcn_field_type_set_binary( &ft, LCN_TRUE ) );
+    CuAssertTrue( tc, lcn_field_type_is_binary( &ft ) );
 
-    CuAssertTrue( tc, lcn_field_type_is_binary( ft ) );
+    LCN_TEST( lcn_field_create_binary( &binary_field,
+                                       "binary",
+                                       bin_val,
+                                       strlen(bin_val) + 1,
+                                       pool ));
 
-    LCN_TEST( lcn_field_create_binary_ft( &binary_field,
-                                          "binary",
-                                          bin_val,
-                                          strlen(bin_val) + 1,
-                                          ft,
-                                          pool ) );
+    LCN_TEST( lcn_field_create_binary( &binary_field2,
+                                       "binary",
+                                       bin_val2,
+                                       strlen(bin_val2) + 1,
+                                       pool ) );
 
-    LCN_TEST( lcn_field_create_binary_ft( &binary_field2,
-                                          "binary",
-                                          bin_val2,
-                                          strlen(bin_val2) + 1,
-                                          ft,
-                                          pool ) );
-
-    LCN_TEST( lcn_document_add_field( doc, string_field, pool ) );
-    LCN_TEST( lcn_document_add_field( doc, binary_field, pool ) );
+    LCN_TEST( lcn_document_add_field( doc, string_field ));
+    LCN_TEST( lcn_document_add_field( doc, binary_field ));
 
     list = lcn_document_get_fields( doc );
     CuAssertIntEquals( tc, 2, lcn_list_size( list ) );
@@ -166,7 +160,7 @@ test_binary_field( CuTest* tc )
 
         CuAssertStrEquals( tc, string_test, binary_field_value );
 
-        LCN_TEST( lcn_document_add_field( doc, binary_field2, pool ) );
+        LCN_TEST( lcn_document_add_field( doc, binary_field2 ));
 
         list = lcn_document_get_fields( doc );
         CuAssertIntEquals( tc, 3, lcn_list_size( list ) );

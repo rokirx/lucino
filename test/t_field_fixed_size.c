@@ -668,7 +668,7 @@ test_indexing( CuTest* tc )
                                                3,
                                                pool ) );
 
-        LCN_TEST( lcn_document_add_field( document, field, pool ) );
+        LCN_TEST( lcn_document_add_field( document, field ));
 
         field_content[1] = 1;
         LCN_TEST( lcn_field_create_fixed_size( &field,
@@ -679,7 +679,7 @@ test_indexing( CuTest* tc )
                                                pool ) );
         field_content[1] = 0;
 
-        LCN_TEST( lcn_document_add_field( document, field, pool ) );
+        LCN_TEST( lcn_document_add_field( document, field ));
 
         LCN_TEST( lcn_index_writer_add_document( index_writer, document ) );
         LCN_TEST( lcn_index_writer_close( index_writer ) );
@@ -716,7 +716,7 @@ test_indexing( CuTest* tc )
                                                3,
                                                pool ) );
 
-        LCN_TEST( lcn_document_add_field( document, field, pool ) );
+        LCN_TEST( lcn_document_add_field( document, field ));
         LCN_TEST( lcn_index_writer_add_document( index_writer, document ) );
         LCN_TEST( lcn_index_writer_close( index_writer ) );
     }
@@ -735,7 +735,7 @@ test_indexing( CuTest* tc )
                                                15,
                                                pool ) );
 
-        LCN_TEST( lcn_document_add_field( document, field, pool ) );
+        LCN_TEST( lcn_document_add_field( document, field ));
         LCN_TEST( lcn_index_writer_add_document( index_writer, document ) );
         LCN_TEST( lcn_index_writer_close( index_writer ) );
     }
@@ -753,7 +753,7 @@ test_indexing( CuTest* tc )
                                                default_content,
                                                3,
                                                pool ) );
-        LCN_TEST( lcn_document_add_field( document, field, pool ) );
+        LCN_TEST( lcn_document_add_field( document, field ));
 
         field_content[1] = 5;
         LCN_TEST( lcn_field_create_fixed_size( &field,
@@ -762,7 +762,7 @@ test_indexing( CuTest* tc )
                                                default_content,
                                                16,
                                                pool ) );
-        LCN_TEST( lcn_document_add_field( document, field, pool ) );
+        LCN_TEST( lcn_document_add_field( document, field ));
         field_content[1] = 0;
         field_content[0] = 0;
         LCN_TEST( lcn_field_create_fixed_size( &field,
@@ -772,7 +772,7 @@ test_indexing( CuTest* tc )
                                                1,
                                                pool ) );
 
-        LCN_TEST( lcn_document_add_field( document, field, pool ) );
+        LCN_TEST( lcn_document_add_field( document, field ));
 
         LCN_TEST( lcn_index_writer_add_document( index_writer, document ) );
         LCN_TEST( lcn_index_writer_close( index_writer ) );
@@ -1588,7 +1588,7 @@ test_indexing_errors( CuTest* tc )
                                                3,
                                                pool ) );
 
-        LCN_TEST( lcn_document_add_field( document, field, pool ) );
+        LCN_TEST( lcn_document_add_field( document, field ));
 
         field_content[1] = 1;
         LCN_TEST( lcn_field_create_fixed_size( &field,
@@ -1599,7 +1599,7 @@ test_indexing_errors( CuTest* tc )
                                                pool ) );
         field_content[1] = 0;
 
-        LCN_TEST( lcn_document_add_field( document, field, pool ) );
+        LCN_TEST( lcn_document_add_field( document, field ));
 
         LCN_TEST( lcn_index_writer_add_document( index_writer, document ) );
         LCN_TEST( lcn_index_writer_close( index_writer ) );
@@ -1635,7 +1635,7 @@ test_indexing_errors( CuTest* tc )
                                                3,
                                                pool ) );
 
-        LCN_TEST( lcn_document_add_field( document, field, pool ) );
+        LCN_TEST( lcn_document_add_field( document, field ));
         LCN_TEST( lcn_index_writer_add_document( index_writer, document ) );
         LCN_TEST( lcn_index_writer_close( index_writer ) );
     }
@@ -1654,7 +1654,7 @@ test_indexing_errors( CuTest* tc )
                                                15,
                                                pool ) );
 
-        LCN_TEST( lcn_document_add_field( document, field, pool ) );
+        LCN_TEST( lcn_document_add_field( document, field ));
         LCN_TEST( lcn_index_writer_add_document( index_writer, document ) );
         LCN_TEST( lcn_index_writer_close( index_writer ) );
     }
@@ -1675,7 +1675,7 @@ test_indexing_errors( CuTest* tc )
                                                4,
                                                pool ));
 
-        LCN_TEST( lcn_document_add_field( document, field, pool ) );
+        LCN_TEST( lcn_document_add_field( document, field ));
 
         field_content[1] = 5;
         LCN_TEST( lcn_field_create_fixed_size( &field,
@@ -1684,7 +1684,7 @@ test_indexing_errors( CuTest* tc )
                                                default_content,
                                                16,
                                                pool ) );
-        LCN_TEST( lcn_document_add_field( document, field, pool ) );
+        LCN_TEST( lcn_document_add_field( document, field ));
         field_content[1] = 0;
         field_content[0] = 0;
         LCN_TEST( lcn_field_create_fixed_size( &field,
@@ -1694,7 +1694,7 @@ test_indexing_errors( CuTest* tc )
                                                1,
                                                pool ) );
 
-        LCN_TEST( lcn_document_add_field( document, field, pool ) );
+        LCN_TEST( lcn_document_add_field( document, field ));
 
         stat = lcn_index_writer_add_document( index_writer, document );
         CuAssertIntEquals( tc, LCN_ERR_FIELD_INFO_INCONSISTENT_DEFINITION, stat );
@@ -1740,7 +1740,7 @@ test_indexing_errors_default_val( CuTest* tc )
                                                3,
                                                pool ) );
 
-        LCN_TEST( lcn_document_add_field( document, field, pool ) );
+        LCN_TEST( lcn_document_add_field( document, field ));
 
         field_content[1] = 1;
         LCN_TEST( lcn_field_create_fixed_size( &field,
@@ -1751,7 +1751,7 @@ test_indexing_errors_default_val( CuTest* tc )
                                                pool ) );
         field_content[1] = 0;
 
-        LCN_TEST( lcn_document_add_field( document, field, pool ) );
+        LCN_TEST( lcn_document_add_field( document, field ));
 
         LCN_TEST( lcn_index_writer_add_document( index_writer, document ) );
         LCN_TEST( lcn_index_writer_close( index_writer ) );
@@ -1787,7 +1787,7 @@ test_indexing_errors_default_val( CuTest* tc )
                                                3,
                                                pool ) );
 
-        LCN_TEST( lcn_document_add_field( document, field, pool ) );
+        LCN_TEST( lcn_document_add_field( document, field ));
         LCN_TEST( lcn_index_writer_add_document( index_writer, document ) );
         LCN_TEST( lcn_index_writer_close( index_writer ) );
     }
@@ -1806,7 +1806,7 @@ test_indexing_errors_default_val( CuTest* tc )
                                                15,
                                                pool ) );
 
-        LCN_TEST( lcn_document_add_field( document, field, pool ) );
+        LCN_TEST( lcn_document_add_field( document, field ));
         LCN_TEST( lcn_index_writer_add_document( index_writer, document ) );
         LCN_TEST( lcn_index_writer_close( index_writer ) );
     }
@@ -1828,7 +1828,7 @@ test_indexing_errors_default_val( CuTest* tc )
                                                3,
                                                pool ));
 
-        LCN_TEST( lcn_document_add_field( document, field, pool ) );
+        LCN_TEST( lcn_document_add_field( document, field ));
 
         field_content[1] = 5;
         LCN_TEST( lcn_field_create_fixed_size( &field,
@@ -1837,7 +1837,7 @@ test_indexing_errors_default_val( CuTest* tc )
                                                default_content,
                                                16,
                                                pool ) );
-        LCN_TEST( lcn_document_add_field( document, field, pool ) );
+        LCN_TEST( lcn_document_add_field( document, field ));
         field_content[1] = 0;
         field_content[0] = 0;
         LCN_TEST( lcn_field_create_fixed_size( &field,
@@ -1847,7 +1847,7 @@ test_indexing_errors_default_val( CuTest* tc )
                                                1,
                                                pool ) );
 
-        LCN_TEST( lcn_document_add_field( document, field, pool ) );
+        LCN_TEST( lcn_document_add_field( document, field ));
 
         stat = lcn_index_writer_add_document( index_writer, document );
         CuAssertIntEquals( tc, LCN_ERR_FIELD_INFO_INCONSISTENT_DEFINITION, stat );
@@ -1883,7 +1883,7 @@ test_create_fixed_size_by_ints( CuTest* tc )
                                                        0,
                                                        32,
                                                        pool ));
-        LCN_TEST( lcn_document_add_field( document, field, pool ) );
+        LCN_TEST( lcn_document_add_field( document, field ));
         LCN_TEST( lcn_index_writer_add_document( index_writer, document ) );
         LCN_TEST( lcn_index_writer_close( index_writer ) );
     }
