@@ -219,9 +219,9 @@ CuSuite *make_multi_reader_suite (void)
 {
     CuSuite *s= CuSuiteNew();
 
-    SUITE_ADD_TEST( s, test_multi_reader );
+    //SUITE_ADD_TEST( s, test_multi_reader );
     SUITE_ADD_TEST( s, test_doc_ids );
-    SUITE_ADD_TEST( s, test_multi_seek_enum );
+    //SUITE_ADD_TEST( s, test_multi_seek_enum );
 
     return s;
 }
