@@ -4,6 +4,7 @@
 #include "lucene.h"
 #include "term.h"
 #include "lcn_index.h"
+#include "index_file_names.h"
 
 typedef struct lcn_segment_info_t lcn_segment_info_t;
 //typedef struct lcn_segment_info_per_commit_t lcn_segment_info_per_commit_t;
@@ -35,6 +36,12 @@ struct lcn_segment_info_t {
     char* version;
 
     unsigned int is_compound_file;
+    
+    /**
+     * Lucene 5.0
+     */
+    
+    lcn_list_t *set_files;
 };
 
 struct lcn_segment_infos_t {
@@ -189,7 +196,17 @@ lcn_segment_infos_files( lcn_segment_infos_t *segement_infos,
                          lcn_directory_t *dir, 
                          lcn_bool_t include_segments_file,
                          apr_pool_t *pool,
-                         lcn_list_t **files );        
+                         lcn_list_t **files );   
+
+char*
+lcn_segment_infos_get_segments_file_name( lcn_segment_infos_t *segment_infos,
+                                          apr_pool_t *pool );
+
+
+apr_status_t
+lcn_segment_info_files( lcn_segment_info_t *segment_info,
+                        apr_pool_t *pool,
+                        apr_hash_t **files );
 
 #endif
 

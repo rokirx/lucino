@@ -521,11 +521,11 @@ lcn_segment_infos_read_directory( lcn_segment_infos_t *segment_infos,
 }
 
 apr_status_t
-lcn_segment_infos_files( lcn_segment_infos_t *segement_infos,
+lcn_segment_infos_files( lcn_segment_infos_t *segment_infos,
                          lcn_directory_t *dir, 
                          lcn_bool_t include_segments_file,
                          apr_pool_t *pool,
-                         lcn_list_t **files )
+                         lcn_list_t **segment_file_names )
 {
     apr_status_t s;
     apr_pool_t *cp;
@@ -533,17 +533,21 @@ lcn_segment_infos_files( lcn_segment_infos_t *segement_infos,
     do
     {
         int i;
-        
+        char* hash_default_str = "";
         
         apr_pool_create( &cp, pool );
-     
-        LCNCE( lcn_list_create( files, segement_infos->counter, pool ) );
+        
+        LCNCE( lcn_list_create( segment_file_names, 0, pool ) );
         
         if ( include_segments_file )
         {
+            
+            apr_hash_t* files = apr_hash_make( cp );
+            apr_hash_index_t* hi;
+            
             char *segment_file_name = lcn_index_file_names_file_name_from_generation( LCN_INDEX_FILE_NAMES_SEGMENTS, 
                                                                                       "", 
-                                                                                      segement_infos->last_generation,
+                                                                                      segment_infos->last_generation,
                                                                                       pool );
             
             if ( NULL != segment_file_name )
@@ -552,19 +556,48 @@ lcn_segment_infos_files( lcn_segment_infos_t *segement_infos,
                  * TODO: if last_generation == -1 we might get null here it seems wrong to
                  * and null to the files set
                  */
-                lcn_list_add( *files, segment_file_name );
+                apr_hash_set( files, segment_file_name, APR_HASH_KEY_STRING, hash_default_str );
             }
             
-            for(i = 0; i <= lcn_list_size( *files ); i++ )
+            for(i = 0; i <= apr_hash_count( files ); i++ )
             {
+                lcn_segment_info_per_commit_t* info = (lcn_segment_info_per_commit_t*) lcn_list_get( segment_infos->segments, i );
                 
+                if( info->segment_info->directory == dir )
+                {
+                    apr_hash_t* segment_info_file_names;
+                    LCNCE( lcn_segment_info_files( info->segment_info, cp, &segment_info_file_names ) );
+                    files = apr_hash_overlay( cp, files, segment_info_file_names );
+                }
             }
+            LCNCE( s );
             
+            for( hi = apr_hash_first( cp, files ); hi; hi = apr_hash_next( hi )  )
+            {
+                const void* hash_key;
+                apr_hash_this( hi, &hash_key, NULL, NULL );
+                LCNCE( lcn_list_add( *segment_file_names, (char*) hash_key ) );
+            }
+            LCNCE( s );
         }
     }
     while(0);
+    
+    if( cp != NULL )
+    {
+        apr_pool_destroy( cp );
+    }
     
     return s;
     
 }
 
+char*
+lcn_segment_infos_get_segments_file_name( lcn_segment_infos_t *segment_infos,
+                                          apr_pool_t *pool )
+{
+    return lcn_index_file_names_file_name_from_generation( LCN_INDEX_FILE_NAMES_SEGMENTS,
+                                                           "",
+                                                           segment_infos->last_generation,
+                                                           pool );
+}
