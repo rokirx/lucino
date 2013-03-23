@@ -319,11 +319,11 @@ lcn_segment_reader_initialize( lcn_segment_reader_t *segment_reader,
 
     do
     {
-        LCNCE( apr_pool_create( &child_pool, pool ));
-
         lcn_bool_t has_deletions;
         lcn_bool_t cf_segment_exists = LCN_FALSE;
         char* cf_segment_file_name= NULL;
+
+        LCNCE( apr_pool_create( &child_pool, pool ));
 
         segment_reader->segment = segment_info->name;
         LCNPV( cf_segment_file_name = apr_pstrcat( child_pool,
@@ -348,7 +348,7 @@ lcn_segment_reader_initialize( lcn_segment_reader_t *segment_reader,
 #if 0
         TODO Compound file support
             // Use compound file directory for some files, if it exists
-            Directory cfsDir = directory();
+             cfsDir = directory();
         if (directory().fileExists(segment + ".cfs")) {
             cfsReader = new CompoundFileReader(directory(), segment + ".cfs");
             cfsDir = cfsReader;

@@ -14,6 +14,9 @@ lcn_compound_file_reader_create ( lcn_compound_file_reader_t **cfr,
 
     do
     {
+        lcn_file_entry_t *last_entry = NULL;
+        lcn_file_entry_t *new_entry = NULL;
+        lcn_bool_t is_start_entry = LCN_TRUE;
         unsigned int count = 0, i = 0;
 
         LCNPV( *cfr = apr_pcalloc( pool, sizeof ( lcn_compound_file_reader_t ) ), APR_ENOMEM );
@@ -26,18 +29,13 @@ lcn_compound_file_reader_create ( lcn_compound_file_reader_t **cfr,
         // read the directory and init files
         LCNCE( lcn_index_input_read_vint( (*cfr)->istream, &count ));
 
-        lcn_file_entry_t *last_entry = NULL;
-        lcn_file_entry_t *new_entry = NULL;
-
-        lcn_bool_t is_start_entry = LCN_TRUE;
-
         for ( i = 0; i < count; i++ )
         {
-            apr_int64_t offset = 0;
-            LCNCE( lcn_index_input_read_long( (*cfr)->istream, &offset ) );
-
             char *file_name = NULL;
             unsigned int len = 0;
+            apr_int64_t offset = 0;
+
+            LCNCE( lcn_index_input_read_long( (*cfr)->istream, &offset ) );
             LCNCE ( lcn_index_input_read_string( (*cfr)->istream, &file_name, &len, (*cfr)->pool ) );
 
             if( new_entry != NULL )
@@ -110,6 +108,8 @@ lcn_compound_file_reader_open_input ( lcn_compound_file_reader_t *cfr,
                                       const char *file_name )
 {
     apr_status_t s = APR_SUCCESS;
+    lcn_file_entry_t *entry;
+
     LCNASSERTR ( cfr->is_open == LCN_TRUE, LCN_ERR_STREAM_CLOSED );
 
     if ( cfr->istream == NULL )
@@ -117,7 +117,7 @@ lcn_compound_file_reader_open_input ( lcn_compound_file_reader_t *cfr,
         return LCN_ERR_INVALID_ARGUMENT;
     }
 
-    lcn_file_entry_t *entry = cfr->list_entry_start;
+    entry = cfr->list_entry_start;
     while ( entry != NULL )
     {
         if (  0 == strcmp( entry->file_name, file_name ) )
@@ -158,12 +158,14 @@ lcn_compound_file_reader_entries_as_list ( lcn_compound_file_reader_t *cfr,
                                     apr_pool_t *pool)
 {
     apr_status_t s;
+    lcn_file_entry_t *entry;
     unsigned int size = lcn_compound_file_reader_entries_size(cfr);
 
     do
     {
         LCNCE(lcn_list_create(entries, size, pool));
-        lcn_file_entry_t *entry = cfr->list_entry_start;
+
+        entry = cfr->list_entry_start;
         while ( entry != NULL )
         {
             LCNCE(lcn_list_add(*entries, entry->file_name));

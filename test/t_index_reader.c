@@ -1,5 +1,3 @@
-#include <unistd.h>
-
 #include "test_all.h"
 #include "lcn_index.h"
 #include "lcn_util.h"

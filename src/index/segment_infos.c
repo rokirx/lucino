@@ -218,13 +218,13 @@ lcn_segment_infos_has_separate_norms( lcn_segment_info_t *segment_info,
     {
         lcn_list_t *file_list;
         char *pattern;
-        int i;
+        unsigned int i, pattern_len;
 
         LCNCE( apr_pool_create( &child_pool, pool ));
         LCNCE( lcn_directory_list(segment_info->directory, &file_list, child_pool) );
         LCNPV( pattern = apr_pstrcat(child_pool, segment_info->name, ".s", NULL ), LCN_ERR_NULL_PTR);
 
-        unsigned int pattern_len = strlen(pattern);
+        pattern_len = strlen(pattern);
 
         for ( i = 0; i < lcn_list_size( file_list ); i++ )
         {
@@ -330,101 +330,6 @@ get_last_commit_generation( lcn_list_t *files, apr_int64_t *gen )
     return s;
 }
 
-
-/* TODO: mayby move to index_file_names.c */
-
-/**
- * Returns a file name that includes the given segment name, your own custom
- * name and extension. The format of the filename is:
- *
- * <segmentName>(_<name>)(.<ext>)
- *
- * NOTE: .<ext> is added to the result file name only if
- * ext is not empty.
- *
- * NOTE: _<segmentSuffix> is added to the result file name only if
- * it's not the empty string
- *
- * NOTE: all custom files should be named using this method, or
- * otherwise some structures may fail to handle them properly (such as if they
- * are added to compound files).
- */
-static char* segment_file_name( const char *segment_name,
-                                const char *segment_suffix,
-                                const char *ext,
-                                apr_pool_t *pool )
-{
-    lcn_bool_t has_ext    = ( NULL != ext && strlen(ext) > 0 );
-    lcn_bool_t has_suffix = ( NULL != segment_suffix && strlen(segment_suffix) > 0 );
-
-    if ( has_ext || has_suffix )
-    {
-        /* mayby TODO: assert !ext.startsWith("."); */
-
-        return apr_pstrcat( pool,
-                            segment_name,
-                            has_suffix ? "_" : "",
-                            has_suffix ? segment_suffix : "",
-                            has_ext ? "." : "",
-                            has_ext ? ext : "",
-                            NULL );
-    }
-    else
-    {
-        return apr_pstrdup( pool, segment_name );
-    }
-}
-
-/**
- * Computes the full file name from base, extension and generation.
- *
- * If the generation is -1, the file name is null.
- * If it's 0, the file name is <base>.<ext>
- * If it's > 0, the file name is <base>_<gen>.<ext>
- *
- * NOTE: .<ext> is added to the name only if ext not an empty string.
- *
- * @param base main part of the file name
- * @param ext extension of the filename
- * @param gen generation
- */
-static char* file_name_from_generation( char *base,
-                                        char *ext,
-                                        apr_int64_t gen,
-                                        apr_pool_t *pool )
-{
-    if ( gen == -1)
-    {
-        return NULL;
-    }
-
-    if ( gen == 0 )
-    {
-        return segment_file_name(base, "", ext, pool );
-    }
-
-    {
-        /* mayby TODO: assert gen > 0 */
-
-        /* max long encoded to base 36: 1z141z4 (length 7), so 10 */
-        /* should be ok                                           */
-
-        char gen_buf[10];
-        lcn_bool_t has_ext = (NULL != ext && strlen(ext) > 0);
-
-        lcn_itoa36( gen, gen_buf );
-
-        return apr_pstrcat( pool,
-                            base,
-                            "_",
-                            gen_buf,
-                            has_ext ? "." : "",
-                            has_ext ? ext : "",
-                            NULL );
-    }
-}
-
-
 /**
  * List the directory and use the highest
  * segments_N file.  This method works well as long
@@ -517,10 +422,10 @@ find_segments_file( lcn_directory_t *directory,
 
         /* more simplification's going on, fix it eventually */
 
-        *segments_file = file_name_from_generation( LCN_INDEX_FILE_NAMES_SEGMENTS,
-                                                    "",
-                                                    gen,
-                                                    pool );
+        *segments_file = lcn_index_file_names_file_name_from_generation( LCN_INDEX_FILE_NAMES_SEGMENTS,
+                                                                         "",
+                                                                         gen,
+                                                                         pool );
 
         flog( stderr, "segments_file:  %s\n", *segments_file );
 
@@ -614,3 +519,52 @@ lcn_segment_infos_read_directory( lcn_segment_infos_t *segment_infos,
 
     return s;
 }
+
+apr_status_t
+lcn_segment_infos_files( lcn_segment_infos_t *segement_infos,
+                         lcn_directory_t *dir,
+                         lcn_bool_t include_segments_file,
+                         apr_pool_t *pool,
+                         lcn_list_t **files )
+{
+    apr_status_t s;
+    apr_pool_t *cp;
+
+    do
+    {
+        int i;
+
+
+        apr_pool_create( &cp, pool );
+
+        LCNCE( lcn_list_create( files, segement_infos->counter, pool ) );
+
+        if ( include_segments_file )
+        {
+            char *segment_file_name = lcn_index_file_names_file_name_from_generation( LCN_INDEX_FILE_NAMES_SEGMENTS,
+                                                                                      "",
+                                                                                      segement_infos->last_generation,
+                                                                                      pool );
+
+            if ( NULL != segment_file_name )
+            {
+                /*
+                 * TODO: if last_generation == -1 we might get null here it seems wrong to
+                 * and null to the files set
+                 */
+                lcn_list_add( *files, segment_file_name );
+            }
+
+            for(i = 0; i <= lcn_list_size( *files ); i++ )
+            {
+
+            }
+
+        }
+    }
+    while(0);
+
+    return s;
+
+}
+

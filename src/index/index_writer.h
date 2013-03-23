@@ -73,18 +73,11 @@ struct lcn_index_writer_t {
      */
     apr_hash_t *reader_map;
 
-    /**
-     * A hook for extending classes to execute operations before pending added and
-     * deleted documents are flushed to the Directory.
-     */
-    void (*do_before_flush) (void);
+    unsigned int flush_count;
 
-    /**
-     * A hook for extending classes to execute operations after pending added and
-     * deleted documents have been flushed to the Directory but before the change
-     * is committed (new segments_N file written).
-     */
-    void (*do_after_flush) (void);
+    unsigned int pending_commit_change_count;
+
+    lcn_list_t *files_to_commit;
 };
 
 #endif /* INDEX_WRITER_H */

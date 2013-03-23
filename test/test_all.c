@@ -19,6 +19,7 @@ teardown_test_dir (void)
 
 int main (void)
 {
+    int fail_count;
     CuString *output = CuStringNew();
     CuSuite* sr = CuSuiteNew();
     apr_status_t s;
@@ -118,9 +119,10 @@ int main (void)
     free( output->buffer );
     free( output );
 
+    fail_count = sr->failCount;
     CuSuiteFree( sr );
 
     apr_terminate();
 
-    return 0;
+    return ( fail_count == 0 ) ? 0 : -1;
 }

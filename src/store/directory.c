@@ -352,9 +352,12 @@ lcn_cfs_directory_list( const lcn_directory_t *directory,
 
     do
     {
+        unsigned int i = 0, j;
+
         printf("\n\n lcn_cfs_directory_list call \?");
-        LCNCE(lcn_compound_file_reader_entries_as_list(directory->cfr, file_list, pool));
-        unsigned int i = 0, j = lcn_list_size(*file_list);
+        LCNCE( lcn_compound_file_reader_entries_as_list(directory->cfr, file_list, pool) );
+        j = lcn_list_size(*file_list);
+
         for(i = 0; i < j; ++i)
         {
             printf("\n\nname: %s", (char*)lcn_list_get(*file_list, i));
@@ -382,12 +385,13 @@ lcn_cfs_directory_create( lcn_directory_t **new_dir,
 
     do
     {
+        lcn_compound_file_reader_t *cfr;
+
         /* initialize type struct */
         LCNCE( lcn_base_directory_create( new_dir, pool ));
         LCNPV( (*new_dir)->name = apr_pstrdup( pool, cf_base_dir->name ), APR_ENOMEM );
 
         /* Set compound file informations */
-        lcn_compound_file_reader_t *cfr;
         LCNCE( lcn_compound_file_reader_create(&cfr, cf_base_dir, cf_name, pool ));
         (*new_dir)->cfr = cfr;
 

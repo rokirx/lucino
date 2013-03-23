@@ -179,5 +179,17 @@ lcn_segment_info_per_commit_num_deleted_docs( lcn_segment_info_per_commit_t *seg
                                               lcn_index_writer_t *index_writer,
                                               apr_pool_t *pool );
 
+/**
+ * Lucene 5.0
+ */
+
+
+apr_status_t
+lcn_segment_infos_files( lcn_segment_infos_t *segement_infos,
+                         lcn_directory_t *dir,
+                         lcn_bool_t include_segments_file,
+                         apr_pool_t *pool,
+                         lcn_list_t **files );
+
 #endif
 

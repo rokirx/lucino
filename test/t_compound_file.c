@@ -46,15 +46,17 @@ assert_same_stream ( CuTest* tc,
                      lcn_index_input_t* expected,
                      lcn_index_input_t* actual )
 {
+    unsigned int expected_size, test_size, expected_pos, test_pos;
+
     CuAssertPtrNotNull(tc, expected);
     CuAssertPtrNotNull(tc, actual);
 
-    unsigned int expected_size = lcn_index_input_size ( expected );
-    unsigned int test_size = lcn_index_input_size ( actual );
+    expected_size = lcn_index_input_size ( expected );
+    test_size = lcn_index_input_size ( actual );
     CuAssertIntEquals ( tc, expected_size, test_size );
 
-    unsigned int expected_pos = lcn_index_input_file_pointer ( expected );
-    unsigned int test_pos = lcn_index_input_file_pointer( actual );
+    expected_pos = lcn_index_input_file_pointer ( expected );
+    test_pos = lcn_index_input_file_pointer( actual );
 
     CuAssertIntEquals ( tc, expected_pos, test_pos );
 }
@@ -65,10 +67,11 @@ assert_same_streams ( CuTest* tc,
                       lcn_index_input_t* actual,
                       long seek_to )
 {
+    unsigned int expected_size = lcn_index_input_size ( expected );
+
     CuAssertPtrNotNull(tc, expected);
     CuAssertPtrNotNull(tc, actual);
 
-    unsigned int expected_size = lcn_index_input_size ( expected );
     if ( seek_to >= 0 && seek_to < expected_size )
     {
         LCN_TEST ( lcn_index_input_seek( expected, seek_to ) );
@@ -126,7 +129,10 @@ create_random_file ( CuTest *tc,
 
         for ( i = 0; i < size; i++ )
         {
-            unsigned int data = ( unsigned int ) rand();
+            /*
+             * rand() liefert Zahlen von 0 bis RND_MAX
+             */
+            unsigned int data = ( ( unsigned int ) rand() ) + 1;
             CuAssertTrue( tc, data > 0 );
             lcn_ostream_write_long( os, data );
         }
@@ -152,11 +158,15 @@ test_single_file(CuTest* tc)
     {
         lcn_directory_t *dir;
         char *seq_file = "seq_file";
+        lcn_compound_file_writer_t *cfw;
+        lcn_compound_file_reader_t *cfr = NULL;
+        lcn_index_input_t *expected = NULL;
+        lcn_index_input_t *actual = NULL;
+
 
         LCN_TEST( lcn_fs_directory_create( &dir, dir_test, LCN_TRUE, pool ) );
         LCN_TEST( create_sequence_file(dir, seq_file, 0, data[i], pool ) );
         // add seq_file to cf writer.
-        lcn_compound_file_writer_t *cfw;
 
         LCN_TEST( lcn_compound_file_writer_create( &cfw, dir, cf_name, pool ) );
 
@@ -167,15 +177,10 @@ test_single_file(CuTest* tc)
         CuAssertIntEquals(tc, 1, size );
 
         LCN_TEST( lcn_compound_file_writer_close( cfw ) );
-
-        lcn_compound_file_reader_t *cfr = NULL;
         LCN_TEST( lcn_compound_file_reader_create( &cfr, dir, cf_name, pool ) );
 
         size = lcn_compound_file_reader_entries_size ( cfr );
         CuAssertIntEquals( tc, 1, size );
-
-        lcn_index_input_t *expected = NULL;
-        lcn_index_input_t *actual = NULL;
 
         LCN_TEST( lcn_directory_open_input( dir, &expected, seq_file, LCN_IO_CONTEXT_READONCE, pool ) );
         LCN_TEST( lcn_compound_file_reader_open_input( cfr, &actual, seq_file ) );
@@ -196,7 +201,11 @@ test_single_file(CuTest* tc)
 static void
 test_two_files ( CuTest* tc )
 {
+    lcn_compound_file_reader_t *cfr;
     lcn_directory_t *dir;
+    lcn_index_input_t *expected = NULL;
+    lcn_index_input_t *actual = NULL;
+    lcn_compound_file_writer_t *cfw;
 
     apr_pool_t *pool;
     apr_pool_create( &pool, NULL );
@@ -205,21 +214,16 @@ test_two_files ( CuTest* tc )
     LCN_TEST( create_sequence_file(dir, "seq_file1", 0, 15, pool ) );
     LCN_TEST( create_sequence_file(dir, "seq_file2", 0, 114, pool ) );
 
-    lcn_compound_file_writer_t *cfw;
     LCN_TEST( lcn_compound_file_writer_create( &cfw, dir, "test_two_files.csf", pool ) );
     LCN_TEST( lcn_compound_file_writer_add_file( cfw, "seq_file1" ) );
     LCN_TEST( lcn_compound_file_writer_add_file( cfw, "seq_file2" ) );
     LCN_TEST( lcn_compound_file_writer_close( cfw ) );
 
-    lcn_compound_file_reader_t *cfr;
     LCN_TEST( lcn_compound_file_reader_create( &cfr, dir, "test_two_files.csf", pool ) );
 
     /**
      * Open seq_file1 and test it.
      */
-    lcn_index_input_t *expected = NULL;
-    lcn_index_input_t *actual = NULL;
-
     LCN_TEST( lcn_directory_open_input( dir, &expected, "seq_file1", LCN_IO_CONTEXT_READONCE, pool ) );
     LCN_TEST( lcn_compound_file_reader_open_input( cfr, &actual, "seq_file1" ) );
 

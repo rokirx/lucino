@@ -3,11 +3,9 @@
 #include "compound_file_writer.h"
 #include "lcn_util.h"
 #include "ostream.h"
-#include <sys/param.h>
-#include <string.h>
 #include "io_context.h"
 
-const unsigned int BUFFER_SIZE = 1024;
+#define BUFFER_SIZE     ( 1024 )
 
 /** Copy the contents of the file with specified extension into the
  *  provided output stream. Use the provided buffer for moving data
@@ -111,13 +109,12 @@ lcn_compound_file_writer_add_file( lcn_compound_file_writer_t *cfw,
                                    const char *seq_file)
 {
     apr_status_t s = APR_SUCCESS;
+    lcn_bool_t seq_file_exists = LCN_FALSE;
     int i = 0, ids_size = 0;
     lcn_file_entry_t *new_file_entry = NULL;
 
     LCNASSERTR ( cfw->is_open == LCN_TRUE, LCN_ERR_STREAM_CLOSED );
     ids_size = lcn_compound_file_writer_ids_size( cfw );
-
-    bool seq_file_exists = LCN_FALSE;
 
     do
     {
@@ -171,11 +168,11 @@ apr_status_t
 lcn_compound_file_writer_close( lcn_compound_file_writer_t *cfw )
 {
     apr_status_t s = APR_SUCCESS;
-    LCNASSERTR ( cfw->is_open == LCN_TRUE, LCN_ERR_STREAM_CLOSED );
-    unsigned int entries_size = 0;
-    int i = 0;
+    unsigned int entries_size = 0, i = 0;
     char buffer[BUFFER_SIZE];
     apr_pool_t *child_pool = NULL;
+
+    LCNASSERTR ( cfw->is_open == LCN_TRUE, LCN_ERR_STREAM_CLOSED );
 
     if ( cfw->merged )
     {
