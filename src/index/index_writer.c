@@ -256,10 +256,41 @@ lcn_index_writer_delete_segments( lcn_index_writer_t *index_writer,
 }
 
 static apr_status_t
-lcn_index_writer_start_commit()
+lcn_index_writer_start_commit( lcn_index_writer_t *index_writer )
 {
     apr_status_t s = APR_SUCCESS;
+    apr_pool_t* cp;
     
+    do
+    {
+        apr_pool_create( cp , index_writer->pool );
+        
+        IW_INFO( "lcn_index_writer_start_commit(): start" );
+
+        if( index_writer->pending_commit_change_count == index_writer->last_commit_change_count )
+        {
+            IW_INFO( "skip lcn_index_writer_start_commit(): no changes pending" );
+            //deleter.decRef(filesToCommit)
+            index_writer->files_to_commit = NULL;    
+
+            break;
+        }
+        
+#if 0
+        TODO: implement
+        if (infoStream.isEnabled("IW")) {
+            infoStream.message("IW", "startCommit index=" + segString(toLiveInfos(toSync)) + " changeCount=" + changeCount);
+        }
+#endif 
+        
+    }
+    while(0);
+    
+    if( cp != NULL )
+    {
+        apr_pool_destroy( cp );
+    }
+        
     return s;
 }
 
@@ -280,30 +311,41 @@ lcn_index_writer_prepare_commit_internal( lcn_index_writer_t* index_writer )
     {
         char* seg_string;
         
-        LCNCE( apr_pool_create( &cp, index_writer->pool ) );;
+        LCNCE( apr_pool_create( &cp, index_writer->pool ) );
         
         LCNCE( lcn_index_writer_seg_string_all( index_writer, &seg_string, cp ) );
         IW_INFO( "prepare_commit: flush" );
         IW_INFO( apr_pstrcat( cp, " index before flush ", seg_string, NULL ) );
-        
+
+#if 0        
         /**
          * Notice: Excluded different threading stuff.
          * look for docWriter.flushAllThreads()
          */
         
-        /**
-         * TODO: docWriter.flushAllThreads()
-         * Then flush_count counts correctly. Actual just lcn_index_writer_do_flush
-         * increments fluch_count.
-         * 
-         * index_writer->flush_count++;
-         */
+
+          TODO: docWriter.flushAllThreads()
+          Then flush_count counts correctly. Actual just lcn_index_writer_do_flush
+          increments fluch_count.
+          
+          index_writer->flush_count++;
+         
         
-        /**
-         * TODO: implement 
-         *      maybeApplyDeletes(true) 
-         *      readerPool.commit(segmentsInfos) 
-         */
+        
+        TODO: implement 
+             maybeApplyDeletes(true) 
+             readerPool.commit(segmentsInfos) 
+
+        
+        
+        // Must clone the segmentInfos while we still
+        // hold fullFlushLock and while sync'd so that
+        // no partial changes (eg a delete w/o
+        // corresponding add from an updateDocument) can
+        // sneak into the commit point:
+        // toCommit = segmentInfos.clone();
+        
+#endif
         
         index_writer->pending_commit_change_count = index_writer->change_count;
         
@@ -312,20 +354,14 @@ lcn_index_writer_prepare_commit_internal( lcn_index_writer_t* index_writer )
                                  LCN_FALSE,
                                  index_writer->pool,
                                  &index_writer->files_to_commit );
-        
-        /** 
-         * TODO: implement
-         * deleter.incRef(filesToCommit);
-         */
-        
-        /**
-         * TODO: implement
-         * docWriter.finishFullFlush(flushSuccess); 
-         */
-        
 #if 0
-        TODO: implement
+      TODO: implement
+      deleter.incRef(filesToCommit);
+    
+      TODO: implement
+      docWriter.finishFullFlush(flushSuccess);
         
+      TODO: implement 
       boolean success = false;
       try {
         if (anySegmentsFlushed) {
@@ -340,8 +376,8 @@ lcn_index_writer_prepare_commit_internal( lcn_index_writer_t* index_writer )
           }
         }
 #endif    
-        
-        lcn_index_writer_start_commit();
+        //TODO: implementieren
+        lcn_index_writer_start_commit( index_writer );
     }
     while(0);
     
