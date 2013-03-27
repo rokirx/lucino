@@ -167,7 +167,7 @@ test_read_string(CuTest* tc)
     CuAssertTrue(tc, len == 26);
     CuAssertStrEquals(tc, buf, "Apache Software Foundation" );
     LCN_TEST( lcn_index_input_read_string( in, &buf, &len, p ) );
-    CuAssertStrEquals(tc, buf, "Teste Sonderzeichen: ouml: ö, auml: ä, uuml: ü, Ouml: Ö, Auml: Ä, Uuml: Ü, szlig: ß" );
+    CuAssertStrEquals(tc, buf, "Teste Sonderzeichen: ouml: \366, auml: \344, uuml: \374, Ouml: \326, Auml: \304, Uuml: \334, szlig: \337" );
     LCN_TEST( lcn_index_input_close( in ) );
 
     f = make_ram_file( "string.dat", tc, p );
@@ -176,7 +176,7 @@ test_read_string(CuTest* tc)
     CuAssertTrue(tc, len == 26);
     CuAssertStrEquals(tc, buf, "Apache Software Foundation" );
     LCN_TEST( lcn_index_input_read_string( in, &buf, &len, p ) );
-    CuAssertStrEquals(tc, buf, "Teste Sonderzeichen: ouml: ö, auml: ä, uuml: ü, Ouml: Ö, Auml: Ä, Uuml: Ü, szlig: ß" );
+    CuAssertStrEquals(tc, buf, "Teste Sonderzeichen: ouml: \366, auml: \344, uuml: \374, Ouml: \326, Auml: \304, Uuml: \334, szlig: \337" );
     LCN_TEST( lcn_index_input_close( in ) );
     LCN_TEST( lcn_directory_close( t_dir ) );
     apr_pool_destroy( p );
@@ -285,7 +285,7 @@ test_clone(CuTest* tc)
     CuAssertStrEquals(tc, buf, "Apache Software Foundation");
     LCN_TEST( lcn_index_input_clone( in, &clone, p ) );
     LCN_TEST( lcn_index_input_read_string( in, &buf, &len, p ) );
-    CuAssertStrEquals(tc, buf, "Teste Sonderzeichen: ouml: ö, auml: ä, uuml: ü, Ouml: Ö, Auml: Ä, Uuml: Ü, szlig: ß" );
+    CuAssertStrEquals(tc, buf, "Teste Sonderzeichen: ouml: \366, auml: \344, uuml: \374, Ouml: \326, Auml: \304, Uuml: \334, szlig: \337" );
     LCN_TEST( lcn_index_input_read_string( clone, &buf, &len, p ) );
     CuAssertIntEquals(tc, len, 26);
     CuAssertStrEquals(tc, buf, "Apache Software Foundation");
@@ -299,7 +299,7 @@ test_clone(CuTest* tc)
     CuAssertStrEquals(tc, buf, "Apache Software Foundation");
     LCN_TEST( lcn_index_input_clone( in, &clone, p ) );
     LCN_TEST( lcn_index_input_read_string( in, &buf, &len, p ) );
-    CuAssertStrEquals(tc, buf, "Teste Sonderzeichen: ouml: ö, auml: ä, uuml: ü, Ouml: Ö, Auml: Ä, Uuml: Ü, szlig: ß");
+    CuAssertStrEquals(tc, buf, "Teste Sonderzeichen: ouml: \366, auml: \344, uuml: \374, Ouml: \326, Auml: \304, Uuml: \334, szlig: \337");
     LCN_TEST( lcn_index_input_read_string( clone, &buf, &len, p ) );
     CuAssertIntEquals(tc, 26, len );
     CuAssertStrEquals(tc, "Apache Software Foundation", buf );
