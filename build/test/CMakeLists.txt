@@ -9,6 +9,7 @@ ADD_EXECUTABLE(
     ../../test/CuTest.c
     ../../test/t_50_document_writer.c
     ../../test/t_50_index_writer.c
+    ../../test/t_50_crc32.c
     ../../test/t_array.c
     ../../test/t_atom.c
     ../../test/t_bitvector.c

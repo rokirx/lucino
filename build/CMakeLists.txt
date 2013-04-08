@@ -107,6 +107,7 @@ ADD_LIBRARY( lucino
              ../src/util/smallfloat
              ../src/util/string_buffer
              ../src/util/to_string_utils
+             ../src/util/crc32
              ../src/util/util )
 
 INCLUDE_DIRECTORIES( ${APR_INCLUDE}

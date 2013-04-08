@@ -1,3 +1,4 @@
+#include "lucene.h"
 #include "crc32.h"
 
 /*-
@@ -42,7 +43,7 @@
  * CRC32 code derived from work by Gary S. Brown.
  */
 
-static uint32_t crc32_tab[] = {
+static apr_uint32_t crc32_tab[] = {
 	0x00000000, 0x77073096, 0xee0e612c, 0x990951ba, 0x076dc419, 0x706af48f,
 	0xe963a535, 0x9e6495a3,	0x0edb8832, 0x79dcb8a4, 0xe0d5e91e, 0x97d2d988,
 	0x09b64c2b, 0x7eb17cbd, 0xe7b82d07, 0x90bf1d91, 0x1db71064, 0x6ab020f2,
@@ -88,16 +89,41 @@ static uint32_t crc32_tab[] = {
 	0xb40bbe37, 0xc30c8ea1, 0x5a05df1b, 0x2d02ef8d
 };
 
-uint32_t
-crc32(uint32_t crc, const void *buf, size_t size)
+
+apr_status_t
+lcn_crc32_create( lcn_crc32_t** crc, apr_pool_t* pool )
+{
+    apr_status_t s = APR_SUCCESS;
+    
+    do
+    {
+        LCNPV( *crc = apr_pcalloc( pool, sizeof ( lcn_crc32_t ) ), APR_ENOMEM );
+        (*crc)->crc = 0;
+    }
+    while(0);
+    
+    return s;
+}
+
+void
+lcn_crc32_update( lcn_crc32_t* crc, const void *buf, apr_size_t len)
 {
     const uint8_t *p;
-
+    
     p = buf;
-    crc = crc ^ ~0U;
+    crc->crc = crc->crc ^ ~0U;
 
-    while (size--)
-            crc = crc32_tab[(crc ^ *p++) & 0xFF] ^ (crc >> 8);
+    while (len--)
+            crc->crc = crc32_tab[(crc->crc ^ *p++) & 0xFF] ^ (crc->crc >> 8);
 
-    return crc ^ ~0U;
+    crc->crc = crc->crc ^ ~0U;
+}
+
+/*
+ * Extensions
+ */
+void
+lcn_crc32_reset( lcn_crc32_t* crc )
+{
+    crc->crc = 0;
 }

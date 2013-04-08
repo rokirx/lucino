@@ -1,10 +1,20 @@
 #ifndef CRC32_H
 #define	CRC32_H
 
-#include "lucene.h"
+typedef struct _lcn_crc32_t {
+    
+    unsigned int crc;
+      
+} lcn_crc32_t; 
 
-uint32_t
-crc32(uint32_t crc, const void *buf, size_t size);
+apr_status_t
+lcn_crc32_create( lcn_crc32_t** crc, apr_pool_t* pool );
+
+void
+lcn_crc32_update( lcn_crc32_t* crc, const void *buf, apr_size_t len);
+
+void
+lcn_crc32_reset( lcn_crc32_t* crc );
 
 #endif	/* CRC32_H */
 
