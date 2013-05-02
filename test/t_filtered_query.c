@@ -1,9 +1,10 @@
+#include <lcn_search.h>
+#include <lcn_index.h>
+#include <lcn_util.h>
+#include <lcn_bitvector.h>
+#include <lcn_analysis.h>
+
 #include "test_all.h"
-#include "lcn_search.h"
-#include "lcn_index.h"
-#include "lcn_analysis.h"
-#include "lcn_util.h"
-#include "lcn_bitvector.h"
 
 static char* test_ids[]= { "KW21",
                            "KW45",
@@ -119,7 +120,7 @@ test_omit_norms( CuTest* tc )
         value = lcn_field_value( field );
         memcpy( val, value, lcn_field_size( field ));
         val[ lcn_field_size( field ) ] = '\0';
-        CuAssertStrEquals( tc, "123Ö", val );
+        CuAssertStrEquals( tc, "123\326", val );
     }
 
     apr_pool_destroy( pool );

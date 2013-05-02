@@ -120,7 +120,7 @@ test_omit_norms( CuTest* tc )
         value = lcn_field_value( field );
         memcpy( val, value, lcn_field_size( field ));
         val[ lcn_field_size( field ) ] = '\0';
-        CuAssertStrEquals( tc, "123Ö", val );
+        CuAssertStrEquals( tc, "123\326", val );
     }
 
     apr_pool_destroy( pool );

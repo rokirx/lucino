@@ -1,0 +1,13 @@
+ISO-8891-1 File
+mappgings:
+
+auml		: \344
+Auml 		: \304
+ouml		: \366
+Ouml 		: \326
+uuml		: \374
+Uuml 		: \334
+paragraph   : \247
+szlig		: \337
+&eacute		: \351
+&aacute		: \341
