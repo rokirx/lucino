@@ -14,6 +14,10 @@
 /** java.lang.Character.MAX_RADIX **/
 #define LCN_INDEX_FILE_NAMES_MAX_RADIX (36)
 
+/** Used for the segments.gen file only!
+ * Whenever you add a new format, make it 1 smaller (negative version logic)! */
+#define LCN_INDEX_FILE_NAMES_FORMAT_SEGMENTS_GEN_CURRENT ( -2 )
+
 char* 
 lcn_index_file_names_segment_file_name( const char *segment_name,
                                         const char *segment_suffix,
