@@ -1,7 +1,7 @@
 #include <lucene.h>
 #include <lcn_store.h>
 
-#include "ostream.h"
+#include "index_output.h"
 #include "../util/crc32.h"
 #include "directory.h"
 #include "index_input.h"

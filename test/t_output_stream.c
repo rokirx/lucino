@@ -1,7 +1,7 @@
 #include "test_all.h"
 #include "lcn_store.h"
 #include "index_input.h"
-#include "ostream.h"
+#include "index_output.h"
 #include "io_context.h"
 
 static void

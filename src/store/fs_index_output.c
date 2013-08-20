@@ -1,6 +1,6 @@
 #include <lcn_store.h>
 
-#include "ostream.h"
+#include "index_output.h"
 
 static apr_status_t
 lcn_fs_ostream_flush_buffer ( lcn_index_output_t *os, char *buf, size_t len )

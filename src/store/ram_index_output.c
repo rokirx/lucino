@@ -1,7 +1,7 @@
 #include <lucene.h>
 #include <lcn_store.h>
 
-#include "ostream.h"
+#include "index_input.h"
 
 static apr_status_t
 lcn_ram_index_output_flush_buffer ( lcn_index_output_t *os, char *buf, size_t len )

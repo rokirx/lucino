@@ -2,7 +2,7 @@
 #include "directory.h"
 #include "compound_file_writer.h"
 #include "lcn_util.h"
-#include "ostream.h"
+#include "index_output.h"
 #include <sys/param.h>
 #include <string.h>
 #include "io_context.h"
