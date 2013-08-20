@@ -24,16 +24,16 @@ lcn_term_infos_writer_write_term( lcn_term_infos_writer_t *term_infos_writer,
         char *term_buf;
 
         /* write shared prefix length */
-        LCNCE( lcn_ostream_write_vint( out, start ) );
+        LCNCE( lcn_index_output_write_vint( out, start ) );
 
         /* write delta length */
-        LCNCE( lcn_ostream_write_vint( out, length ) );
+        LCNCE( lcn_index_output_write_vint( out, length ) );
 
         /* write delta chars */
-        LCNCE( lcn_ostream_write_chars( out, term->text, start, length ) );
+        LCNCE( lcn_index_output_write_chars( out, term->text, start, length ) );
 
         /* write field num */
-        LCNCE( lcn_ostream_write_vint( out, field_number ) );
+        LCNCE( lcn_index_output_write_vint( out, field_number ) );
 
         term_infos_writer->last_term.field = term->field;
         term_infos_writer->last_field_number = field_number;
@@ -84,9 +84,9 @@ lcn_term_infos_writer_close( lcn_term_infos_writer_t *term_infos_writer )
     {
         /* write size after format */
 
-        LCNCE( lcn_ostream_seek( out, 4 ) );
-        LCNCE( lcn_ostream_write_long( out, term_infos_writer->size ) );
-        LCNCE( lcn_ostream_close( out ) );
+        LCNCE( lcn_index_output_seek( out, 4 ) );
+        LCNCE( lcn_index_output_write_long( out, term_infos_writer->size ) );
+        LCNCE( lcn_index_output_close( out ) );
 
         if ( ! term_infos_writer->is_index )
         {
@@ -143,28 +143,28 @@ lcn_term_infos_writer_add_term( lcn_term_infos_writer_t *term_infos_writer,
         out = term_infos_writer->output;
 
         /* write doc freq */
-        LCNCE( lcn_ostream_write_vint( out, term_info->doc_freq ) );
+        LCNCE( lcn_index_output_write_vint( out, term_info->doc_freq ) );
 
         /* write pointers */
-        LCNCE( lcn_ostream_write_vlong( out, term_info->freq_pointer -
+        LCNCE( lcn_index_output_write_vlong( out, term_info->freq_pointer -
                                               term_infos_writer->last_ti.freq_pointer ));
 
-        LCNCE( lcn_ostream_write_vlong( out, term_info->prox_pointer -
+        LCNCE( lcn_index_output_write_vlong( out, term_info->prox_pointer -
                                               term_infos_writer->last_ti.prox_pointer ));
 
         if ( term_info->doc_freq >= term_infos_writer->skip_interval )
         {
-            LCNCE( lcn_ostream_write_vint( out, term_info->skip_offset ) );
+            LCNCE( lcn_index_output_write_vint( out, term_info->skip_offset ) );
         }
 
         if ( term_infos_writer->is_index )
         {
             /* write pointer */
 
-            LCNCE( lcn_ostream_write_vlong( out,
-                                            lcn_ostream_get_file_pointer( term_infos_writer->other->output ) -
+            LCNCE( lcn_index_output_write_vlong( out,
+                                            lcn_index_output_get_file_pointer( term_infos_writer->other->output ) -
                                             term_infos_writer->last_index_pointer ) );
-            term_infos_writer->last_index_pointer = lcn_ostream_get_file_pointer( term_infos_writer->other->output );
+            term_infos_writer->last_index_pointer = lcn_index_output_get_file_pointer( term_infos_writer->other->output );
         }
 
         term_infos_writer->last_ti = *term_info;
@@ -211,16 +211,16 @@ lcn_term_infos_writer_initialize( lcn_term_infos_writer_t *term_infos_writer,
                                                   is_index ? ".tii" : ".tis",
                                                   pool ) );
         /* write format */
-        LCNCE( lcn_ostream_write_int( term_infos_writer->output, LCN_TERM_INFOS_FILE_FORMAT ) );
+        LCNCE( lcn_index_output_write_int( term_infos_writer->output, LCN_TERM_INFOS_FILE_FORMAT ) );
 
         /* leave space for size */
-        LCNCE( lcn_ostream_write_long( term_infos_writer->output, 0 ) );
+        LCNCE( lcn_index_output_write_long( term_infos_writer->output, 0 ) );
 
         /* write index interval */
-        LCNCE( lcn_ostream_write_int( term_infos_writer->output, term_infos_writer->index_interval ) );
+        LCNCE( lcn_index_output_write_int( term_infos_writer->output, term_infos_writer->index_interval ) );
 
         /* write skip interval */
-        LCNCE( lcn_ostream_write_int( term_infos_writer->output, LCN_TERM_INFOS_SKIP_INTERVAL ) );
+        LCNCE( lcn_index_output_write_int( term_infos_writer->output, LCN_TERM_INFOS_SKIP_INTERVAL ) );
     }
     while(0);
 

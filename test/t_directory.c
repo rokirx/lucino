@@ -47,8 +47,8 @@ do_tests( CuTest* tc, lcn_directory_t *t_dir, apr_pool_t *pool )
     LCN_TEST( apr_pool_create( &str_pool, pool ) );
 
     LCN_TEST( lcn_directory_create_output( t_dir, &out, "segments", pool ));
-    lcn_ostream_write_string( out, "TEST" );
-    LCN_TEST( lcn_ostream_close( out ) );
+    lcn_index_output_write_string( out, "TEST" );
+    LCN_TEST( lcn_index_output_close( out ) );
     LCN_TEST( lcn_directory_open_input( t_dir, &in, "segments", LCN_IO_CONTEXT_READONCE, pool ) );
     LCN_TEST( lcn_index_input_read_string( in, &str, &len, pool ) );
     CuAssertStrEquals(tc, str, "TEST" );
@@ -56,8 +56,8 @@ do_tests( CuTest* tc, lcn_directory_t *t_dir, apr_pool_t *pool )
     CuAssertTrue(tc, APR_SUCCESS != lcn_directory_open_input( t_dir, &in, "xxx", LCN_IO_CONTEXT_READONCE, pool ));
 
     LCN_TEST( lcn_directory_create_segment_file( t_dir, &out, "segments", ".abc", pool ));
-    LCN_TEST( lcn_ostream_write_string( out, "TEST abc" ) );
-    LCN_TEST( lcn_ostream_close( out ) );
+    LCN_TEST( lcn_index_output_write_string( out, "TEST abc" ) );
+    LCN_TEST( lcn_index_output_close( out ) );
     LCN_TEST( lcn_directory_open_segment_file( t_dir, &in, "segments", ".abc", pool ) );
     LCN_TEST( lcn_index_input_read_string( in, &str, &len, pool ) );
     CuAssertStrEquals(tc, str, "TEST abc" );
@@ -81,8 +81,8 @@ do_tests( CuTest* tc, lcn_directory_t *t_dir, apr_pool_t *pool )
     /* tests memory management: first write data into dir using a pool */
     LCN_TEST( apr_pool_create(&child_pool, pool ) );
     LCN_TEST( lcn_directory_create_output( t_dir, &out, "afile", child_pool ));
-    LCN_TEST( lcn_ostream_write_string( out, "some test data" ) );
-    LCN_TEST( lcn_ostream_close( out ) );
+    LCN_TEST( lcn_index_output_write_string( out, "some test data" ) );
+    LCN_TEST( lcn_index_output_close( out ) );
     apr_pool_destroy( child_pool );
 
     /* now check whether the data is still available */
@@ -108,11 +108,11 @@ do_tests( CuTest* tc, lcn_directory_t *t_dir, apr_pool_t *pool )
 
     for( i = 0; i<60; i++ )
     {
-        LCN_TEST( lcn_ostream_write_vint( out, i ) );
-        LCN_TEST( lcn_ostream_write_string( out, long_string ) );
+        LCN_TEST( lcn_index_output_write_vint( out, i ) );
+        LCN_TEST( lcn_index_output_write_string( out, long_string ) );
     }
 
-    LCN_TEST( lcn_ostream_close( out ) );
+    LCN_TEST( lcn_index_output_close( out ) );
     apr_pool_destroy( child_pool );
 
     LCN_TEST( apr_pool_create( &child_pool, pool ) );

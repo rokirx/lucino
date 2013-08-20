@@ -58,16 +58,16 @@ lcn_index_writer_write_deletable_files( lcn_index_writer_t *index_writer,
                 "deleteable.new",
                 pool ));
 
-        LCNCE( lcn_ostream_write_int( output, lcn_list_size( files )));
+        LCNCE( lcn_index_output_write_int( output, lcn_list_size( files )));
 
         for ( i = 0; i < lcn_list_size( files ); i++ )
         {
-            LCNCE( lcn_ostream_write_string( output, ( char* ) lcn_list_get( files, i )));
+            LCNCE( lcn_index_output_write_string( output, ( char* ) lcn_list_get( files, i )));
         }
 
         LCNCE( s );
 
-        LCNCE( lcn_ostream_close( output ));
+        LCNCE( lcn_index_output_close( output ));
 
         LCNCE( lcn_directory_rename_file( index_writer->directory,
                 "deleteable.new",

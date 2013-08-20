@@ -22,7 +22,7 @@ lcn_fs_ostream_seek ( lcn_index_output_t *ostream, apr_off_t pos )
     apr_status_t s;
     apr_off_t p = pos;
 
-    LCNCR( lcn_ostream_flush( ostream ) );
+    LCNCR( lcn_index_output_flush( ostream ) );
     ostream->buffer_start = pos;
     LCNCR( apr_file_seek( ostream->_apr_file, APR_SET, &p ) );
 
@@ -55,7 +55,7 @@ lcn_fs_ostream_create ( lcn_index_output_t **new_os,
     do
     {
         LCNPV( *new_os = (lcn_index_output_t*) apr_pcalloc( pool, sizeof(lcn_index_output_t)), APR_ENOMEM );
-        LCNCE( lcn_init_ostream_struct( *new_os, pool ) );
+        LCNCE( lcn_index_output_init_struct( *new_os, pool ) );
         LCNPV( (*new_os)->name = apr_pstrdup( (*new_os)->pool, file_name ), APR_ENOMEM );
         LCNCE( apr_file_open( &((*new_os)->_apr_file),
                               file_name,

@@ -236,9 +236,9 @@ lcn_segment_infos_write( lcn_segment_infos_t *segment_infos,
         LCNCE( lcn_checksum_index_output_create( &segn_output, segn_file, segment_infos->pool ) );
         
         LCNCE( lcn_codec_util_write_header( segn_output, "segments", LCN_SEGMENT_INFOS_VERSION_40 ) );
-        LCNCE( lcn_ostream_write_long( segn_output, segment_infos->version));
-        LCNCE( lcn_ostream_write_int( segn_output, segment_infos->counter ));
-        LCNCE( lcn_ostream_write_int( segn_output, size ));
+        LCNCE( lcn_index_output_write_long( segn_output, segment_infos->version));
+        LCNCE( lcn_index_output_write_int( segn_output, segment_infos->counter ));
+        LCNCE( lcn_index_output_write_int( segn_output, size ));
 
         for( i = 0; i < size; i++ )
         {
@@ -248,14 +248,14 @@ lcn_segment_infos_write( lcn_segment_infos_t *segment_infos,
             LCNCE( lcn_segment_infos_get( segment_infos, &info_pc, i ) );
             info = lcn_segment_info_per_commit_info( info_pc );
 
-            LCNCE( lcn_ostream_write_string( segn_output, info->name ) );
+            LCNCE( lcn_index_output_write_string( segn_output, info->name ) );
 #if 0
             TODO: implement Codec
             
             segnOutput.writeString(si.getCodec().getName());
 #endif
-            LCNCE( lcn_ostream_write_long( segn_output, info_pc->del_gen ) );
-            LCNCE( lcn_ostream_write_int( segn_output, info_pc->del_count ) );
+            LCNCE( lcn_index_output_write_long( segn_output, info_pc->del_gen ) );
+            LCNCE( lcn_index_output_write_int( segn_output, info_pc->del_count ) );
             
 #if 0
             TODO: implement assert
@@ -775,15 +775,15 @@ lcn_segment_infos_write_segments_gen( lcn_directory_t *dir,
                                             LCN_INDEX_FILE_NAMES_SEGMENTS_GEN, 
                                             cp) );
         
-        LCNCE( lcn_ostream_write_int( gen_output, LCN_INDEX_FILE_NAMES_FORMAT_SEGMENTS_GEN_CURRENT ) );
-        LCNCE( lcn_ostream_write_long( gen_output, generation ) );
-        LCNCE( lcn_ostream_write_long( gen_output, generation ) );
+        LCNCE( lcn_index_output_write_int( gen_output, LCN_INDEX_FILE_NAMES_FORMAT_SEGMENTS_GEN_CURRENT ) );
+        LCNCE( lcn_index_output_write_long( gen_output, generation ) );
+        LCNCE( lcn_index_output_write_long( gen_output, generation ) );
     }
     while( 0 );
     
     if ( NULL != gen_output ) 
     {
-        s = lcn_ostream_close ( gen_output );
+        s = lcn_index_output_close ( gen_output );
     }
     
     // It's OK if we fail to write this file since it's

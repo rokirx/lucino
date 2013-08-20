@@ -401,7 +401,7 @@ lcn_field_infos_write( lcn_field_infos_t *field_infos,
 
         LCNCM( lcn_directory_create_output( directory, &ostream, file_name, pool ), file_name );
         LCNCE( lcn_field_infos_write_to_ostream( field_infos, ostream ) );
-        LCNCE( lcn_ostream_close( ostream ) );
+        LCNCE( lcn_index_output_close( ostream ) );
     }
     while(0);
 
@@ -420,14 +420,14 @@ lcn_field_infos_write_to_ostream( lcn_field_infos_t *field_infos,
 
     do
     {
-        LCNCE( lcn_ostream_write_vint( ostream, lcn_field_infos_size( field_infos ) ) );
+        LCNCE( lcn_index_output_write_vint( ostream, lcn_field_infos_size( field_infos ) ) );
 
         while ( NULL != fi )
         {
             unsigned char bits = fi->bits;
 
-            LCNCE( lcn_ostream_write_string( ostream, fi->name ) );
-            LCNCE( lcn_ostream_write_byte( ostream, bits ) );
+            LCNCE( lcn_index_output_write_string( ostream, fi->name ) );
+            LCNCE( lcn_index_output_write_byte( ostream, bits ) );
 
             fi = fi->next;
         }

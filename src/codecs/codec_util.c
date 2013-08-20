@@ -17,9 +17,9 @@ lcn_codec_util_write_header( lcn_index_output_t *out,
         return LCN_ERR_CODE_MUSST_BE_SIMPLE_ASCII;
     }
     
-    LCNCR( lcn_ostream_write_int( out, LCN_CODEC_MAGIC ) );
-    LCNCR( lcn_ostream_write_string( out, codec ) );
-    LCNCR( lcn_ostream_write_int( out, version ) );
+    LCNCR( lcn_index_output_write_int( out, LCN_CODEC_MAGIC ) );
+    LCNCR( lcn_index_output_write_string( out, codec ) );
+    LCNCR( lcn_index_output_write_int( out, version ) );
     
     return s;
 }

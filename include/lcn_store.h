@@ -20,7 +20,7 @@ BEGIN_C_DECLS
  */
 
 apr_status_t
-lcn_init_ostream_struct ( lcn_index_output_t *new_os, apr_pool_t *pool );
+lcn_index_output_init_struct ( lcn_index_output_t *new_os, apr_pool_t *pool );
 
 unsigned int
 lcn_index_input_size ( lcn_index_input_t *input_stream );
@@ -182,40 +182,40 @@ lcn_cs_input_stream_create( lcn_index_input_t **new_is,
  */
 
 apr_off_t
-lcn_ostream_get_file_pointer( lcn_index_output_t *ostream );
+lcn_index_output_get_file_pointer( lcn_index_output_t *ostream );
 
 
 apr_status_t
-lcn_ostream_seek( lcn_index_output_t *ostream, apr_off_t pos );
+lcn_index_output_seek( lcn_index_output_t *ostream, apr_off_t pos );
 
 
 apr_status_t
-lcn_ostream_write_chars( lcn_index_output_t *os,
+lcn_index_output_write_chars( lcn_index_output_t *os,
                          const char *s,
                          apr_off_t start,
                          unsigned int length );
 
 apr_status_t
-lcn_ostream_write_vlong( lcn_index_output_t *ostream,
+lcn_index_output_write_vlong( lcn_index_output_t *ostream,
                          apr_uint64_t n );
 
 /**
  * Writes a long as eight bytes.
  */
 apr_status_t
-lcn_ostream_write_long( lcn_index_output_t *ostream,
+lcn_index_output_write_long( lcn_index_output_t *ostream,
                         apr_uint64_t n );
 
 /**
  * Writes an unsigned int as four bytes.
  */
 apr_status_t
-lcn_ostream_write_int16( lcn_index_output_t *ostream,
+lcn_index_output_write_int16( lcn_index_output_t *ostream,
                          unsigned int n );
 
 
 apr_status_t
-lcn_ostream_write_byte( lcn_index_output_t *ostream,
+lcn_index_output_write_byte( lcn_index_output_t *ostream,
                         unsigned char b );
 
 
@@ -227,7 +227,7 @@ lcn_ostream_write_byte( lcn_index_output_t *ostream,
  *
  */
 apr_status_t
-lcn_ostream_write_bytes( lcn_index_output_t *ostream,
+lcn_index_output_write_bytes( lcn_index_output_t *ostream,
                          const char *buf,
                          unsigned int size );
 
@@ -237,7 +237,7 @@ lcn_ostream_write_bytes( lcn_index_output_t *ostream,
  *
  */
 apr_status_t
-lcn_ostream_flush( lcn_index_output_t *ostream );
+lcn_index_output_flush( lcn_index_output_t *ostream );
 
 apr_status_t
 lcn_ram_ostream_reset( lcn_index_output_t *ostream );
@@ -248,32 +248,32 @@ lcn_ram_ostream_reset( lcn_index_output_t *ostream );
  * supported.
  */
 apr_status_t
-lcn_ostream_write_vint( lcn_index_output_t *ostream,
+lcn_index_output_write_vint( lcn_index_output_t *ostream,
                         unsigned int n );
 
 apr_status_t
-lcn_ostream_write_bitvector( lcn_index_output_t *os, lcn_bitvector_t *bitvector );
+lcn_index_output_write_bitvector( lcn_index_output_t *os, lcn_bitvector_t *bitvector );
 
 
 /**
  * Writes a string to the output
  */
 apr_status_t
-lcn_ostream_write_string( lcn_index_output_t *ostream,
+lcn_index_output_write_string( lcn_index_output_t *ostream,
                           const char *str );
 
 /**
  * Flushes the buffers and cloes files of the output stream
  */
 apr_status_t
-lcn_ostream_close( lcn_index_output_t *ostream );
+lcn_index_output_close( lcn_index_output_t *ostream );
 
 /**
  * Writes an int as four bytes. It must be possible
  * to write negative integers.
  */
 apr_status_t
-lcn_ostream_write_int ( lcn_index_output_t *ostream, int n );
+lcn_index_output_write_int ( lcn_index_output_t *ostream, int n );
 
 
 /**

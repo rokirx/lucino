@@ -70,12 +70,12 @@ lcn_bitvector_write_internal_uncompressed( lcn_bitvector_t *bitvector,
      *  write count
      *  write bits
      */
-    LCNCR( lcn_ostream_write_int( out, (int) lcn_bitvector_size( bitvector )));
-    LCNCR( lcn_ostream_write_int( out, (int) lcn_bitvector_count( bitvector )));
+    LCNCR( lcn_index_output_write_int( out, (int) lcn_bitvector_size( bitvector )));
+    LCNCR( lcn_index_output_write_int( out, (int) lcn_bitvector_count( bitvector )));
 
     if ( NULL != bitvector->bits )
     {
-        LCNCR( lcn_ostream_write_bytes( out,
+        LCNCR( lcn_index_output_write_bytes( out,
                                         bitvector->bits,
                                         (size_t) ((bitvector->size>>3) + 1) ) );
     }
@@ -85,7 +85,7 @@ lcn_bitvector_write_internal_uncompressed( lcn_bitvector_t *bitvector,
 
         while( bytes-- > 0 )
         {
-            LCNCR( lcn_ostream_write_byte( out, 0 ) );
+            LCNCR( lcn_index_output_write_byte( out, 0 ) );
         }
     }
 
@@ -118,10 +118,10 @@ lcn_bitvector_write_internal ( lcn_bitvector_t *bv,
      *  only in a new style file is the second integer, former count,
      *  greater then the first integer, forme size.
      */
-    LCNCR( lcn_ostream_write_int( out, 1 ));
-    LCNCR( lcn_ostream_write_int( out, 2 ));
-    LCNCR( lcn_ostream_write_int( out, (int) lcn_bitvector_size( bv )));
-    LCNCR( lcn_ostream_write_int( out, (int) lcn_bitvector_count( bv )));
+    LCNCR( lcn_index_output_write_int( out, 1 ));
+    LCNCR( lcn_index_output_write_int( out, 2 ));
+    LCNCR( lcn_index_output_write_int( out, (int) lcn_bitvector_size( bv )));
+    LCNCR( lcn_index_output_write_int( out, (int) lcn_bitvector_count( bv )));
 
     if ( NULL != bv->bits )
     {
@@ -129,7 +129,7 @@ lcn_bitvector_write_internal ( lcn_bitvector_t *bv,
 
         if ( lcn_bitvector_get_bit( bv, 0 ))
         {
-            LCNCR( lcn_ostream_write_vint( out, 0 ));
+            LCNCR( lcn_index_output_write_vint( out, 0 ));
         }
 
         while( i < lcn_bitvector_size( bv ))
@@ -145,12 +145,12 @@ lcn_bitvector_write_internal ( lcn_bitvector_t *bv,
                 i++;
             }
 
-            LCNCR( lcn_ostream_write_vint( out, gap ));
+            LCNCR( lcn_index_output_write_vint( out, gap ));
         }
     }
     else
     {
-        LCNCR( lcn_ostream_write_vint( out, (int) lcn_bitvector_size( bv )));
+        LCNCR( lcn_index_output_write_vint( out, (int) lcn_bitvector_size( bv )));
     }
 
     return s;
@@ -175,7 +175,7 @@ lcn_bitvector_dump_file( lcn_bitvector_t* bitvector,
 
     if ( NULL != os )
     {
-        apr_status_t stat = lcn_ostream_close( os );
+        apr_status_t stat = lcn_index_output_close( os );
         s = s ? s : stat;
     }
 
@@ -206,7 +206,7 @@ lcn_bitvector_write_file ( lcn_bitvector_t* bitvector,
 
     if ( NULL != os )
     {
-        apr_status_t stat = lcn_ostream_close( os );
+        apr_status_t stat = lcn_index_output_close( os );
         s = s ? s : stat;
     }
 
@@ -236,7 +236,7 @@ lcn_bitvector_write ( lcn_bitvector_t *bitvector,
 
     if ( NULL != out )
     {
-        apr_status_t stat = lcn_ostream_close( out );
+        apr_status_t stat = lcn_index_output_close( out );
         s = s ? s : stat;
     }
 

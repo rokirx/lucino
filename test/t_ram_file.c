@@ -17,10 +17,10 @@ test_read_write(CuTest* tc)
 
     for( i = 0; i < 100; i++ )
     {
-        LCN_TEST( lcn_ostream_write_byte( os, i ));
+        LCN_TEST( lcn_index_output_write_byte( os, i ));
     }
 
-    LCN_TEST( lcn_ostream_close( os ) );
+    LCN_TEST( lcn_index_output_close( os ) );
 
     LCN_TEST( lcn_ram_input_stream_create( &is, NULL, file, p ) );
 

@@ -30,11 +30,11 @@ create_sequence_file( lcn_directory_t *dir,
 
         for( i = 0; i <= size; i++ )
         {
-            lcn_ostream_write_int( os, start);
+            lcn_index_output_write_int( os, start);
             start++;
         }
 
-        lcn_ostream_close( os );
+        lcn_index_output_close( os );
     }
     while(0);
 
@@ -128,10 +128,10 @@ create_random_file ( CuTest *tc,
         {
             unsigned int data = ( unsigned int ) rand();
             CuAssertTrue( tc, data > 0 );
-            lcn_ostream_write_long( os, data );
+            lcn_index_output_write_long( os, data );
         }
 
-        lcn_ostream_close ( os );
+        lcn_index_output_close ( os );
     }
     while(0);
 

@@ -71,7 +71,7 @@ lcn_ram_ostream_seek ( lcn_index_output_t *os, apr_off_t pos )
 {
     apr_status_t s;
 
-    LCNCR( lcn_ostream_flush( os ) );
+    LCNCR( lcn_index_output_flush( os ) );
     os->buffer_start = pos;
     os->pointer = pos;
 
@@ -96,7 +96,7 @@ lcn_ram_ostream_write_to ( lcn_index_output_t *ram_ostream,
                            lcn_index_output_t *ostream )
 {
     apr_status_t s;
-    LCNCR( lcn_ostream_flush( ram_ostream ) );
+    LCNCR( lcn_index_output_flush( ram_ostream ) );
     LCNCR( lcn_ram_file_copy_to_ostream( ram_ostream->_file, ostream ));
     return s;
 }
@@ -125,7 +125,7 @@ lcn_ram_file_copy_to_ostream ( lcn_ram_file_t *file,
         for ( i = 0; i < buf_count; i++ )
         {
             buf = lcn_list_get( file->buffers, i );
-            LCNCE( lcn_ostream_write_bytes( ostream, buf, LCN_STREAM_BUFFER_SIZE ) );
+            LCNCE( lcn_index_output_write_bytes( ostream, buf, LCN_STREAM_BUFFER_SIZE ) );
         }
 
         if ( s )
@@ -135,7 +135,7 @@ lcn_ram_file_copy_to_ostream ( lcn_ram_file_t *file,
 
         buf = lcn_list_get( file->buffers, i );
         i = file->length % LCN_STREAM_BUFFER_SIZE;
-        LCNCE( lcn_ostream_write_bytes( ostream, buf, i ) );
+        LCNCE( lcn_index_output_write_bytes( ostream, buf, i ) );
     }
     while(0);
 
@@ -152,7 +152,7 @@ lcn_ram_ostream_create ( lcn_index_output_t **new_os,
     do
     {
         LCNPV( *new_os = (lcn_index_output_t*) apr_pcalloc( pool, sizeof(lcn_index_output_t)), APR_ENOMEM );
-        LCNCE( lcn_init_ostream_struct( *new_os, pool ) );
+        LCNCE( lcn_index_output_init_struct( *new_os, pool ) );
 
         (*new_os)->_length       = lcn_ram_ostream_length;
         (*new_os)->_seek         = lcn_ram_ostream_seek;

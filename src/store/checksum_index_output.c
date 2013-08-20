@@ -27,7 +27,7 @@ lcn_checksum_index_output_create( lcn_index_output_t **os,
         lcn_checksum_index_output_t *cio;
         
         LCNPV( cio = lcn_object_create( lcn_checksum_index_output_t, pool ), APR_ENOMEM );
-        LCNCE( lcn_init_ostream_struct( &cio->os, pool ) );
+        LCNCE( lcn_index_output_init_struct( &cio->os, pool ) );
         cio->main = main;
         LCNCE( lcn_crc32_create( &cio->digest, pool) ); 
         
@@ -46,7 +46,7 @@ lcn_checksum_index_output_write_bytes( lcn_index_output_t *os,
     lcn_checksum_index_output_t *cio = ( lcn_checksum_index_output_t* ) os;
     
     lcn_crc32_update( cio->digest, (const void*) buf, len );
-    return lcn_ostream_write_bytes( cio->main, buf, (unsigned int) len );
+    return lcn_index_output_write_bytes( cio->main, buf, (unsigned int) len );
 }
 
 unsigned int
@@ -61,7 +61,7 @@ lcn_checksum_index_output_finish_commit( lcn_index_output_t *os )
     lcn_checksum_index_output_t *cio = ( lcn_checksum_index_output_t* ) os;
     unsigned int crc = cio->digest->crc;
     
-    return lcn_ostream_write_long( cio->main, crc );
+    return lcn_index_output_write_long( cio->main, crc );
 }
 
 /**
@@ -76,12 +76,12 @@ lcn_checksum_index_output_write_string_string_hash( lcn_index_output_t *os,
     
     if ( NULL == hash )
     {
-        LCNCR( lcn_ostream_write_int( cio->main, 0 ) );
+        LCNCR( lcn_index_output_write_int( cio->main, 0 ) );
     }
     else
     {
         unsigned int size = apr_hash_count( hash ); 
-        lcn_ostream_write_int( cio->main, size );
+        lcn_index_output_write_int( cio->main, size );
 #if 0
         TODO: implement
         
@@ -112,7 +112,7 @@ lcn_checksum_index_output_close( lcn_index_output_t* os )
 {
     apr_status_t s = APR_SUCCESS;
     
-    LCNCR( lcn_ostream_close( ( ( lcn_checksum_index_output_t* ) os)->main ) );
+    LCNCR( lcn_index_output_close( ( ( lcn_checksum_index_output_t* ) os)->main ) );
     
     return s;
 }

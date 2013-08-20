@@ -22,9 +22,9 @@ make_ram_file ( char *file_name, CuTest *tc, apr_pool_t *pool )
 
     LCN_TEST( lcn_index_input_read_bytes( in, buf, 0, &len ) );
     len = lcn_index_input_size( in );
-    LCN_TEST( lcn_ostream_write_bytes( out, buf, len ) );
+    LCN_TEST( lcn_index_output_write_bytes( out, buf, len ) );
 
-    LCN_TEST( lcn_ostream_close( out ) );
+    LCN_TEST( lcn_index_output_close( out ) );
     LCN_TEST( lcn_index_input_close( in ) );
 
     return f;

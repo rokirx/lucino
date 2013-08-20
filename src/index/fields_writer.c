@@ -71,7 +71,7 @@ lcn_fields_writer_add_document( lcn_fields_writer_t *fields_writer,
         lcn_index_output_t *f_out = fields_writer->fields_stream;
         lcn_index_output_t *i_out = fields_writer->index_stream;
 
-        LCNCE( lcn_ostream_write_long( i_out, lcn_ostream_get_file_pointer( f_out ) ));
+        LCNCE( lcn_index_output_write_long( i_out, lcn_index_output_get_file_pointer( f_out ) ));
 
         for( i = 0; i < lcn_list_size( doc->field_list ); i++ )
         {
@@ -84,7 +84,7 @@ lcn_fields_writer_add_document( lcn_fields_writer_t *fields_writer,
             }
         }
 
-        LCNCE( lcn_ostream_write_vint( f_out, stored_count ) );
+        LCNCE( lcn_index_output_write_vint( f_out, stored_count ) );
 
         for( i = 0; i < lcn_list_size( doc->field_list ); i++ )
         {
@@ -104,7 +104,7 @@ lcn_fields_writer_add_document( lcn_fields_writer_t *fields_writer,
                                                      &number,
                                                      lcn_field_name( doc_field ) ) );
 
-                LCNCE( lcn_ostream_write_vint( f_out, number ) );
+                LCNCE( lcn_index_output_write_vint( f_out, number ) );
 
                 if ( lcn_field_is_tokenized( doc_field ) )
                 {
@@ -116,18 +116,18 @@ lcn_fields_writer_add_document( lcn_fields_writer_t *fields_writer,
                     byte |= LCN_FIELDS_WRITER_BINARY;
                 }
 
-                LCNCE( lcn_ostream_write_byte( f_out, byte ) );
+                LCNCE( lcn_index_output_write_byte( f_out, byte ) );
 
                 if ( lcn_field_is_binary( doc_field ) )
                 {
-                    LCNCE( lcn_ostream_write_vint( f_out, lcn_field_size( doc_field ) ) );
-                    LCNCE( lcn_ostream_write_bytes( f_out,
+                    LCNCE( lcn_index_output_write_vint( f_out, lcn_field_size( doc_field ) ) );
+                    LCNCE( lcn_index_output_write_bytes( f_out,
                                                     (char*)lcn_field_value( doc_field ),
                                                     lcn_field_size( doc_field ) ) );
                 }
                 else
                 {
-                    lcn_ostream_write_string( f_out, lcn_field_value( doc_field ) );
+                    lcn_index_output_write_string( f_out, lcn_field_value( doc_field ) );
                 }
             }
         }
@@ -140,8 +140,8 @@ lcn_fields_writer_add_document( lcn_fields_writer_t *fields_writer,
 apr_status_t
 lcn_fields_writer_close( lcn_fields_writer_t *fields_writer )
 {
-    apr_status_t s1 = lcn_ostream_close( fields_writer->fields_stream );
-    apr_status_t s2 = lcn_ostream_close( fields_writer->index_stream );
+    apr_status_t s1 = lcn_index_output_close( fields_writer->fields_stream );
+    apr_status_t s2 = lcn_index_output_close( fields_writer->index_stream );
 
     if ( s1 )
     {

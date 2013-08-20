@@ -217,8 +217,8 @@ lcn_segment_merger_reset_skip( lcn_segment_merger_t *segment_merger )
     apr_status_t s;
     LCNCR( lcn_ram_ostream_reset( segment_merger->skip_buffer ) );
     segment_merger->last_skip_doc = 0;
-    segment_merger->last_skip_freq_pointer = lcn_ostream_get_file_pointer( segment_merger->freq_output );
-    segment_merger->last_skip_prox_pointer = lcn_ostream_get_file_pointer( segment_merger->prox_output );
+    segment_merger->last_skip_freq_pointer = lcn_index_output_get_file_pointer( segment_merger->freq_output );
+    segment_merger->last_skip_prox_pointer = lcn_index_output_get_file_pointer( segment_merger->prox_output );
     return s;
 }
 
@@ -227,13 +227,13 @@ lcn_segment_merger_buffer_skip( lcn_segment_merger_t *segment_merger, unsigned i
 {
     apr_status_t s;
 
-    apr_off_t freq_pointer = lcn_ostream_get_file_pointer( segment_merger->freq_output );
-    apr_off_t prox_pointer = lcn_ostream_get_file_pointer( segment_merger->prox_output );
+    apr_off_t freq_pointer = lcn_index_output_get_file_pointer( segment_merger->freq_output );
+    apr_off_t prox_pointer = lcn_index_output_get_file_pointer( segment_merger->prox_output );
 
-    LCNCR( lcn_ostream_write_vint( segment_merger->skip_buffer, doc - segment_merger->last_skip_doc ));
-    LCNCR( lcn_ostream_write_vint( segment_merger->skip_buffer,
+    LCNCR( lcn_index_output_write_vint( segment_merger->skip_buffer, doc - segment_merger->last_skip_doc ));
+    LCNCR( lcn_index_output_write_vint( segment_merger->skip_buffer,
                                    (unsigned int) (freq_pointer-segment_merger->last_skip_freq_pointer)));
-    LCNCR( lcn_ostream_write_vint( segment_merger->skip_buffer,
+    LCNCR( lcn_index_output_write_vint( segment_merger->skip_buffer,
                                    (unsigned int) (prox_pointer-segment_merger->last_skip_prox_pointer)));
 
     segment_merger->last_skip_doc = doc;
@@ -307,12 +307,12 @@ lcn_segment_merger_append_postings( lcn_segment_merger_t *segment_merger,
                 if ( 1 == freq )
                 {
                     /* write doc & freq=1 */
-                    LCNCE( lcn_ostream_write_vint( segment_merger->freq_output, doc_code | 1 ));
+                    LCNCE( lcn_index_output_write_vint( segment_merger->freq_output, doc_code | 1 ));
                 }
                 else
                 {
-                    LCNCE( lcn_ostream_write_vint( segment_merger->freq_output, doc_code ) ); /* write doc         */
-                    LCNCE( lcn_ostream_write_vint( segment_merger->freq_output, freq     ) ); /* write freq in doc */
+                    LCNCE( lcn_index_output_write_vint( segment_merger->freq_output, doc_code ) ); /* write doc         */
+                    LCNCE( lcn_index_output_write_vint( segment_merger->freq_output, freq     ) ); /* write freq in doc */
                 }
 
                 /* write position deltas */
@@ -323,7 +323,7 @@ lcn_segment_merger_append_postings( lcn_segment_merger_t *segment_merger,
                 {
                     apr_ssize_t position;
                     LCNCE( lcn_term_positions_next_position( postings, &position ));
-                    LCNCE( lcn_ostream_write_vint( segment_merger->prox_output, position - last_position ));
+                    LCNCE( lcn_index_output_write_vint( segment_merger->prox_output, position - last_position ));
                     last_position = position;
                 }
             }
@@ -347,7 +347,7 @@ lcn_segment_merger_write_skip( lcn_segment_merger_t *segment_merger,
                                apr_off_t *skip_pointer)
 {
     apr_status_t s;
-    *skip_pointer = lcn_ostream_get_file_pointer( segment_merger->freq_output );
+    *skip_pointer = lcn_index_output_get_file_pointer( segment_merger->freq_output );
     LCNCR( lcn_ram_ostream_write_to( segment_merger->skip_buffer, segment_merger->freq_output ));
     return s;
 }
@@ -361,8 +361,8 @@ lcn_segment_merger_merge_term_info( lcn_segment_merger_t *segment_merger,
 
     do
     {
-        apr_off_t freq_pointer = lcn_ostream_get_file_pointer( segment_merger->freq_output );
-        apr_off_t prox_pointer = lcn_ostream_get_file_pointer( segment_merger->prox_output );
+        apr_off_t freq_pointer = lcn_index_output_get_file_pointer( segment_merger->freq_output );
+        apr_off_t prox_pointer = lcn_index_output_get_file_pointer( segment_merger->prox_output );
         unsigned int df;
         apr_off_t skip_pointer;
 
@@ -552,7 +552,7 @@ lcn_segment_merger_merge_terms( lcn_segment_merger_t *segment_merger )
 
         if ( NULL != segment_merger->freq_output )
         {
-            stat = lcn_ostream_close( segment_merger->freq_output );
+            stat = lcn_index_output_close( segment_merger->freq_output );
             segment_merger->freq_output = NULL;
         }
 
@@ -560,7 +560,7 @@ lcn_segment_merger_merge_terms( lcn_segment_merger_t *segment_merger )
 
         if ( NULL != segment_merger->prox_output )
         {
-            stat = lcn_ostream_close( segment_merger->prox_output );
+            stat = lcn_index_output_close( segment_merger->prox_output );
             segment_merger->prox_output = NULL;
         }
 
@@ -685,14 +685,14 @@ lcn_segment_merger_merge_norms( lcn_segment_merger_t *segment_merger )
                     {
                         if ( ! lcn_index_reader_is_deleted( reader, k ))
                         {
-                            LCNCE( lcn_ostream_write_byte( output, input->arr[ k ] ));
+                            LCNCE( lcn_index_output_write_byte( output, input->arr[ k ] ));
                         }
                     }
                 }
 
                 if ( NULL != output )
                 {
-                    apr_status_t stat = lcn_ostream_close( output );
+                    apr_status_t stat = lcn_index_output_close( output );
                     s = ( s ? s : stat );
                 }
             }

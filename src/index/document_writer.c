@@ -528,12 +528,12 @@ lcn_document_writer_write_norms( lcn_document_writer_t *document_writer,
                                                     apr_pstrcat( pool, segment_name, ".f", apr_itoa( pool, i ), NULL ),
                                                     pool ));
 
-                LCNCE( lcn_ostream_write_byte( norms, lcn_similarity_encode_norm( document_writer->similarity, norm ) ));
+                LCNCE( lcn_index_output_write_byte( norms, lcn_similarity_encode_norm( document_writer->similarity, norm ) ));
             }
 
             if ( NULL != norms )
             {
-                apr_status_t st = lcn_ostream_close( norms );
+                apr_status_t st = lcn_index_output_close( norms );
                 s = s ? s : st;
             }
 
@@ -620,8 +620,8 @@ lcn_document_writer_write_postings( lcn_document_writer_t *document_writer,
 
                 /* add an entry to the dictionary with pointers to prox and freq files */
                 ti.doc_freq = 1;
-                ti.freq_pointer = lcn_ostream_get_file_pointer( freq );
-                ti.prox_pointer = lcn_ostream_get_file_pointer( prox );
+                ti.freq_pointer = lcn_index_output_get_file_pointer( freq );
+                ti.prox_pointer = lcn_index_output_get_file_pointer( prox );
                 ti.skip_offset  = -1;
 
                 LCNCE( lcn_term_infos_writer_add_term ( tis,
@@ -633,12 +633,12 @@ lcn_document_writer_write_postings( lcn_document_writer_t *document_writer,
 
                 if ( 1 == posting_freq )  /* optimize freq == 1 */
                 {
-                    LCNCE( lcn_ostream_write_vint( freq, 1 )); /* set low bit of doc num */
+                    LCNCE( lcn_index_output_write_vint( freq, 1 )); /* set low bit of doc num */
                 }
                 else
                 {
-                    LCNCE( lcn_ostream_write_vint( freq, 0 ));              /* the document number */
-                    LCNCE( lcn_ostream_write_vint( freq, posting_freq ));   /* frequency in doc    */
+                    LCNCE( lcn_index_output_write_vint( freq, 0 ));              /* the document number */
+                    LCNCE( lcn_index_output_write_vint( freq, posting_freq ));   /* frequency in doc    */
                 }
 
                 last_position = 0;
@@ -647,7 +647,7 @@ lcn_document_writer_write_postings( lcn_document_writer_t *document_writer,
                 for( j = 0; j < posting_freq; j++ )  /* use delta-encoding */
                 {
                     unsigned int position = positions[j];
-                    LCNCE( lcn_ostream_write_vint( prox, position - last_position ));
+                    LCNCE( lcn_index_output_write_vint( prox, position - last_position ));
                     last_position = position;
                 }
 
@@ -696,13 +696,13 @@ lcn_document_writer_write_postings( lcn_document_writer_t *document_writer,
 
     if ( NULL != freq )
     {
-        s_save = lcn_ostream_close( freq );
+        s_save = lcn_index_output_close( freq );
         s = ( s ? s : s_save );
     }
 
     if ( NULL != prox )
     {
-        s_save = lcn_ostream_close( prox );
+        s_save = lcn_index_output_close( prox );
         s = ( s ? s : s_save );
     }
 
