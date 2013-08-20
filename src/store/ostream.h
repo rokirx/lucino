@@ -1,9 +1,8 @@
 #ifndef LCN_OSTREAM_H
 #define LCN_OSTREAM_H
 
-#include "lucene.h"
-#include "lcn_bitvector.h"
-
+#include <lucene.h>
+#include <lcn_bitvector.h>
 
 struct lcn_ram_file_t {
 
@@ -26,9 +25,6 @@ struct lcn_ram_file_t {
 
 };
 
-
-
-
 struct lcn_ostream_t  {
 
     apr_pool_t *pool;
@@ -47,11 +43,12 @@ struct lcn_ostream_t  {
      * file pointer = buffer_start + buffer_position
      */
     apr_off_t  buffer_start;      /* position in file of buffer */
+    
     apr_off_t  buffer_position;   /* next byte to read          */
+    
     unsigned int buffer_length;     /* end of valid bytes         */
 
     apr_status_t (*_length) ( lcn_ostream_t *ostream, apr_off_t * off);
-
 
     /**
      * Returns LUCENE_OK on success, LUCENE_IOERR on failure
@@ -65,6 +62,6 @@ struct lcn_ostream_t  {
                                     char *buffer,
                                     size_t buf_size );
 
-}  ;
+};
 
 #endif /* OSTREAM_H */

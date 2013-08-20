@@ -19,6 +19,9 @@ BEGIN_C_DECLS
  * @{
  */
 
+apr_status_t
+lcn_init_ostream_struct ( lcn_ostream_t *new_os, apr_pool_t *pool );
+
 unsigned int
 lcn_index_input_size ( lcn_index_input_t *input_stream );
 
@@ -305,6 +308,28 @@ apr_status_t
 lcn_ram_ostream_write_to ( lcn_ostream_t *ram_ostream,
                            lcn_ostream_t *ostream );
 
+apr_status_t
+lcn_checksum_index_output_create( lcn_ostream_t **os,
+                                  lcn_ostream_t *main,
+                                  apr_pool_t *pool );
+
+apr_status_t
+lcn_checksum_index_output_write_bytes( lcn_ostream_t *os,
+                                       const char *buf,
+                                       apr_size_t len );
+
+unsigned int
+lcn_checksum_index_output_get_checksum( lcn_ostream_t *os );
+
+apr_status_t
+lcn_checksum_index_output_finish_commit( lcn_ostream_t *os );
+
+apr_status_t
+lcn_checksum_index_output_write_string_string_hash( lcn_ostream_t *os, 
+                                                    apr_hash_t *hash );
+apr_status_t
+lcn_checksum_index_output_close( lcn_ostream_t* os );
+
 /** @} */
 /** @} */
 
@@ -314,6 +339,8 @@ lcn_ram_file_get_length ( lcn_ram_file_t *ram_file );
 apr_status_t
 lcn_file_exists( const char *file_name, lcn_bool_t *flag, apr_pool_t *pool );
 
+void
+lcn_ostream_copy( lcn_ostream_t *src, lcn_ostream_t *dst );
 
 END_C_DECLS
 

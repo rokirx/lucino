@@ -255,34 +255,109 @@ lcn_index_writer_delete_segments( lcn_index_writer_t *index_writer,
     return s;
 }
 
+  /** Walk through all files referenced by the current
+   *  segmentInfos and ask the Directory to sync each file,
+   *  if it wasn't already.  If that succeeds, then we
+   *  prepare a new segments_N file but do not fully commit
+   *  it. 
+   */
 static apr_status_t
-lcn_index_writer_start_commit( lcn_index_writer_t *index_writer )
+lcn_index_writer_start_commit( lcn_index_writer_t *index_writer,
+                               lcn_segment_infos_t *to_sync )
 {
     apr_status_t s = APR_SUCCESS;
     apr_pool_t* cp;
     
     do
     {
-        apr_pool_create( cp , index_writer->pool );
+        lcn_list_t *files_to_sync;
+        
+        LCNCE( apr_pool_create( &cp , to_sync->pool ) );
         
         IW_INFO( "lcn_index_writer_start_commit(): start" );
 
+#if 0
+      synchronized(this) {
+#endif
+          
         if( index_writer->pending_commit_change_count == index_writer->last_commit_change_count )
         {
             IW_INFO( "skip lcn_index_writer_start_commit(): no changes pending" );
-            //deleter.decRef(filesToCommit)
+#if 0
+            TODO: implement
+            
+            deleter.decRef(filesToCommit)
+#endif
             index_writer->files_to_commit = NULL;    
 
             break;
         }
         
+        IW_INFO(  apr_pstrcat( cp, "startCommit index= not yet implemented"," changeCount=", apr_itoa( cp, index_writer->change_count ) , NULL ) );
 #if 0
         TODO: implement
-        if (infoStream.isEnabled("IW")) {
-            infoStream.message("IW", "startCommit index=" + segString(toLiveInfos(toSync)) + " changeCount=" + changeCount);
+        
+        assert filesExist(toSync);
+                
+       } /* End syncronized-Block */
+        
+        assert testPoint("midStartCommit");
+        
+        try {
+
+            assert testPoint("midStartCommit2");
+
+            synchronized(this) {
+
+                assert pendingCommit == null;
+
+                assert segmentInfos.getGeneration() == toSync.getGeneration();
+            }
         }
 #endif 
+        /*
+         * Exception here means nothing is prepared
+         * (this method unwinds everything it did on
+         * an exception)
+         */
+        LCNCE( lcn_segment_infos_prepare_commit( to_sync,
+                                                 index_writer->directory ) );
+        index_writer->pending_commit = to_sync;
+        LCNCE( lcn_segment_infos_files( to_sync, index_writer->directory, LCN_FALSE, cp, &files_to_sync ) );
         
+        
+#if 0
+        nodocuments Test files_to_sync = 0
+                
+        TODO: implement
+ 
+        directory.sync(filesToSync);
+#endif        
+        
+        IW_INFO("done all syncs");
+        
+        // Have our master segmentInfos record the
+        // generations we just prepared.  We do this
+        // on error or success so we don't
+        // double-write a segments_N file.
+        lcn_segment_infos_update_generation( to_sync, index_writer->segment_infos ); 
+        
+#if 0
+        TODO: implement
+        
+        if (!pendingCommitSet) {
+            if (infoStream.isEnabled("IW")) {
+              infoStream.message("IW", "hit exception committing segments file");
+            }
+
+            // Hit exception
+            deleter.decRef(filesToCommit);
+            filesToCommit = null;
+          }
+        
+        assert testPoint("finishStartCommit");    
+#endif
+          
     }
     while(0);
     
@@ -310,6 +385,7 @@ lcn_index_writer_prepare_commit_internal( lcn_index_writer_t* index_writer )
     do
     {
         char* seg_string;
+        lcn_segment_infos_t *to_commit;
         
         LCNCE( apr_pool_create( &cp, index_writer->pool ) );
         
@@ -317,36 +393,30 @@ lcn_index_writer_prepare_commit_internal( lcn_index_writer_t* index_writer )
         IW_INFO( "prepare_commit: flush" );
         IW_INFO( apr_pstrcat( cp, " index before flush ", seg_string, NULL ) );
 
-#if 0        
+#if 0     
+        TODO: implement
+        
         /**
          * Notice: Excluded different threading stuff.
          * look for docWriter.flushAllThreads()
          */
         
+        Then flush_count counts correctly. Actual just lcn_index_writer_do_flush
+        increments fluch_count.
 
-          TODO: docWriter.flushAllThreads()
-          Then flush_count counts correctly. Actual just lcn_index_writer_do_flush
-          increments fluch_count.
+        index_writer->flush_count++;
           
-          index_writer->flush_count++;
-         
-        
-        
-        TODO: implement 
-             maybeApplyDeletes(true) 
-             readerPool.commit(segmentsInfos) 
-
-        
-        
+        maybeApplyDeletes(true) 
+                
+        readerPool.commit(segmentsInfos) 
+#endif
         // Must clone the segmentInfos while we still
         // hold fullFlushLock and while sync'd so that
         // no partial changes (eg a delete w/o
         // corresponding add from an updateDocument) can
         // sneak into the commit point:
-        // toCommit = segmentInfos.clone();
-        
-#endif
-        
+     
+        lcn_segment_infos_clone( &to_commit, index_writer->segment_infos, index_writer->pool );
         index_writer->pending_commit_change_count = index_writer->change_count;
         
         lcn_segment_infos_files( index_writer->segment_infos,
@@ -375,9 +445,10 @@ lcn_index_writer_prepare_commit_internal( lcn_index_writer_t* index_writer )
             filesToCommit = null;
           }
         }
-#endif    
-        //TODO: implementieren
-        lcn_index_writer_start_commit( index_writer );
+#endif            
+        
+        lcn_index_writer_start_commit( index_writer,
+                                       to_commit );
     }
     while(0);
     
@@ -393,34 +464,70 @@ lcn_index_writer_prepare_commit_internal( lcn_index_writer_t* index_writer )
 
     return s;
 }
-
-
       
 static apr_status_t
 lcn_index_writer_finish_commit( lcn_index_writer_t *index_writer )
 {
-    apr_status_t s;
+    apr_status_t s = APR_SUCCESS;
     apr_pool_t *cp = NULL;
-
+    int finally = LCN_FALSE;
+    
     do
     {
-        char* seg_string;
+        LCNCE( apr_pool_create( &cp, index_writer->pool ) );
+        
+        if ( index_writer->pending_commit != NULL )
+        {
+            finally = LCN_TRUE;
+            IW_INFO("commit: pendingCommit != null");
 
-        LCNASSERT( !index_writer->closed, LCN_ERR_ALREADY_CLOSED );
+            LCNCE( lcn_segment_infos_finish_commit( index_writer->pending_commit, index_writer->directory ) );
+            
+            IW_INFO( apr_pstrcat( cp, "commit: wrote segments file \"",
+                                  lcn_index_file_names_file_name_from_generation( LCN_INDEX_FILE_NAMES_SEGMENTS,
+                                                                                  "",
+                                                                                  index_writer->pending_commit->last_generation, 
+                                                                                  cp ),
+                                  "\"", NULL) );
+            lcn_segment_infos_update_generation( index_writer->segment_infos, index_writer->pending_commit );
+            index_writer->last_commit_change_count = index_writer->pending_commit_change_count;
+            
+#if 0
+            TODO: implement
 
-        apr_pool_create( &cp, index_writer->pool );
+            rollbackSegments = pendingCommit.createBackupSegmentInfos();
+            deleter.checkpoint(pendingCommit, true);      
+#endif
+        }
+        else
+        {
+            IW_INFO("commit: pendingCommit == null; skip");
+        }
 
-        // TODO Weiter
+        IW_INFO("commit: done");
     }
-    while(0);
-
-    if( NULL != cp )
+    while( 0 );
+        
+    if ( finally )
+    {
+#if 0
+      TODO: implement
+      
+      // Matches the incRef done in prepareCommit:
+        deleter.decRef(filesToCommit);
+#endif
+        index_writer->files_to_commit = NULL;
+        index_writer->pending_commit = NULL;
+    }
+    
+    if ( cp != NULL )
     {
         apr_pool_destroy( cp );
     }
-
+    
     return s;
 }
+
 
 static apr_status_t
 lcn_index_writer_commit_internal( lcn_index_writer_t *index_writer )
@@ -450,7 +557,7 @@ lcn_index_writer_commit_internal( lcn_index_writer_t *index_writer )
             IW_INFO("commit: already_prepared");
         }
 
-      //finishCommit();
+        LCNCE( lcn_index_writer_finish_commit( index_writer ) );
     }
     while(0);
 
@@ -486,7 +593,8 @@ lcn_index_writer_merge_segments_impl( lcn_index_writer_t *index_writer,
                                                 index_writer->seg_name_subpool ));
 
 #if 0
-        //TODO:
+        TODO: implement
+        
         if ( infoStream != null ) infoStream.print( "merging segments" );
 #endif
         LCNCE( lcn_segment_merger_create( &segment_merger,
@@ -508,7 +616,7 @@ lcn_index_writer_merge_segments_impl( lcn_index_writer_t *index_writer,
             LCNCE( lcn_segment_reader_create_by_info( &reader, si, pool ));
 
 #if 0
-            // TODO
+            // TODO: implement
             //if (infoStream != null)
             //   infoStream.print(" " + si.name + " (" + si.docCount + " docs)");
 #endif
@@ -793,8 +901,8 @@ lcn_index_writer_create_impl( lcn_index_writer_t **index_writer,
     while ( 0 );
 
     if ( s && ( NULL != si_pool ))
-    {
-        apr_pool_destroy( si_pool );
+    { 
+       apr_pool_destroy( si_pool );
     }
 
     return s;
@@ -849,12 +957,14 @@ lcn_index_writer_create_impl_neu( lcn_index_writer_t **index_writer,
 
         if ( create )
         {
+            segment_infos->last_generation = segment_infos->generation;
+         
             /* Try to read first.  This is to allow create
              * against an index that's currently open for
              * searching.  In this case we write the next
              * segments_N file with no segments:
              */
-            if ( APR_SUCCESS == lcn_segment_infos_read_directory( segment_infos, directory ))
+            if ( APR_SUCCESS == lcn_segment_infos_read_directory( segment_infos, directory ) )
             {
                 lcn_segment_infos_clear( segment_infos );
             }
@@ -2064,7 +2174,7 @@ lcn_index_writer_reader_map_get( lcn_readers_and_live_docs_t *rld,
                                  lcn_bool_t create,
                                  apr_pool_t *pool )
 {
-    apr_status_t s;
+    apr_status_t s = APR_SUCCESS;
 
     //TODO implement assert
     // assert info.info.dir == directory : "info.dir=" + info.info.dir + " vs " + directory;
@@ -2145,18 +2255,14 @@ apr_status_t
 lcn_index_writer_commit( lcn_index_writer_t *index_writer )
 {
     apr_status_t s = APR_SUCCESS;
+    
+    LCNASSERTR( ! index_writer->closed, LCN_ERR_ALREADY_CLOSED );
+    LCNCR( lcn_index_writer_commit_internal( index_writer ));
 
-    do
-    {
-        LCNASSERTR( ! index_writer->closed, LCN_ERR_ALREADY_CLOSED );
-        LCNCE( lcn_index_writer_commit_internal( index_writer ));
-
-        /**
-         * After successful commit we can set pending_commit NULL.
-         */
-        index_writer->pending_commit = NULL;
-    }
-    while(0);
+    /**
+     * After successful commit we can set pending_commit NULL.
+     */
+    index_writer->pending_commit = NULL;
 
     return s;
 }

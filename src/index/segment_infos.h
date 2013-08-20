@@ -10,8 +10,12 @@ typedef struct lcn_segment_info_t lcn_segment_info_t;
 //typedef struct lcn_segment_info_per_commit_t lcn_segment_info_per_commit_t;
 //typedef struct lcn_segment_infos_t lcn_segment_infos_t;
 
-
 #define LCN_SEGMENT_INFOS_FORMAT (-1)
+
+/**
+ * The file format version for the segments_N codec header
+ */
+#define LCN_SEGMENT_INFOS_VERSION_40 ( 0 )
 
 struct lcn_segment_info_per_commit_t
 {
@@ -21,6 +25,17 @@ struct lcn_segment_info_per_commit_t
      * How many deleted docs in the segment
      */
     unsigned int del_count;
+    
+    /**
+     * Lucene 5.0
+     */
+    
+    /**
+     * TDOD: implement. del_gen is never set
+     * 
+     * Returns the number of deleted docs in the segment.
+     */
+    unsigned int del_gen;
 };
 
 struct lcn_segment_info_t {
@@ -79,7 +94,20 @@ struct lcn_segment_infos_t {
      * there was an IOException that had interrupted a commit
      */
     apr_int64_t last_generation;
-
+    
+    /**
+     * Lucene 5.0
+     */
+    
+    /**
+     * must create with lcn_checksum_index_output_create()
+     */
+    lcn_ostream_t *pending_seqn_output;
+    
+   /*
+    * Opaque Map&lt;String, String&gt; that user can specify during IndexWriter.commit 
+    */
+    apr_hash_t *user_data;
 };
 
 lcn_segment_info_t *
@@ -196,17 +224,58 @@ lcn_segment_infos_files( lcn_segment_infos_t *segement_infos,
                          lcn_directory_t *dir, 
                          lcn_bool_t include_segments_file,
                          apr_pool_t *pool,
-                         lcn_list_t **files );   
+                         lcn_list_t **files );  
 
-char*
-lcn_segment_infos_get_segments_file_name( lcn_segment_infos_t *segment_infos,
-                                          apr_pool_t *pool );
+apr_status_t
+lcn_segment_infos_clone( lcn_segment_infos_t **clone,
+                         lcn_segment_infos_t *segment_infos,
+                         apr_pool_t *pool );
 
+void
+lcn_segment_infos_update_generation( lcn_segment_infos_t *clone,
+                                     lcn_segment_infos_t *segment_infos );
+
+apr_status_t
+lcn_segment_infos_finish_commit( lcn_segment_infos_t *pending_commit,
+                                 lcn_directory_t *directory );
 
 apr_status_t
 lcn_segment_info_files( lcn_segment_info_t *segment_info,
                         apr_pool_t *pool,
                         apr_hash_t **files );
+
+/** Call this to start a commit.  This writes the new
+ *  segments file, but writes an invalid checksum at the
+ *  end, so that it is not visible to readers.  Once this
+ *  is called you must call {@link #finishCommit} to complete
+ *  the commit or {@link #rollbackCommit} to abort it.
+ *  <p>
+ *  Note: {@link #changed()} should be called prior to this
+ *  method if changes have been made to this {@link SegmentInfos} instance
+ *  </p>  
+ **/
+apr_status_t
+lcn_segment_infos_prepare_commit( lcn_segment_infos_t *segment_infos,
+                                  lcn_directory_t *dir );
+
+
+lcn_segment_info_per_commit_t*
+lcn_segment_info_per_commit_clone( lcn_segment_info_per_commit_t *segment_info_per_commit,
+                                    apr_pool_t *pool );
+
+/** 
+ * Call this before committing if changes have been made to the
+ * segments. 
+ */
+void 
+lcn_segment_infos_changed( lcn_segment_infos_t *segment_infos );
+
+/**
+ * Parse the generation off the segments file name and
+ * return it. 
+ */
+apr_status_t
+lcn_segment_infos_generation_from_segments_file_name( char* filename, apr_int64_t* generation );
 
 #endif
 
