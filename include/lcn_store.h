@@ -339,9 +339,6 @@ lcn_ram_file_get_length ( lcn_ram_file_t *ram_file );
 apr_status_t
 lcn_file_exists( const char *file_name, lcn_bool_t *flag, apr_pool_t *pool );
 
-void
-lcn_ostream_copy( lcn_index_output_t *src, lcn_index_output_t *dst );
-
 END_C_DECLS
 
 #endif /* LCN_STORE_H */
