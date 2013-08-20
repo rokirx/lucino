@@ -10,6 +10,8 @@ ADD_EXECUTABLE(
     ../../test/t_50_document_writer.c
     ../../test/t_50_index_writer.c
     ../../test/t_50_crc32.c
+    ../../test/t_50_checksum_index_output.c
+    ../../test/t_50_segment_infos.c
     ../../test/t_array.c
     ../../test/t_atom.c
     ../../test/t_bitvector.c
@@ -87,9 +89,9 @@ INCLUDE_DIRECTORIES( ${APR_INCLUDE}
                      ../src/util
                      ../src/query_parser )
 
-IF( NV_LOGGING )
+#IF( NV_LOGGING )
   ADD_DEFINITIONS( -D_LCNTRACE )
-ENDIF( NV_LOGGING )
+#ENDIF( NV_LOGGING )
 
 IF( NOT WIN32 )
 
