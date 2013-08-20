@@ -4,8 +4,8 @@
 static void
 test_create( CuTest* tc )
 {
-    lcn_ostream_t *os = NULL;
-    lcn_ostream_t *cio = NULL;
+    lcn_index_output_t *os = NULL;
+    lcn_index_output_t *cio = NULL;
     lcn_directory_t *dir = NULL;
     apr_pool_t *pool = NULL;
     

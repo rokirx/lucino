@@ -12,8 +12,8 @@ struct lcn_fields_writer_t {
     unsigned char flags;
 
     lcn_field_infos_t   *field_infos;
-    lcn_ostream_t *fields_stream;
-    lcn_ostream_t *index_stream;
+    lcn_index_output_t *fields_stream;
+    lcn_index_output_t *index_stream;
 
     /* streams for fixed sized fields */
 

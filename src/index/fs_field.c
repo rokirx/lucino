@@ -112,7 +112,7 @@ lcn_fs_field_open_input( lcn_directory_fs_field_t *field,
 
         if ( create_file && (! file_exists) )
         {
-            lcn_ostream_t *os;
+            lcn_index_output_t *os;
 
             LCNCE( lcn_directory_create_output( field->directory,
                                                 &os,
@@ -472,7 +472,7 @@ lcn_fs_field_update_fields_def( lcn_directory_fs_field_t *field,
                                 apr_pool_t *pool )
 {
     apr_status_t s = APR_SUCCESS;
-    lcn_ostream_t *info_os = NULL;
+    lcn_index_output_t *info_os = NULL;
 
     do
     {
@@ -977,7 +977,7 @@ lcn_fs_field_default_val( const lcn_fs_field_t *field )
 
 apr_status_t
 lcn_fs_field_write_info( lcn_directory_fs_field_t *field,
-                         lcn_ostream_t *ostream )
+                         lcn_index_output_t *ostream )
 {
     apr_status_t s;
 
@@ -992,7 +992,7 @@ lcn_fs_field_write_info( lcn_directory_fs_field_t *field,
 
 apr_status_t
 lcn_fs_field_write_content( lcn_directory_fs_field_t *field,
-                            lcn_ostream_t *ostream )
+                            lcn_index_output_t *ostream )
 {
     return lcn_ostream_write_bytes( ostream,
                                     NULL == field->buf ?
@@ -1089,7 +1089,7 @@ lcn_directory_fs_field_commit( lcn_fs_field_t *base_field,
     do
     {
         char *file_name;
-        lcn_ostream_t *os;
+        lcn_index_output_t *os;
 
         LCNPV( file_name = apr_pstrcat( pool, field->parent.name, ".fsf", NULL ), APR_ENOMEM );
         LCNPV( field->directory, LCN_ERR_INVALID_ARGUMENT );

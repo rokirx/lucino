@@ -60,7 +60,7 @@ lcn_bitvector_alloc_bits( lcn_bitvector_t *bitvector )
 
 static apr_status_t
 lcn_bitvector_write_internal_uncompressed( lcn_bitvector_t *bitvector,
-                                           lcn_ostream_t *out )
+                                           lcn_index_output_t *out )
 {
     apr_status_t s;
 
@@ -101,7 +101,7 @@ lcn_bitvector_write_internal_uncompressed( lcn_bitvector_t *bitvector,
  */
 static apr_status_t
 lcn_bitvector_write_internal ( lcn_bitvector_t *bv,
-                               lcn_ostream_t *out )
+                               lcn_index_output_t *out )
 {
     apr_status_t s;
 
@@ -162,7 +162,7 @@ lcn_bitvector_dump_file( lcn_bitvector_t* bitvector,
                          apr_pool_t* pool )
 {
     apr_status_t s;
-    lcn_ostream_t *os = NULL;
+    lcn_index_output_t *os = NULL;
     apr_pool_t *child_pool = NULL;
 
     do
@@ -193,7 +193,7 @@ lcn_bitvector_write_file ( lcn_bitvector_t* bitvector,
                            apr_pool_t* pool )
 {
     apr_status_t s;
-    lcn_ostream_t *os = NULL;
+    lcn_index_output_t *os = NULL;
     apr_pool_t *child_pool = NULL;
 
     do
@@ -225,7 +225,7 @@ lcn_bitvector_write ( lcn_bitvector_t *bitvector,
                       apr_pool_t* pool )
 {
     apr_status_t s;
-    lcn_ostream_t *out = NULL;
+    lcn_index_output_t *out = NULL;
 
     do
     {

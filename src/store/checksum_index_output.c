@@ -8,16 +8,16 @@
 
 struct _lcn_checksum_index_output_t 
 {
-    lcn_ostream_t os;
+    lcn_index_output_t os;
     
-    lcn_ostream_t *main;
+    lcn_index_output_t *main;
     
     lcn_crc32_t *digest;
 };
 
 apr_status_t
-lcn_checksum_index_output_create( lcn_ostream_t **os,
-                                  lcn_ostream_t *main,
+lcn_checksum_index_output_create( lcn_index_output_t **os,
+                                  lcn_index_output_t *main,
                                   apr_pool_t *pool )
 {
     apr_status_t s = APR_SUCCESS;
@@ -31,7 +31,7 @@ lcn_checksum_index_output_create( lcn_ostream_t **os,
         cio->main = main;
         LCNCE( lcn_crc32_create( &cio->digest, pool) ); 
         
-        *os = (lcn_ostream_t*) cio;
+        *os = (lcn_index_output_t*) cio;
     }
     while(0);
     
@@ -39,7 +39,7 @@ lcn_checksum_index_output_create( lcn_ostream_t **os,
 }
 
 apr_status_t
-lcn_checksum_index_output_write_bytes( lcn_ostream_t *os,
+lcn_checksum_index_output_write_bytes( lcn_index_output_t *os,
                                        const char *buf,
                                        apr_size_t len )
 {
@@ -50,13 +50,13 @@ lcn_checksum_index_output_write_bytes( lcn_ostream_t *os,
 }
 
 unsigned int
-lcn_checksum_index_output_get_checksum( lcn_ostream_t *os )
+lcn_checksum_index_output_get_checksum( lcn_index_output_t *os )
 {
     return ( ( lcn_checksum_index_output_t* ) os )->digest->crc;
 }
 
 apr_status_t
-lcn_checksum_index_output_finish_commit( lcn_ostream_t *os )
+lcn_checksum_index_output_finish_commit( lcn_index_output_t *os )
 {
     lcn_checksum_index_output_t *cio = ( lcn_checksum_index_output_t* ) os;
     unsigned int crc = cio->digest->crc;
@@ -68,7 +68,7 @@ lcn_checksum_index_output_finish_commit( lcn_ostream_t *os )
  * TODO: Nach index_output (ostream) verschieben 
  */
 apr_status_t
-lcn_checksum_index_output_write_string_string_hash( lcn_ostream_t *os, 
+lcn_checksum_index_output_write_string_string_hash( lcn_index_output_t *os, 
                                                     apr_hash_t *hash )
 {
     apr_status_t s = APR_SUCCESS;
@@ -108,7 +108,7 @@ lcn_checksum_index_output_write_string_string_hash( lcn_ostream_t *os,
  * TODO remove hack. Replace with function pointer
  */
 apr_status_t
-lcn_checksum_index_output_close( lcn_ostream_t* os )
+lcn_checksum_index_output_close( lcn_index_output_t* os )
 {
     apr_status_t s = APR_SUCCESS;
     

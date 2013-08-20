@@ -28,7 +28,7 @@ do_tests( CuTest* tc, lcn_directory_t *t_dir, apr_pool_t *pool )
 {
     apr_pool_t *child_pool;
     apr_pool_t *str_pool;
-    lcn_ostream_t *out;
+    lcn_index_output_t *out;
     lcn_index_input_t *in;
     char *str = NULL;
     unsigned int len;

@@ -24,7 +24,7 @@ create_sequence_file( lcn_directory_t *dir,
 
     do
     {
-        lcn_ostream_t *os;
+        lcn_index_output_t *os;
 
         LCNCE( lcn_directory_create_output( dir, &os, file_name, pool ));
 
@@ -116,7 +116,7 @@ create_random_file ( CuTest *tc,
 {
     apr_status_t s = APR_SUCCESS;
     int i = 0;
-    lcn_ostream_t* os;
+    lcn_index_output_t* os;
 
     srand( ( unsigned int ) time(NULL) );
 

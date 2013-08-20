@@ -205,8 +205,8 @@ lcn_segment_infos_write( lcn_segment_infos_t *segment_infos,
 {
     apr_status_t s;
     apr_pool_t *cp = NULL;
-    lcn_ostream_t *segn_file = NULL;
-    lcn_ostream_t *segn_output = NULL;
+    lcn_index_output_t *segn_file = NULL;
+    lcn_index_output_t *segn_output = NULL;
     
     do
     {
@@ -765,7 +765,7 @@ lcn_segment_infos_write_segments_gen( lcn_directory_t *dir,
 {
     apr_status_t s = APR_SUCCESS;
     apr_pool_t* cp = NULL;
-    lcn_ostream_t* gen_output = NULL;
+    lcn_index_output_t* gen_output = NULL;
         
     do
     {

@@ -25,7 +25,7 @@ struct lcn_ram_file_t {
 
 };
 
-struct lcn_ostream_t  {
+struct lcn_index_output_t  {
 
     apr_pool_t *pool;
     apr_file_t *_apr_file;
@@ -48,17 +48,17 @@ struct lcn_ostream_t  {
     
     unsigned int buffer_length;     /* end of valid bytes         */
 
-    apr_status_t (*_length) ( lcn_ostream_t *ostream, apr_off_t * off);
+    apr_status_t (*_length) ( lcn_index_output_t *ostream, apr_off_t * off);
 
     /**
      * Returns LUCENE_OK on success, LUCENE_IOERR on failure
      */
-    apr_status_t (*_seek) ( lcn_ostream_t *ostream, apr_off_t off);
+    apr_status_t (*_seek) ( lcn_index_output_t *ostream, apr_off_t off);
 
     /**
      * An abstract method, to be overriden by concrete classes.
      */
-    apr_status_t (*_flush_buffer) ( lcn_ostream_t *ostream,
+    apr_status_t (*_flush_buffer) ( lcn_index_output_t *ostream,
                                     char *buffer,
                                     size_t buf_size );
 

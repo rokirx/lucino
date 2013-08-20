@@ -3,7 +3,7 @@
 #include "codec.h"
 
 apr_status_t
-lcn_codec_util_write_header( lcn_ostream_t *out, 
+lcn_codec_util_write_header( lcn_index_output_t *out, 
                              char* codec, 
                              unsigned int version )
 {

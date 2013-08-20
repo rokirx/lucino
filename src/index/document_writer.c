@@ -497,7 +497,7 @@ lcn_document_writer_write_norms( lcn_document_writer_t *document_writer,
                                  const char *segment_name )
 {
     apr_status_t s;
-    lcn_ostream_t *norms = NULL;
+    lcn_index_output_t *norms = NULL;
     apr_pool_t *pool = NULL;
 
     do
@@ -561,8 +561,8 @@ lcn_document_writer_write_postings( lcn_document_writer_t *document_writer,
     apr_status_t s_save;
 
     apr_pool_t *pool = NULL;
-    lcn_ostream_t *freq = NULL;
-    lcn_ostream_t *prox = NULL;
+    lcn_index_output_t *freq = NULL;
+    lcn_index_output_t *prox = NULL;
     lcn_term_infos_writer_t *tis = NULL;
 
     /* TODO: TermVectorsWriter termVectorWriter = null */

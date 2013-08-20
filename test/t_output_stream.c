@@ -5,7 +5,7 @@
 #include "io_context.h"
 
 static void
-test_create_ostream_impl ( CuTest *tc, lcn_ostream_t *out )
+test_create_ostream_impl ( CuTest *tc, lcn_index_output_t *out )
 {
     CuAssertTrue(tc, out->isOpen == 1);
     CuAssertTrue(tc, out->buffer_position == 0);
@@ -15,7 +15,7 @@ test_create_ostream_impl ( CuTest *tc, lcn_ostream_t *out )
 static void
 test_create_ouptput_stream(CuTest* tc)
 {
-    lcn_ostream_t *out;
+    lcn_index_output_t *out;
     lcn_ram_file_t *file;
 
     {
@@ -51,7 +51,7 @@ test_write_byte(CuTest* tc)
 {
     lcn_index_input_t *in;
     lcn_ram_file_t *file;
-    lcn_ostream_t *out;
+    lcn_index_output_t *out;
     apr_pool_t *pool;
     unsigned char byte;
 
@@ -106,7 +106,7 @@ test_write_bytes(CuTest* tc)
 {
     char buf[17];
     char s[] = "Das ist ein Test";
-    lcn_ostream_t *out;
+    lcn_index_output_t *out;
     lcn_ram_file_t *file;
     unsigned int len;
     lcn_index_input_t *in;
@@ -173,7 +173,7 @@ test_write_bytes(CuTest* tc)
 }
 
 static void
-test_write_int_write_impl ( CuTest* tc, apr_status_t (*write) (lcn_ostream_t *, int), lcn_ostream_t *out )
+test_write_int_write_impl ( CuTest* tc, apr_status_t (*write) (lcn_index_output_t *, int), lcn_index_output_t *out )
 {
     write( out, 1 );
     write( out, 10 );
@@ -187,7 +187,7 @@ test_write_int_write_impl ( CuTest* tc, apr_status_t (*write) (lcn_ostream_t *, 
 }
 
 static void
-test_write_vint_write_impl ( CuTest* tc, apr_status_t (*write) (lcn_ostream_t *, unsigned int), lcn_ostream_t *out )
+test_write_vint_write_impl ( CuTest* tc, apr_status_t (*write) (lcn_index_output_t *, unsigned int), lcn_index_output_t *out )
 {
     write( out, 1 );
     write( out, 10 );
@@ -201,7 +201,7 @@ test_write_vint_write_impl ( CuTest* tc, apr_status_t (*write) (lcn_ostream_t *,
 }
 
 static void
-test_write_vlong_write_impl ( CuTest* tc, apr_status_t (*write) (lcn_ostream_t *, apr_uint64_t), lcn_ostream_t *out )
+test_write_vlong_write_impl ( CuTest* tc, apr_status_t (*write) (lcn_index_output_t *, apr_uint64_t), lcn_index_output_t *out )
 {
     write( out, 1 );
     write( out, 10 );
@@ -274,7 +274,7 @@ test_write_vint_read_impl ( CuTest* tc, apr_status_t (*read) (lcn_index_input_t 
 static void
 test_write_int(CuTest* tc)
 {
-    lcn_ostream_t *out;
+    lcn_index_output_t *out;
     lcn_ram_file_t *file;
     lcn_index_input_t *in;
 
@@ -327,7 +327,7 @@ test_write_int(CuTest* tc)
 static void
 test_write_long(CuTest* tc)
 {
-    lcn_ostream_t *out;
+    lcn_index_output_t *out;
     lcn_index_input_t *in;
 
     {
@@ -382,7 +382,7 @@ test_write_long(CuTest* tc)
 static void
 test_write_vint(CuTest* tc)
 {
-    lcn_ostream_t *out;
+    lcn_index_output_t *out;
     lcn_index_input_t *in;
     lcn_ram_file_t *file;
 
@@ -438,7 +438,7 @@ test_write_string(CuTest* tc)
     char *buf;
     unsigned int len;
 
-    lcn_ostream_t *out;
+    lcn_index_output_t *out;
     lcn_index_input_t *in;
     lcn_ram_file_t *file;
 

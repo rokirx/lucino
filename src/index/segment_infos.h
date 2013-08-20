@@ -102,7 +102,7 @@ struct lcn_segment_infos_t {
     /**
      * must create with lcn_checksum_index_output_create()
      */
-    lcn_ostream_t *pending_seqn_output;
+    lcn_index_output_t *pending_seqn_output;
     
    /*
     * Opaque Map&lt;String, String&gt; that user can specify during IndexWriter.commit 

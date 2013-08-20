@@ -3,7 +3,7 @@
 #include "ostream.h"
 
 static apr_status_t
-lcn_fs_ostream_flush_buffer ( lcn_ostream_t *os, char *buf, size_t len )
+lcn_fs_ostream_flush_buffer ( lcn_index_output_t *os, char *buf, size_t len )
 {
     apr_status_t s;
     apr_size_t l = len;
@@ -17,7 +17,7 @@ lcn_fs_ostream_flush_buffer ( lcn_ostream_t *os, char *buf, size_t len )
  * Sets current position in this file, where the next write will occur.
  */
 static apr_status_t
-lcn_fs_ostream_seek ( lcn_ostream_t *ostream, apr_off_t pos )
+lcn_fs_ostream_seek ( lcn_index_output_t *ostream, apr_off_t pos )
 {
     apr_status_t s;
     apr_off_t p = pos;
@@ -33,7 +33,7 @@ lcn_fs_ostream_seek ( lcn_ostream_t *ostream, apr_off_t pos )
  * The number of bytes in the file.
  */
 static apr_status_t
-lcn_fs_ostream_length ( lcn_ostream_t *os, apr_off_t *len )
+lcn_fs_ostream_length ( lcn_index_output_t *os, apr_off_t *len )
 {
     apr_status_t s;
     apr_finfo_t finfo;
@@ -45,7 +45,7 @@ lcn_fs_ostream_length ( lcn_ostream_t *os, apr_off_t *len )
 }
 
 apr_status_t
-lcn_fs_ostream_create ( lcn_ostream_t **new_os,
+lcn_fs_ostream_create ( lcn_index_output_t **new_os,
                         const char *file_name,
                         apr_pool_t *pool )
 {
@@ -54,7 +54,7 @@ lcn_fs_ostream_create ( lcn_ostream_t **new_os,
 
     do
     {
-        LCNPV( *new_os = (lcn_ostream_t*) apr_pcalloc( pool, sizeof(lcn_ostream_t)), APR_ENOMEM );
+        LCNPV( *new_os = (lcn_index_output_t*) apr_pcalloc( pool, sizeof(lcn_index_output_t)), APR_ENOMEM );
         LCNCE( lcn_init_ostream_struct( *new_os, pool ) );
         LCNPV( (*new_os)->name = apr_pstrdup( (*new_os)->pool, file_name ), APR_ENOMEM );
         LCNCE( apr_file_open( &((*new_os)->_apr_file),

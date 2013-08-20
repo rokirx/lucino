@@ -4,13 +4,13 @@
 #include "index_input.h"
 
 apr_off_t
-lcn_ostream_get_file_pointer( lcn_ostream_t *ostream )
+lcn_ostream_get_file_pointer( lcn_index_output_t *ostream )
 {
     return ostream->buffer_start + ostream->buffer_position;
 }
 
 apr_status_t
-lcn_ostream_close( lcn_ostream_t *ostream )
+lcn_ostream_close( lcn_index_output_t *ostream )
 {
     apr_status_t s;
 
@@ -28,7 +28,7 @@ lcn_ostream_close( lcn_ostream_t *ostream )
 }
 
 apr_status_t
-lcn_ostream_seek( lcn_ostream_t *ostream, apr_off_t pos )
+lcn_ostream_seek( lcn_index_output_t *ostream, apr_off_t pos )
 {
     apr_status_t s;
     LCNCR( ostream->_seek( ostream, pos ) );
@@ -36,7 +36,7 @@ lcn_ostream_seek( lcn_ostream_t *ostream, apr_off_t pos )
 }
 
 apr_status_t
-lcn_ostream_write_bytes( lcn_ostream_t *ostream,
+lcn_ostream_write_bytes( lcn_index_output_t *ostream,
                          const char *b,
                          unsigned int length )
 {
@@ -68,7 +68,7 @@ lcn_ostream_write_bytes( lcn_ostream_t *ostream,
  * full.
  */
 apr_status_t
-lcn_ostream_write_byte ( lcn_ostream_t *os, unsigned char b)
+lcn_ostream_write_byte ( lcn_index_output_t *os, unsigned char b)
 {
     apr_status_t s = APR_SUCCESS;
 
@@ -87,7 +87,7 @@ lcn_ostream_write_byte ( lcn_ostream_t *os, unsigned char b)
 }
 
 apr_status_t
-lcn_ostream_write_int ( lcn_ostream_t *os, int n )
+lcn_ostream_write_int ( lcn_index_output_t *os, int n )
 {
     apr_status_t s = APR_SUCCESS;
 
@@ -113,7 +113,7 @@ lcn_ostream_write_int ( lcn_ostream_t *os, int n )
  * output stream
  */
 apr_status_t
-lcn_ostream_write_int16( lcn_ostream_t *os, unsigned int i)
+lcn_ostream_write_int16( lcn_index_output_t *os, unsigned int i)
 {
     apr_status_t s = APR_SUCCESS;
 
@@ -133,7 +133,7 @@ lcn_ostream_write_int16( lcn_ostream_t *os, unsigned int i)
 }
 
 apr_status_t
-lcn_ostream_write_bitvector( lcn_ostream_t *os, lcn_bitvector_t *bitvector )
+lcn_ostream_write_bitvector( lcn_index_output_t *os, lcn_bitvector_t *bitvector )
 {
     apr_status_t s;
 
@@ -152,7 +152,7 @@ lcn_ostream_write_bitvector( lcn_ostream_t *os, lcn_bitvector_t *bitvector )
 }
 
 apr_status_t
-lcn_ostream_write_vint( lcn_ostream_t *os, unsigned int i)
+lcn_ostream_write_vint( lcn_index_output_t *os, unsigned int i)
 {
     apr_status_t s = APR_SUCCESS;
 
@@ -177,7 +177,7 @@ lcn_ostream_write_vint( lcn_ostream_t *os, unsigned int i)
 }
 
 apr_status_t
-lcn_ostream_write_vlong( lcn_ostream_t *os, apr_uint64_t i)
+lcn_ostream_write_vlong( lcn_index_output_t *os, apr_uint64_t i)
 {
     apr_status_t s = APR_SUCCESS;
 
@@ -202,7 +202,7 @@ lcn_ostream_write_vlong( lcn_ostream_t *os, apr_uint64_t i)
 }
 
 apr_status_t
-lcn_ostream_write_long( lcn_ostream_t *os, apr_uint64_t i )
+lcn_ostream_write_long( lcn_index_output_t *os, apr_uint64_t i )
 {
     apr_status_t s;
 
@@ -222,7 +222,7 @@ lcn_ostream_write_long( lcn_ostream_t *os, apr_uint64_t i )
  * returns LUCENE_OK on success, LUCENE_IOERR on failure
  */
 apr_status_t
-lcn_ostream_write_chars ( lcn_ostream_t *os,
+lcn_ostream_write_chars ( lcn_index_output_t *os,
                           const char *str,
                           apr_off_t start,
                           unsigned int length )
@@ -270,7 +270,7 @@ lcn_ostream_write_chars ( lcn_ostream_t *os,
  * Writes a string.
  */
 apr_status_t
-lcn_ostream_write_string( lcn_ostream_t *ostream,
+lcn_ostream_write_string( lcn_index_output_t *ostream,
                           const char *str )
 {
     apr_status_t s;
@@ -283,7 +283,7 @@ lcn_ostream_write_string( lcn_ostream_t *ostream,
 }
 
 apr_status_t
-lcn_ostream_flush ( lcn_ostream_t *ostream )
+lcn_ostream_flush ( lcn_index_output_t *ostream )
 {
     apr_status_t s;
 
@@ -297,7 +297,7 @@ lcn_ostream_flush ( lcn_ostream_t *ostream )
 }
 
 apr_status_t
-lcn_init_ostream_struct ( lcn_ostream_t *new_os, apr_pool_t *pool )
+lcn_init_ostream_struct ( lcn_index_output_t *new_os, apr_pool_t *pool )
 {
     apr_status_t s;
 

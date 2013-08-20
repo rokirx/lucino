@@ -397,7 +397,7 @@ lcn_field_infos_write( lcn_field_infos_t *field_infos,
 
     do
     {
-        lcn_ostream_t *ostream;
+        lcn_index_output_t *ostream;
 
         LCNCM( lcn_directory_create_output( directory, &ostream, file_name, pool ), file_name );
         LCNCE( lcn_field_infos_write_to_ostream( field_infos, ostream ) );
@@ -412,7 +412,7 @@ lcn_field_infos_write( lcn_field_infos_t *field_infos,
 
 apr_status_t
 lcn_field_infos_write_to_ostream( lcn_field_infos_t *field_infos,
-                                  lcn_ostream_t *ostream )
+                                  lcn_index_output_t *ostream )
 {
     apr_status_t s;
 

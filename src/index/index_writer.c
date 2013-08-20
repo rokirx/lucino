@@ -50,7 +50,7 @@ lcn_index_writer_write_deletable_files( lcn_index_writer_t *index_writer,
 
     do
     {
-        lcn_ostream_t *output;
+        lcn_index_output_t *output;
         unsigned int i;
 
         LCNCE( lcn_directory_create_output( index_writer->directory,

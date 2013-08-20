@@ -23,12 +23,12 @@ struct lcn_segment_merger_t {
     lcn_term_info_t *term_info;
 
     /* this elements are not initialized by default */
-    lcn_ostream_t *freq_output;
-    lcn_ostream_t *prox_output;
+    lcn_index_output_t *freq_output;
+    lcn_index_output_t *prox_output;
     lcn_term_infos_writer_t *ti_writer;
     lcn_priority_queue_t *queue;
 
-    lcn_ostream_t *skip_buffer;
+    lcn_index_output_t *skip_buffer;
     unsigned int last_skip_doc;
     apr_off_t last_skip_freq_pointer;
     apr_off_t last_skip_prox_pointer;

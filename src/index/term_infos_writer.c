@@ -17,7 +17,7 @@ lcn_term_infos_writer_write_term( lcn_term_infos_writer_t *term_infos_writer,
     int start = lcn_string_difference( last_text, term->text );
     int length = strlen( term->text ) - start;
 
-    lcn_ostream_t *out = term_infos_writer->output;
+    lcn_index_output_t *out = term_infos_writer->output;
 
     do
     {
@@ -73,7 +73,7 @@ apr_status_t
 lcn_term_infos_writer_close( lcn_term_infos_writer_t *term_infos_writer )
 {
     apr_status_t s;
-    lcn_ostream_t *out = term_infos_writer->output;
+    lcn_index_output_t *out = term_infos_writer->output;
 
     if ( ! term_infos_writer->is_open )
     {
@@ -107,7 +107,7 @@ lcn_term_infos_writer_add_term( lcn_term_infos_writer_t *term_infos_writer,
                                 unsigned int field_number )
 {
     apr_status_t s;
-    lcn_ostream_t *out ;
+    lcn_index_output_t *out ;
 
     if ( ! term_infos_writer->is_index &&
          lcn_term_compare( term, &(term_infos_writer->last_term) ) <= 0 )

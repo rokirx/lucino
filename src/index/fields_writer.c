@@ -13,7 +13,7 @@
 
 struct fixed_size_ostream
 {
-    lcn_ostream_t *ostream;
+    lcn_index_output_t *ostream;
     unsigned int doc_count;
 };
 
@@ -68,8 +68,8 @@ lcn_fields_writer_add_document( lcn_fields_writer_t *fields_writer,
         unsigned int i;
         lcn_field_t *doc_field;
 
-        lcn_ostream_t *f_out = fields_writer->fields_stream;
-        lcn_ostream_t *i_out = fields_writer->index_stream;
+        lcn_index_output_t *f_out = fields_writer->fields_stream;
+        lcn_index_output_t *i_out = fields_writer->index_stream;
 
         LCNCE( lcn_ostream_write_long( i_out, lcn_ostream_get_file_pointer( f_out ) ));
 

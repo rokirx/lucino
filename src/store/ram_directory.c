@@ -81,7 +81,7 @@ lcn_ram_directory_list( const lcn_directory_t *directory,
 
 static apr_status_t
 lcn_ram_directory_create_file ( lcn_directory_t *directory,
-                                lcn_ostream_t **new_os,
+                                lcn_index_output_t **new_os,
                                 const char *file_name,
                                 apr_pool_t *pool )
 {

@@ -5,7 +5,7 @@ static void
 test_read_write(CuTest* tc)
 {
     apr_pool_t *p;
-    lcn_ostream_t *os;
+    lcn_index_output_t *os;
     lcn_index_input_t *is;
     lcn_ram_file_t *file;
     unsigned char i;

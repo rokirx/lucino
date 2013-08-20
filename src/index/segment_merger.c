@@ -649,7 +649,7 @@ lcn_segment_merger_merge_norms( lcn_segment_merger_t *segment_merger )
             if ( lcn_field_info_is_indexed( field_info ) &&
                  ! lcn_field_info_omit_norms( field_info ) )
             {
-                lcn_ostream_t *output = NULL;
+                lcn_index_output_t *output = NULL;
                 unsigned int j;
 
                 LCNCE( lcn_directory_create_segment_file ( segment_merger->directory,

@@ -8,7 +8,7 @@ make_ram_file ( char *file_name, CuTest *tc, apr_pool_t *pool )
     lcn_directory_t *t_dir;
     lcn_ram_file_t *f;
     lcn_index_input_t *in;
-    lcn_ostream_t *out;
+    lcn_index_output_t *out;
     char *buf;
     unsigned int len;
 

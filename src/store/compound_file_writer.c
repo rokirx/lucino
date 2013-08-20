@@ -16,7 +16,7 @@ const unsigned int BUFFER_SIZE = 1024;
 static apr_status_t
 lcn_compound_file_copy( lcn_compound_file_writer_t *cfw,
                         lcn_file_entry_t *entry,
-                        lcn_ostream_t *os,
+                        lcn_index_output_t *os,
                         char buffer[])
 {
     apr_status_t s = APR_SUCCESS;
@@ -195,7 +195,7 @@ lcn_compound_file_writer_close( lcn_compound_file_writer_t *cfw )
 
     do
     {
-        lcn_ostream_t *os = NULL;
+        lcn_index_output_t *os = NULL;
 
         LCNCE( apr_pool_create( &child_pool, cfw->pool ));
 

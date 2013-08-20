@@ -524,7 +524,7 @@ test_write_gap( CuTest* tc )
     {
         //fprintf(stderr, "write %s\n", files[i] );
         lcn_bitvector_t *bv;
-        lcn_ostream_t *os;
+        lcn_index_output_t *os;
         unsigned int j = 0;
 
         LCN_TEST( lcn_bitvector_create_from_file( &bv,
