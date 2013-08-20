@@ -240,7 +240,7 @@ apr_status_t
 lcn_index_output_flush( lcn_index_output_t *ostream );
 
 apr_status_t
-lcn_ram_ostream_reset( lcn_index_output_t *ostream );
+lcn_ram_index_output_reset( lcn_index_output_t *ostream );
 
 /**
  * Writes an int in a variable-length format.  Writes between one and
@@ -292,7 +292,7 @@ lcn_fs_ostream_create( lcn_index_output_t **new_os,
                        apr_pool_t *pool );
 
 apr_status_t
-lcn_ram_ostream_create( lcn_index_output_t **new_os,
+lcn_ram_index_output_create( lcn_index_output_t **new_os,
                         lcn_ram_file_t *file,
                         apr_pool_t *pool );
 
@@ -305,7 +305,7 @@ lcn_ram_file_copy_to_ostream ( lcn_ram_file_t *file,
                                lcn_index_output_t *out );
 
 apr_status_t
-lcn_ram_ostream_write_to ( lcn_index_output_t *ram_ostream,
+lcn_ram_index_output_write_to ( lcn_index_output_t *ram_ostream,
                            lcn_index_output_t *ostream );
 
 apr_status_t

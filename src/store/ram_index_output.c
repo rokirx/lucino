@@ -4,7 +4,7 @@
 #include "ostream.h"
 
 static apr_status_t
-lcn_ram_ostream_flush_buffer ( lcn_index_output_t *os, char *buf, size_t len )
+lcn_ram_index_output_flush_buffer ( lcn_index_output_t *os, char *buf, size_t len )
 {
     apr_status_t s;
     char *new_buffer = NULL;
@@ -67,7 +67,7 @@ lcn_ram_ostream_flush_buffer ( lcn_index_output_t *os, char *buf, size_t len )
 }
 
 static apr_status_t
-lcn_ram_ostream_seek ( lcn_index_output_t *os, apr_off_t pos )
+lcn_ram_index_output_seek ( lcn_index_output_t *os, apr_off_t pos )
 {
     apr_status_t s;
 
@@ -79,7 +79,7 @@ lcn_ram_ostream_seek ( lcn_index_output_t *os, apr_off_t pos )
 }
 
 static apr_status_t
-lcn_ram_ostream_length ( lcn_index_output_t *os, apr_off_t *len )
+lcn_ram_index_output_length ( lcn_index_output_t *os, apr_off_t *len )
 {
     *len = os->_file->length;
     return APR_SUCCESS;
@@ -92,7 +92,7 @@ lcn_ram_file_get_length( lcn_ram_file_t *ram_file )
 }
 
 apr_status_t
-lcn_ram_ostream_write_to ( lcn_index_output_t *ram_ostream,
+lcn_ram_index_output_write_to ( lcn_index_output_t *ram_ostream,
                            lcn_index_output_t *ostream )
 {
     apr_status_t s;
@@ -102,7 +102,7 @@ lcn_ram_ostream_write_to ( lcn_index_output_t *ram_ostream,
 }
 
 apr_status_t
-lcn_ram_ostream_reset( lcn_index_output_t *ostream )
+lcn_ram_index_output_reset( lcn_index_output_t *ostream )
 {
     ostream->buffer_start = 0;
     ostream->pointer = 0;
@@ -143,7 +143,7 @@ lcn_ram_file_copy_to_ostream ( lcn_ram_file_t *file,
 }
 
 apr_status_t
-lcn_ram_ostream_create ( lcn_index_output_t **new_os,
+lcn_ram_index_output_create ( lcn_index_output_t **new_os,
                          lcn_ram_file_t *file,
                          apr_pool_t *pool )
 {
@@ -154,9 +154,9 @@ lcn_ram_ostream_create ( lcn_index_output_t **new_os,
         LCNPV( *new_os = (lcn_index_output_t*) apr_pcalloc( pool, sizeof(lcn_index_output_t)), APR_ENOMEM );
         LCNCE( lcn_index_output_init_struct( *new_os, pool ) );
 
-        (*new_os)->_length       = lcn_ram_ostream_length;
-        (*new_os)->_seek         = lcn_ram_ostream_seek;
-        (*new_os)->_flush_buffer = lcn_ram_ostream_flush_buffer;
+        (*new_os)->_length       = lcn_ram_index_output_length;
+        (*new_os)->_seek         = lcn_ram_index_output_seek;
+        (*new_os)->_flush_buffer = lcn_ram_index_output_flush_buffer;
 
         (*new_os)->pointer = 0;
         (*new_os)->_file = file;

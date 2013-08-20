@@ -15,7 +15,7 @@ make_ram_file ( char *file_name, CuTest *tc, apr_pool_t *pool )
     LCN_TEST( lcn_fs_directory_create( &t_dir, TEST_DIR, LCN_FALSE, pool ) );
     LCN_TEST( lcn_directory_open_input( t_dir, &in, file_name, LCN_IO_CONTEXT_READONCE, pool ) );
     LCN_TEST( lcn_ram_file_create( &f, pool ) );
-    LCN_TEST( lcn_ram_ostream_create( &out, f, pool ) );
+    LCN_TEST( lcn_ram_index_output_create( &out, f, pool ) );
 
     len = lcn_index_input_size( in );
     buf = (char *) apr_palloc( pool, sizeof(char) * len );

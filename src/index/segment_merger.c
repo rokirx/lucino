@@ -215,7 +215,7 @@ static apr_status_t
 lcn_segment_merger_reset_skip( lcn_segment_merger_t *segment_merger )
 {
     apr_status_t s;
-    LCNCR( lcn_ram_ostream_reset( segment_merger->skip_buffer ) );
+    LCNCR( lcn_ram_index_output_reset( segment_merger->skip_buffer ) );
     segment_merger->last_skip_doc = 0;
     segment_merger->last_skip_freq_pointer = lcn_index_output_get_file_pointer( segment_merger->freq_output );
     segment_merger->last_skip_prox_pointer = lcn_index_output_get_file_pointer( segment_merger->prox_output );
@@ -348,7 +348,7 @@ lcn_segment_merger_write_skip( lcn_segment_merger_t *segment_merger,
 {
     apr_status_t s;
     *skip_pointer = lcn_index_output_get_file_pointer( segment_merger->freq_output );
-    LCNCR( lcn_ram_ostream_write_to( segment_merger->skip_buffer, segment_merger->freq_output ));
+    LCNCR( lcn_ram_index_output_write_to( segment_merger->skip_buffer, segment_merger->freq_output ));
     return s;
 }
 
@@ -754,7 +754,7 @@ lcn_segment_merger_create( lcn_segment_merger_t **segment_merger,
         LCNPV( (*segment_merger)->segment = apr_pstrdup( pool, merge_name ), APR_ENOMEM );
         LCNCE( lcn_list_create( &((*segment_merger)->readers), 10, pool ) );
         LCNCE( lcn_ram_file_create ( &ram_file, pool ));
-        LCNCE( lcn_ram_ostream_create( &((*segment_merger)->skip_buffer), ram_file, pool ));
+        LCNCE( lcn_ram_index_output_create( &((*segment_merger)->skip_buffer), ram_file, pool ));
         LCNCE( lcn_term_info_create( &((*segment_merger)->term_info), 0, 0, 0, 0, pool ));
 
         (*segment_merger)->directory = index_writer->directory;

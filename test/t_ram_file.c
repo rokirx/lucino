@@ -13,7 +13,7 @@ test_read_write(CuTest* tc)
 
     LCN_TEST( apr_pool_create( &p, main_pool ) );
     LCN_TEST( lcn_ram_file_create( &file, p ) );
-    LCN_TEST( lcn_ram_ostream_create( &os, file, p ) );
+    LCN_TEST( lcn_ram_index_output_create( &os, file, p ) );
 
     for( i = 0; i < 100; i++ )
     {

@@ -106,7 +106,7 @@ lcn_ram_directory_create_file ( lcn_directory_t *directory,
             apr_hash_set( ram_dir->file_map, fname_dup, strlen(fname_dup), file );
         }
 
-        LCNCE( lcn_ram_ostream_create( new_os, file, pool ) );
+        LCNCE( lcn_ram_index_output_create( new_os, file, pool ) );
     }
     while(0);
 
