@@ -185,6 +185,9 @@ apr_off_t
 lcn_index_output_get_file_pointer( lcn_index_output_t *ostream );
 
 
+apr_off_t
+lcn_index_output_get_file_pointer_impl( lcn_index_output_t *io );
+
 apr_status_t
 lcn_index_output_seek( lcn_index_output_t *ostream, apr_off_t pos );
 
@@ -218,6 +221,13 @@ apr_status_t
 lcn_index_output_write_byte( lcn_index_output_t *ostream,
                         unsigned char b );
 
+apr_status_t
+lcn_index_output_write_byte_impl ( lcn_index_output_t *os, unsigned char b);
+
+apr_status_t
+lcn_index_output_write_bytes( lcn_index_output_t *ostream,
+                         const char *buf,
+                         unsigned int size );
 
 /**
  * Writes an array of bytes.
@@ -227,10 +237,9 @@ lcn_index_output_write_byte( lcn_index_output_t *ostream,
  *
  */
 apr_status_t
-lcn_index_output_write_bytes( lcn_index_output_t *ostream,
-                         const char *buf,
-                         unsigned int size );
-
+lcn_index_output_write_bytes_impl( lcn_index_output_t *io,
+                              const char *b,
+                              unsigned int length );
 /**
  * Forces any buffered output to be written. Resets the
  * buffer for further usage
@@ -262,11 +271,14 @@ apr_status_t
 lcn_index_output_write_string( lcn_index_output_t *ostream,
                           const char *str );
 
+apr_status_t
+lcn_index_output_close( lcn_index_output_t *io );
+
 /**
  * Flushes the buffers and cloes files of the output stream
  */
 apr_status_t
-lcn_index_output_close( lcn_index_output_t *ostream );
+lcn_index_output_close_impl( lcn_index_output_t *ostream );
 
 /**
  * Writes an int as four bytes. It must be possible
@@ -313,11 +325,6 @@ lcn_checksum_index_output_create( lcn_index_output_t **os,
                                   lcn_index_output_t *main,
                                   apr_pool_t *pool );
 
-apr_status_t
-lcn_checksum_index_output_write_bytes( lcn_index_output_t *os,
-                                       const char *buf,
-                                       apr_size_t len );
-
 unsigned int
 lcn_checksum_index_output_get_checksum( lcn_index_output_t *os );
 
@@ -327,8 +334,6 @@ lcn_checksum_index_output_finish_commit( lcn_index_output_t *os );
 apr_status_t
 lcn_checksum_index_output_write_string_string_hash( lcn_index_output_t *os, 
                                                     apr_hash_t *hash );
-apr_status_t
-lcn_checksum_index_output_close( lcn_index_output_t* os );
 
 /** @} */
 /** @} */

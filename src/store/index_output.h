@@ -4,6 +4,8 @@
 #include <lucene.h>
 #include <lcn_bitvector.h>
 
+#include "index_input.h"
+
 struct lcn_ram_file_t {
 
     apr_pool_t *pool;
@@ -28,16 +30,17 @@ struct lcn_ram_file_t {
 struct lcn_index_output_t  {
 
     apr_pool_t *pool;
-    apr_file_t *_apr_file;
-
-    lcn_ram_file_t * _file;  /* RAM lcn_ostream_t          */
-    apr_off_t pointer;       /* RAM lcn_ostream_t position */
 
     char *name;
 
     bool isOpen;
 
     char *buffer;
+    
+    /**
+     * Debug
+     */
+    char *type;
 
     /**
      * file pointer = buffer_start + buffer_position
@@ -48,7 +51,7 @@ struct lcn_index_output_t  {
     
     unsigned int buffer_length;     /* end of valid bytes         */
 
-    apr_status_t (*_length) ( lcn_index_output_t *ostream, apr_off_t * off);
+    apr_status_t (*_length) ( lcn_index_output_t *ostream, apr_off_t *off);
 
     /**
      * Returns LUCENE_OK on success, LUCENE_IOERR on failure
@@ -61,7 +64,41 @@ struct lcn_index_output_t  {
     apr_status_t (*_flush_buffer) ( lcn_index_output_t *ostream,
                                     char *buffer,
                                     size_t buf_size );
+    
+    /**
+     * Lucene 5.0
+     */
+    
+    /** Writes a single byte.
+    * <p>
+    * The most primitive data type is an eight-bit byte. Files are 
+    * accessed as sequences of bytes. All other data types are defined 
+    * as sequences of bytes, so file formats are byte-order independent.
+    * 
+    * @see IndexInput#readByte()
+    */
+    apr_status_t (*_write_byte) ( lcn_index_output_t *io,
+                                  unsigned char b );
 
+   /** Writes an array of bytes.
+    * @param b the bytes to write
+    * @param offset the offset in the byte array
+    * @param length the number of bytes to write
+    * @see DataInput#readBytes(byte[],int,int)
+    */
+    apr_status_t (*_write_bytes) ( lcn_index_output_t *io,
+                                   const char *b,
+                                   unsigned int length );
+    
+   /**
+     * Closes this stream and releases any system resources associated
+     * with it. If the stream is already closed then invoking this
+     * method has no effect.
+     */
+    apr_status_t (*_close) ( lcn_index_output_t *io );
+    
+    /** Closes this stream to further operations. */
+    apr_off_t (*_get_file_pointer) ( lcn_index_output_t *io );
 };
 
 #endif /* OSTREAM_H */

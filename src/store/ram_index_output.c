@@ -3,23 +3,34 @@
 
 #include "index_input.h"
 
+typedef struct lcn_ram_index_output_t
+{
+    lcn_index_output_t io;
+        
+    lcn_ram_file_t *_file;  /* RAM lcn_index_output_t          */
+
+    apr_off_t pointer;       /* RAM lcn_index_output_t position */
+    
+} lcn_ram_index_output_t;
+
 static apr_status_t
 lcn_ram_index_output_flush_buffer ( lcn_index_output_t *os, char *buf, size_t len )
 {
     apr_status_t s;
+    lcn_ram_index_output_t* rio = (lcn_ram_index_output_t*) os;
     char *new_buffer = NULL;
     char *buffer;
-    size_t buffer_number = (size_t) (os->pointer / LCN_STREAM_BUFFER_SIZE);
-    off_t buffer_offset = os->pointer % LCN_STREAM_BUFFER_SIZE;
+    size_t buffer_number = (size_t) (rio->pointer / LCN_STREAM_BUFFER_SIZE);
+    off_t buffer_offset = rio->pointer % LCN_STREAM_BUFFER_SIZE;
     size_t bytes_in_buffer = (size_t) (LCN_STREAM_BUFFER_SIZE - buffer_offset);
     size_t bytes_to_copy   = bytes_in_buffer >= len ? len : bytes_in_buffer;
-    lcn_list_t *buf_list = os->_file->buffers;
+    lcn_list_t *buf_list = rio->_file->buffers;
 
     /* TODO try to clean up the code by moving allocation into the ram file */
 
     if ( ((size_t) buffer_number) == lcn_list_size( buf_list ) )
     {
-        if ( NULL == (new_buffer = (char*) apr_pcalloc( os->_file->pool, sizeof(char) * LCN_STREAM_BUFFER_SIZE )))
+        if ( NULL == (new_buffer = (char*) apr_pcalloc( rio->_file->pool, sizeof(char) * LCN_STREAM_BUFFER_SIZE )))
         {
             return APR_ENOMEM;
         }
@@ -41,7 +52,7 @@ lcn_ram_index_output_flush_buffer ( lcn_index_output_t *os, char *buf, size_t le
 
         if ( buffer_number == lcn_list_size( buf_list ) )
         {
-            if ( NULL == (new_buffer = (char*) apr_pcalloc( os->_file->pool, sizeof(char) * LCN_STREAM_BUFFER_SIZE )))
+            if ( NULL == (new_buffer = (char*) apr_pcalloc( rio->_file->pool, sizeof(char) * LCN_STREAM_BUFFER_SIZE )))
             {
                 return APR_ENOMEM;
             }
@@ -53,11 +64,11 @@ lcn_ram_index_output_flush_buffer ( lcn_index_output_t *os, char *buf, size_t le
         memcpy( buffer, buf + src_offset, bytes_to_copy );
     }
 
-    os->pointer += len;
+    rio->pointer += len;
 
-    if ( os->pointer > os->_file->length )
+    if ( rio->pointer > rio->_file->length )
     {
-        os->_file->length = os->pointer;
+        rio->_file->length = rio->pointer;
     }
 
     /* TODO set last modified in RAMFile
@@ -70,10 +81,11 @@ static apr_status_t
 lcn_ram_index_output_seek ( lcn_index_output_t *os, apr_off_t pos )
 {
     apr_status_t s;
+    lcn_ram_index_output_t* rio = ( lcn_ram_index_output_t* ) os;
 
     LCNCR( lcn_index_output_flush( os ) );
     os->buffer_start = pos;
-    os->pointer = pos;
+    rio->pointer = pos;
 
     return s;
 }
@@ -81,7 +93,9 @@ lcn_ram_index_output_seek ( lcn_index_output_t *os, apr_off_t pos )
 static apr_status_t
 lcn_ram_index_output_length ( lcn_index_output_t *os, apr_off_t *len )
 {
-    *len = os->_file->length;
+    lcn_ram_index_output_t* rio = ( lcn_ram_index_output_t* ) os;
+ 
+    *len = rio->_file->length;
     return APR_SUCCESS;
 }
 
@@ -93,20 +107,22 @@ lcn_ram_file_get_length( lcn_ram_file_t *ram_file )
 
 apr_status_t
 lcn_ram_index_output_write_to ( lcn_index_output_t *ram_ostream,
-                           lcn_index_output_t *ostream )
+                                lcn_index_output_t *ostream )
 {
     apr_status_t s;
     LCNCR( lcn_index_output_flush( ram_ostream ) );
-    LCNCR( lcn_ram_file_copy_to_ostream( ram_ostream->_file, ostream ));
+    LCNCR( lcn_ram_file_copy_to_ostream( ( ( lcn_ram_index_output_t* ) ram_ostream )->_file, ostream ));
     return s;
 }
 
 apr_status_t
 lcn_ram_index_output_reset( lcn_index_output_t *ostream )
 {
+    lcn_ram_index_output_t* rio = ( lcn_ram_index_output_t* ) ostream;
+    
     ostream->buffer_start = 0;
-    ostream->pointer = 0;
-    ostream->_file->length = 0;
+    rio->pointer = 0;
+    rio->_file->length = 0;
 
     return APR_SUCCESS;
 }
@@ -144,23 +160,32 @@ lcn_ram_file_copy_to_ostream ( lcn_ram_file_t *file,
 
 apr_status_t
 lcn_ram_index_output_create ( lcn_index_output_t **new_os,
-                         lcn_ram_file_t *file,
-                         apr_pool_t *pool )
+                              lcn_ram_file_t *file,
+                              apr_pool_t *pool )
 {
     apr_status_t s;
 
     do
     {
-        LCNPV( *new_os = (lcn_index_output_t*) apr_pcalloc( pool, sizeof(lcn_index_output_t)), APR_ENOMEM );
-        LCNCE( lcn_index_output_init_struct( *new_os, pool ) );
+        lcn_ram_index_output_t *rio;
+        
+        LCNPV( rio = lcn_object_create( lcn_ram_index_output_t, pool ), APR_ENOMEM );
+        LCNCE( lcn_index_output_init_struct( &rio->io, pool ) );
 
-        (*new_os)->_length       = lcn_ram_index_output_length;
-        (*new_os)->_seek         = lcn_ram_index_output_seek;
-        (*new_os)->_flush_buffer = lcn_ram_index_output_flush_buffer;
-
-        (*new_os)->pointer = 0;
-        (*new_os)->_file = file;
-        (*new_os)->isOpen = TRUE;
+        rio->io.isOpen            = TRUE;
+        rio->io._length           = lcn_ram_index_output_length;
+        rio->io._seek             = lcn_ram_index_output_seek;
+        rio->io._flush_buffer     = lcn_ram_index_output_flush_buffer;
+        rio->io._write_byte       = lcn_index_output_write_byte_impl;
+        rio->io._write_bytes      = lcn_index_output_write_bytes_impl;
+        rio->io._close            = lcn_index_output_close_impl;
+        rio->io._get_file_pointer = lcn_index_output_get_file_pointer_impl;
+        
+        rio->pointer = 0;
+        rio->_file = file;
+        
+        *new_os = (lcn_index_output_t*) rio;
+        (*new_os)->type = "ram";
     }
     while(0);
     

@@ -595,7 +595,7 @@ lcn_fs_directory_create_file ( lcn_directory_t *directory,
                                apr_pool_t *pool )
 {
     apr_status_t s;
-    LCNCR( lcn_directory_open_ostream ( directory->name, file_name, os, pool ));
+    LCNCR( lcn_directory_open_ostream ( directory->name, file_name, os, pool ) );
     return s;
 }
 

@@ -328,7 +328,6 @@ typedef struct lcn_field_t lcn_field_t;
 typedef struct lcn_index_input_t lcn_index_input_t;
 typedef struct lcn_list_t lcn_list_t;
 typedef struct lcn_index_output_t lcn_index_output_t;
-typedef struct _lcn_checksum_index_output_t lcn_checksum_index_output_t;
 typedef struct lcn_ram_file_t lcn_ram_file_t;
 typedef struct lcn_similarity_t lcn_similarity_t;
 typedef struct lcn_term_enum_t lcn_term_enum_t;

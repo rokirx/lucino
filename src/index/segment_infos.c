@@ -227,11 +227,6 @@ lcn_segment_infos_write( lcn_segment_infos_t *segment_infos,
             segment_infos->generation++;
         }
    
-#if 0
-        TODO: implement
-        
-        CodecUtil.writeHeader(segnOutput, "segments", VERSION_40);
-#endif
         LCNCE( lcn_directory_create_output( dir, &segn_file, seg_file_name, segment_infos->pool ) );
         LCNCE( lcn_checksum_index_output_create( &segn_output, segn_file, segment_infos->pool ) );
         
@@ -841,11 +836,8 @@ lcn_segment_infos_finish_commit( lcn_segment_infos_t *pending_commit,
         }
       }
 #endif
-    
-        /**
-         * TODO: remove hack. lcn_checksum_index_output_close to lcn_ostream_close  
-         */
-        LCNCE( lcn_checksum_index_output_close( pending_commit->pending_seqn_output ) );
+
+        LCNCE( lcn_index_output_close( pending_commit->pending_seqn_output ) );
         
         pending_commit->pending_seqn_output = NULL;
 

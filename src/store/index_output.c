@@ -4,24 +4,31 @@
 #include "index_input.h"
 
 apr_off_t
-lcn_index_output_get_file_pointer( lcn_index_output_t *ostream )
+lcn_index_output_get_file_pointer( lcn_index_output_t *io )
 {
-    return ostream->buffer_start + ostream->buffer_position;
+    return io->_get_file_pointer( io );
+}
+
+apr_off_t
+lcn_index_output_get_file_pointer_impl( lcn_index_output_t *io )
+{
+    return io->buffer_start + io->buffer_position;
 }
 
 apr_status_t
-lcn_index_output_close( lcn_index_output_t *ostream )
+lcn_index_output_close( lcn_index_output_t *io )
 {
-    apr_status_t s;
+    apr_status_t s = APR_SUCCESS;
+    LCNCR( io->_close( io ) );
+    return s;
+}
+
+apr_status_t
+lcn_index_output_close_impl( lcn_index_output_t *ostream )
+{
+    apr_status_t s = APR_SUCCESS;
 
     LCNCR( lcn_index_output_flush( ostream ) );
-
-    if( NULL != ostream->_apr_file )
-    {
-        LCNCR( apr_file_close( ostream->_apr_file ) );
-        ostream->_apr_file = NULL;
-    }
-
     ostream->isOpen = FALSE;
 
     return s;
@@ -35,10 +42,21 @@ lcn_index_output_seek( lcn_index_output_t *ostream, apr_off_t pos )
     return s;
 }
 
+
 apr_status_t
-lcn_index_output_write_bytes( lcn_index_output_t *ostream,
-                         const char *b,
-                         unsigned int length )
+lcn_index_output_write_bytes( lcn_index_output_t *io,
+                              const char *b,
+                              unsigned int length )
+{
+    apr_status_t s = APR_SUCCESS;
+    LCNCR( io->_write_bytes( io, b, length ) );
+    return s;
+}
+
+apr_status_t
+lcn_index_output_write_bytes_impl( lcn_index_output_t *io,
+                              const char *b,
+                              unsigned int length )
 {
     apr_status_t s = APR_SUCCESS;
     unsigned int i;
@@ -47,17 +65,30 @@ lcn_index_output_write_bytes( lcn_index_output_t *ostream,
     {
         for (i = 0; i < length; i++)
         {
-            LCNCE( lcn_index_output_write_byte( ostream, (unsigned char) b[i] ) );
+            LCNCE( io->_write_byte( io, (unsigned char) b[i] ) );
         }
     }
     else
     {
         for (i = 0; i < length; i++)
         {
-            LCNCE( lcn_index_output_write_byte( ostream, (unsigned char) 0 ) );
+            LCNCE( io->_write_byte( io, (unsigned char) 0 ) );
         }
     }
 
+    return s;
+}
+
+/**
+ * Convenience method for function pointer _write_byte
+ */
+apr_status_t
+lcn_index_output_write_byte ( lcn_index_output_t *os, unsigned char b)
+{
+    apr_status_t s = APR_SUCCESS;
+    
+    LCNCR( os->_write_byte( os, b ) );
+    
     return s;
 }
 
@@ -68,7 +99,7 @@ lcn_index_output_write_bytes( lcn_index_output_t *ostream,
  * full.
  */
 apr_status_t
-lcn_index_output_write_byte ( lcn_index_output_t *os, unsigned char b)
+lcn_index_output_write_byte_impl ( lcn_index_output_t *os, unsigned char b)
 {
     apr_status_t s = APR_SUCCESS;
 
@@ -87,23 +118,14 @@ lcn_index_output_write_byte ( lcn_index_output_t *os, unsigned char b)
 }
 
 apr_status_t
-lcn_index_output_write_int ( lcn_index_output_t *os, int n )
+lcn_index_output_write_int ( lcn_index_output_t *io, int n )
 {
     apr_status_t s = APR_SUCCESS;
 
-    do
-    {
-        if ( os->buffer_position + 3 >= LCN_STREAM_BUFFER_SIZE )
-        {
-            LCNCE( lcn_index_output_flush( os ) );
-        }
-
-        os->buffer[ os->buffer_position++ ] = (char) ((unsigned char) ((unsigned int) n >> 24));
-        os->buffer[ os->buffer_position++ ] = (char) ((unsigned char) ((unsigned int) n >> 16));
-        os->buffer[ os->buffer_position++ ] = (char) ((unsigned char) ((unsigned int) n >>  8));
-        os->buffer[ os->buffer_position++ ] = (char) ((unsigned char) ((unsigned int) n ));
-    }
-    while(0);
+    LCNCR( io->_write_byte( io, (char) ((unsigned char) ((unsigned int) n >> 24)) ) );
+    LCNCR( io->_write_byte( io, (char) ((unsigned char) ((unsigned int) n >> 16)) ) );
+    LCNCR( io->_write_byte( io, (char) ((unsigned char) ((unsigned int) n >>  8)) ) );
+    LCNCR( io->_write_byte( io, (char) ((unsigned char) ((unsigned int) n )) ) );
 
     return s;
 }
@@ -113,21 +135,12 @@ lcn_index_output_write_int ( lcn_index_output_t *os, int n )
  * output stream
  */
 apr_status_t
-lcn_index_output_write_int16( lcn_index_output_t *os, unsigned int i)
+lcn_index_output_write_int16( lcn_index_output_t *io, unsigned int i)
 {
     apr_status_t s = APR_SUCCESS;
 
-    do
-    {
-        if ( os->buffer_position + 1 >= LCN_STREAM_BUFFER_SIZE )
-        {
-            LCNCE( lcn_index_output_flush( os ) );
-        }
-
-        os->buffer[ os->buffer_position++ ] = (char) ((unsigned char) ((unsigned int) i >>  8));
-        os->buffer[ os->buffer_position++ ] = (char) ((unsigned char) ((unsigned int) i ));
-    }
-    while(0);
+    LCNCR( io->_write_byte( io, (char) ((unsigned char) ((unsigned int) i >>  8)) ) );
+    LCNCR( io->_write_byte( io, (char) ((unsigned char) ((unsigned int) i )) ) );
 
     return s;
 }
@@ -152,7 +165,7 @@ lcn_index_output_write_bitvector( lcn_index_output_t *os, lcn_bitvector_t *bitve
 }
 
 apr_status_t
-lcn_index_output_write_vint( lcn_index_output_t *os, unsigned int i)
+lcn_index_output_write_vint( lcn_index_output_t *io, unsigned int i)
 {
     apr_status_t s = APR_SUCCESS;
 
@@ -160,7 +173,7 @@ lcn_index_output_write_vint( lcn_index_output_t *os, unsigned int i)
     {
         while ( (i & ~0x7F) != 0)
         {
-            LCNCE( lcn_index_output_write_byte( os, (unsigned char)(i|0x80) ));
+            LCNCE( io->_write_byte( io, (unsigned char)(i|0x80) ));
             i >>= 7;
         }
 
@@ -169,7 +182,7 @@ lcn_index_output_write_vint( lcn_index_output_t *os, unsigned int i)
             break;
         }
 
-        LCNCE( lcn_index_output_write_byte( os, (unsigned char) i ) );
+        LCNCE( io->_write_byte( io, (unsigned char) i ) );
     }
     while(0);
 
@@ -177,7 +190,7 @@ lcn_index_output_write_vint( lcn_index_output_t *os, unsigned int i)
 }
 
 apr_status_t
-lcn_index_output_write_vlong( lcn_index_output_t *os, apr_uint64_t i)
+lcn_index_output_write_vlong( lcn_index_output_t *io, apr_uint64_t i)
 {
     apr_status_t s = APR_SUCCESS;
 
@@ -185,7 +198,7 @@ lcn_index_output_write_vlong( lcn_index_output_t *os, apr_uint64_t i)
     {
         while( i & ~((apr_uint64_t) 0x7F)  )
         {
-            LCNCE( lcn_index_output_write_byte( os, (unsigned char)( (i & ((apr_uint64_t) 0x7f))) | 0x80 ) );
+            LCNCE( io->_write_byte( io, (unsigned char)( (i & ((apr_uint64_t) 0x7f))) | 0x80 ) );
             i >>= 7;
         }
 
@@ -194,7 +207,7 @@ lcn_index_output_write_vlong( lcn_index_output_t *os, apr_uint64_t i)
             break;
         }
 
-        LCNCE( lcn_index_output_write_byte( os, (unsigned char) i ) );
+        LCNCE( io->_write_byte( io, (unsigned char) i ) );
     }
     while(0);
 
@@ -222,10 +235,10 @@ lcn_index_output_write_long( lcn_index_output_t *os, apr_uint64_t i )
  * returns LUCENE_OK on success, LUCENE_IOERR on failure
  */
 apr_status_t
-lcn_index_output_write_chars ( lcn_index_output_t *os,
-                          const char *str,
-                          apr_off_t start,
-                          unsigned int length )
+lcn_index_output_write_chars ( lcn_index_output_t *io,
+                               const char *str,
+                               apr_off_t start,
+                               unsigned int length )
 {
     apr_status_t s = APR_SUCCESS;
 
@@ -238,28 +251,18 @@ lcn_index_output_write_chars ( lcn_index_output_t *os,
 
         if ( code >= 0x01 && code <= 0x7F )
         {
-            LCNCE( lcn_index_output_write_byte( os, (unsigned char) code ) );
+            LCNCE( io->_write_byte( io, (unsigned char) code ) );
         }
         else if ( ((code >= 0x80) && (code <= 0x7FF)) || code == 0)
         {
-            if ( os->buffer_position + 1 >= LCN_STREAM_BUFFER_SIZE )
-            {
-                LCNCE( lcn_index_output_flush( os ) );
-            }
-
-            os->buffer[ os->buffer_position++ ] = (char) ((unsigned char) (0xC0 | (code >> 6)));
-            os->buffer[ os->buffer_position++ ] = (char) ((unsigned char) (0x80 | (code & 0x3F)));
+            LCNCE( io->_write_byte( io, (char) ((unsigned char) (0xC0 | (code >> 6))) ) );
+            LCNCE( io->_write_byte( io, (char) ((unsigned char) (0x80 | (code & 0x3F))) ) );
         }
         else
         {
-            if ( os->buffer_position + 2 >= LCN_STREAM_BUFFER_SIZE )
-            {
-                LCNCE( lcn_index_output_flush( os ) );
-            }
-
-            os->buffer[ os->buffer_position++ ] = (char) ((unsigned char) (0xE0 | (code >> 12)));
-            os->buffer[ os->buffer_position++ ] = (char) ((unsigned char) ((code >> 6) & 0x3F));
-            os->buffer[ os->buffer_position++ ] = (char) ((unsigned char) (0x80 | (code & 0x3F)));
+            LCNCE( io->_write_byte( io, (char) ((unsigned char) (0xE0 | (code >> 12))) ) );
+            LCNCE( io->_write_byte( io, (char) ((unsigned char) ((code >> 6) & 0x3F)) ) );
+            LCNCE( io->_write_byte( io, (char) ((unsigned char) (0x80 | (code & 0x3F))) ) );
         }
     }
 
