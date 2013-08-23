@@ -17,7 +17,6 @@ test_index_no_documents( CuTest* tc )
         lcn_directory_t *dir;
         lcn_index_writer_t *index_writer;
         lcn_index_writer_config_t *iwc;
-        lcn_index_reader_t *index_reader;
 
         LCN_TEST( apr_pool_create( &pool, NULL ) );
         LCN_TEST( lcn_fs_directory_create( &dir, "05_test_index_no_docuemnts", LCN_TRUE, pool ) );
