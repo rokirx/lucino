@@ -185,7 +185,6 @@ lcn_ram_index_output_create ( lcn_index_output_t **new_os,
         rio->_file = file;
         
         *new_os = (lcn_index_output_t*) rio;
-        (*new_os)->type = "ram";
     }
     while(0);
     

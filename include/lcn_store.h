@@ -299,7 +299,7 @@ lcn_appending_ostream_create( lcn_index_output_t **new_os,
  * Creates a new file for writing the output
  */
 apr_status_t
-lcn_fs_ostream_create( lcn_index_output_t **new_os,
+lcn_fs_index_output_create( lcn_index_output_t **new_os,
                        const char *file_name,
                        apr_pool_t *pool );
 

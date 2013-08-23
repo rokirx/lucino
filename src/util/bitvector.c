@@ -168,7 +168,7 @@ lcn_bitvector_dump_file( lcn_bitvector_t* bitvector,
     do
     {
         LCNCE( apr_pool_create( &child_pool, pool ));
-        LCNCE( lcn_fs_ostream_create( &os, name, child_pool ) );
+        LCNCE( lcn_fs_index_output_create( &os, name, child_pool ) );
         LCNCE( lcn_bitvector_write_internal_uncompressed( bitvector, os ) );
     }
     while(0);
@@ -199,7 +199,7 @@ lcn_bitvector_write_file ( lcn_bitvector_t* bitvector,
     do
     {
         LCNCE( apr_pool_create( &child_pool, pool ));
-        LCNCE( lcn_fs_ostream_create( &os, name, child_pool ) );
+        LCNCE( lcn_fs_index_output_create( &os, name, child_pool ) );
         LCNCE( lcn_bitvector_write_internal( bitvector, os ) );
     }
     while(0);

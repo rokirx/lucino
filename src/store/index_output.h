@@ -36,11 +36,6 @@ struct lcn_index_output_t  {
     bool isOpen;
 
     char *buffer;
-    
-    /**
-     * Debug
-     */
-    char *type;
 
     /**
      * file pointer = buffer_start + buffer_position

@@ -238,7 +238,7 @@ lcn_directory_open_ostream ( const char *path,
     char *fpath;
 
     LCNCR( apr_filepath_merge( &fpath, path, name, 0, pool ));
-    LCNCR( lcn_fs_ostream_create( os, fpath, pool ));
+    LCNCR( lcn_fs_index_output_create( os, fpath, pool ));
 
     return s;
 }

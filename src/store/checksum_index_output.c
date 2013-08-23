@@ -111,7 +111,6 @@ lcn_checksum_index_output_create( lcn_index_output_t **os,
         cio->os._write_bytes      = lcn_checksum_index_output_write_bytes;
         
         *os = (lcn_index_output_t*) cio;
-        (*os)->type = "checksum";
     }
     while(0);
     
@@ -133,9 +132,6 @@ lcn_checksum_index_output_finish_commit( lcn_index_output_t *os )
     return lcn_index_output_write_long( cio->main, crc );
 }
 
-/**
- * TODO: Nach index_output (ostream) verschieben 
- */
 apr_status_t
 lcn_checksum_index_output_write_string_string_hash( lcn_index_output_t *os, 
                                                     apr_hash_t *hash )

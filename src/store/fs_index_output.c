@@ -11,7 +11,7 @@ typedef struct lcn_fs_index_output_t
 } lcn_fs_index_output_t;
 
 static apr_status_t
-close( lcn_index_output_t *io ) 
+lcn_fs_index_output_close( lcn_index_output_t *io ) 
 {
     apr_status_t s;
     lcn_fs_index_output_t *fio = (lcn_fs_index_output_t*) io;   
@@ -25,7 +25,7 @@ close( lcn_index_output_t *io )
 }
 
 static apr_status_t
-lcn_fs_ostream_flush_buffer ( lcn_index_output_t *os, char *buf, size_t len )
+lcn_fs_index_output_flush_buffer ( lcn_index_output_t *os, char *buf, size_t len )
 {
     apr_status_t s;
     apr_size_t l = len;
@@ -39,7 +39,7 @@ lcn_fs_ostream_flush_buffer ( lcn_index_output_t *os, char *buf, size_t len )
  * Sets current position in this file, where the next write will occur.
  */
 static apr_status_t
-lcn_fs_ostream_seek ( lcn_index_output_t *io, apr_off_t pos )
+lcn_fs_index_output_seek ( lcn_index_output_t *io, apr_off_t pos )
 {
     apr_status_t s;
     apr_off_t p = pos;
@@ -55,7 +55,7 @@ lcn_fs_ostream_seek ( lcn_index_output_t *io, apr_off_t pos )
  * The number of bytes in the file.
  */
 static apr_status_t
-lcn_fs_ostream_length ( lcn_index_output_t *os, apr_off_t *len )
+lcn_fs_index_output_length ( lcn_index_output_t *os, apr_off_t *len )
 {
     apr_status_t s;
     apr_finfo_t finfo;
@@ -67,7 +67,7 @@ lcn_fs_ostream_length ( lcn_index_output_t *os, apr_off_t *len )
 }
 
 apr_status_t
-lcn_fs_ostream_create ( lcn_index_output_t **new_os,
+lcn_fs_index_output_create ( lcn_index_output_t **new_os,
                         const char *file_name,
                         apr_pool_t *pool )
 {
@@ -88,16 +88,15 @@ lcn_fs_ostream_create ( lcn_index_output_t **new_os,
                               fio->io.pool ) );
         
         fio->io.isOpen            = TRUE;
-        fio->io._length           = lcn_fs_ostream_length;
-        fio->io._seek             = lcn_fs_ostream_seek;
-        fio->io._flush_buffer     = lcn_fs_ostream_flush_buffer;
-        fio->io._close            = close;
+        fio->io._length           = lcn_fs_index_output_length;
+        fio->io._seek             = lcn_fs_index_output_seek;
+        fio->io._flush_buffer     = lcn_fs_index_output_flush_buffer;
+        fio->io._close            = lcn_fs_index_output_close;
         fio->io._write_byte       = lcn_index_output_write_byte_impl;
         fio->io._write_bytes      = lcn_index_output_write_bytes_impl;
         fio->io._get_file_pointer = lcn_index_output_get_file_pointer_impl;
         
         *new_os = (lcn_index_output_t*) fio;
-        (*new_os)->type = "fs";
     }
     while(0);
 
