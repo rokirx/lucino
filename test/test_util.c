@@ -337,7 +337,7 @@ char *data[] = {
 
         "7. Modified QueryParser to make it possible to programmatically specify the", // 97
         "default Boolean operator (OR or AND).",
-        "(Péter Halácsy via otis)",
+        "(P\351ter Hal\341csy via otis)",
 
         "8. Made many search methods and classes non-final, per requests.",            // 100
         "This includes IndexWriter and IndexSearcher, among others.",

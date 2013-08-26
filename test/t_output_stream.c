@@ -1,11 +1,11 @@
 #include "test_all.h"
 #include "lcn_store.h"
 #include "index_input.h"
-#include "ostream.h"
+#include "index_output.h"
 #include "io_context.h"
 
 static void
-test_create_ostream_impl ( CuTest *tc, lcn_ostream_t *out )
+test_create_ostream_impl ( CuTest *tc, lcn_index_output_t *out )
 {
     CuAssertTrue(tc, out->isOpen == 1);
     CuAssertTrue(tc, out->buffer_position == 0);
@@ -15,16 +15,16 @@ test_create_ostream_impl ( CuTest *tc, lcn_ostream_t *out )
 static void
 test_create_ouptput_stream(CuTest* tc)
 {
-    lcn_ostream_t *out;
+    lcn_index_output_t *out;
     lcn_ram_file_t *file;
 
     {
         apr_pool_t *pool;
         LCN_TEST( apr_pool_create( &pool, main_pool ) );
-        LCN_TEST( lcn_fs_ostream_create( &out, "test_file", pool ) );
+        LCN_TEST( lcn_fs_index_output_create( &out, "test_file", pool ) );
         CuAssertStrEquals( tc, out->name, "test_file" );
         test_create_ostream_impl(tc, out );
-        LCN_TEST( lcn_ostream_close( out ) );
+        LCN_TEST( lcn_index_output_close( out ) );
         apr_file_remove( "test_file", pool );
         apr_pool_destroy( pool );
     }
@@ -36,9 +36,9 @@ test_create_ouptput_stream(CuTest* tc)
 
         {
             LCN_TEST( apr_pool_create( &pool, main_pool ) );
-            LCN_TEST( lcn_ram_ostream_create( &out, file, pool ) );
+            LCN_TEST( lcn_ram_index_output_create( &out, file, pool ) );
             test_create_ostream_impl( tc, out );
-            LCN_TEST( lcn_ostream_close( out ) );
+            LCN_TEST( lcn_index_output_close( out ) );
             apr_pool_destroy( pool );
         }
 
@@ -51,15 +51,15 @@ test_write_byte(CuTest* tc)
 {
     lcn_index_input_t *in;
     lcn_ram_file_t *file;
-    lcn_ostream_t *out;
+    lcn_index_output_t *out;
     apr_pool_t *pool;
     unsigned char byte;
 
     {
         LCN_TEST( apr_pool_create( &pool, main_pool ) );
-        LCN_TEST( lcn_fs_ostream_create( &out, "test_file", pool ) );
-        LCN_TEST( lcn_ostream_write_byte( out, (unsigned char) 250 ) );
-        LCN_TEST( lcn_ostream_close( out ) );
+        LCN_TEST( lcn_fs_index_output_create( &out, "test_file", pool ) );
+        LCN_TEST( lcn_index_output_write_byte( out, (unsigned char) 250 ) );
+        LCN_TEST( lcn_index_output_close( out ) );
         apr_pool_destroy( pool );
     }
 
@@ -81,9 +81,9 @@ test_write_byte(CuTest* tc)
         {
             apr_pool_t *os_pool;
             LCN_TEST( apr_pool_create( &os_pool, main_pool ) );
-            LCN_TEST( lcn_ram_ostream_create( &out, file, os_pool ) );
-            LCN_TEST( lcn_ostream_write_byte( out, (unsigned char) 250 ) );
-            LCN_TEST( lcn_ostream_close( out ) );
+            LCN_TEST( lcn_ram_index_output_create( &out, file, os_pool ) );
+            LCN_TEST( lcn_index_output_write_byte( out, (unsigned char) 250 ) );
+            LCN_TEST( lcn_index_output_close( out ) );
             apr_pool_destroy( os_pool );
         }
 
@@ -106,7 +106,7 @@ test_write_bytes(CuTest* tc)
 {
     char buf[17];
     char s[] = "Das ist ein Test";
-    lcn_ostream_t *out;
+    lcn_index_output_t *out;
     lcn_ram_file_t *file;
     unsigned int len;
     lcn_index_input_t *in;
@@ -118,9 +118,9 @@ test_write_bytes(CuTest* tc)
     {
         apr_pool_t *pool;
         LCN_TEST( apr_pool_create( &pool, main_pool ) );
-        LCN_TEST( lcn_fs_ostream_create( &out, "test_file", pool ) );
-        LCN_TEST( lcn_ostream_write_bytes( out, s, 16 ) );
-        LCN_TEST( lcn_ostream_close( out ) );
+        LCN_TEST( lcn_fs_index_output_create( &out, "test_file", pool ) );
+        LCN_TEST( lcn_index_output_write_bytes( out, s, 16 ) );
+        LCN_TEST( lcn_index_output_close( out ) );
         apr_pool_clear( pool );
     }
 
@@ -148,9 +148,9 @@ test_write_bytes(CuTest* tc)
         {
             apr_pool_t *os_pool;
             LCN_TEST( apr_pool_create( &os_pool, main_pool ) );
-            LCN_TEST( lcn_ram_ostream_create( &out, file, os_pool ) );
-            LCN_TEST( lcn_ostream_write_bytes( out,  s, 16 ) );
-            LCN_TEST( lcn_ostream_close( out ) );
+            LCN_TEST( lcn_ram_index_output_create( &out, file, os_pool ) );
+            LCN_TEST( lcn_index_output_write_bytes( out,  s, 16 ) );
+            LCN_TEST( lcn_index_output_close( out ) );
             apr_pool_clear( os_pool );
         }
 
@@ -173,7 +173,7 @@ test_write_bytes(CuTest* tc)
 }
 
 static void
-test_write_int_write_impl ( CuTest* tc, apr_status_t (*write) (lcn_ostream_t *, int), lcn_ostream_t *out )
+test_write_int_write_impl ( CuTest* tc, apr_status_t (*write) (lcn_index_output_t *, int), lcn_index_output_t *out )
 {
     write( out, 1 );
     write( out, 10 );
@@ -187,7 +187,7 @@ test_write_int_write_impl ( CuTest* tc, apr_status_t (*write) (lcn_ostream_t *, 
 }
 
 static void
-test_write_vint_write_impl ( CuTest* tc, apr_status_t (*write) (lcn_ostream_t *, unsigned int), lcn_ostream_t *out )
+test_write_vint_write_impl ( CuTest* tc, apr_status_t (*write) (lcn_index_output_t *, unsigned int), lcn_index_output_t *out )
 {
     write( out, 1 );
     write( out, 10 );
@@ -201,7 +201,7 @@ test_write_vint_write_impl ( CuTest* tc, apr_status_t (*write) (lcn_ostream_t *,
 }
 
 static void
-test_write_vlong_write_impl ( CuTest* tc, apr_status_t (*write) (lcn_ostream_t *, apr_uint64_t), lcn_ostream_t *out )
+test_write_vlong_write_impl ( CuTest* tc, apr_status_t (*write) (lcn_index_output_t *, apr_uint64_t), lcn_index_output_t *out )
 {
     write( out, 1 );
     write( out, 10 );
@@ -274,16 +274,16 @@ test_write_vint_read_impl ( CuTest* tc, apr_status_t (*read) (lcn_index_input_t 
 static void
 test_write_int(CuTest* tc)
 {
-    lcn_ostream_t *out;
+    lcn_index_output_t *out;
     lcn_ram_file_t *file;
     lcn_index_input_t *in;
 
     {
         apr_pool_t *pool;
         LCN_TEST( apr_pool_create( &pool, main_pool ) );
-        LCN_TEST( lcn_fs_ostream_create( &out, "test_file", pool ) );
-        test_write_int_write_impl( tc, lcn_ostream_write_int, out );
-        LCN_TEST( lcn_ostream_close( out ) );
+        LCN_TEST( lcn_fs_index_output_create( &out, "test_file", pool ) );
+        test_write_int_write_impl( tc, lcn_index_output_write_int, out );
+        LCN_TEST( lcn_index_output_close( out ) );
         apr_pool_destroy( pool );
     }
 
@@ -305,9 +305,9 @@ test_write_int(CuTest* tc)
         {
             apr_pool_t *os_pool;
             LCN_TEST( apr_pool_create( &os_pool, main_pool ) );
-            LCN_TEST( lcn_ram_ostream_create( &out, file, os_pool ) );
-            test_write_int_write_impl( tc, lcn_ostream_write_int, out );
-            LCN_TEST( lcn_ostream_close( out ) );
+            LCN_TEST( lcn_ram_index_output_create( &out, file, os_pool ) );
+            test_write_int_write_impl( tc, lcn_index_output_write_int, out );
+            LCN_TEST( lcn_index_output_close( out ) );
             apr_pool_destroy( os_pool );
         }
 
@@ -327,15 +327,15 @@ test_write_int(CuTest* tc)
 static void
 test_write_long(CuTest* tc)
 {
-    lcn_ostream_t *out;
+    lcn_index_output_t *out;
     lcn_index_input_t *in;
 
     {
         apr_pool_t *pool;
         LCN_TEST( apr_pool_create( &pool, main_pool ) );
-        LCN_TEST( lcn_fs_ostream_create( &out, "test_file_long", pool ) );
-        test_write_vlong_write_impl( tc, lcn_ostream_write_vlong, out );
-        LCN_TEST( lcn_ostream_close( out ) );
+        LCN_TEST( lcn_fs_index_output_create( &out, "test_file_long", pool ) );
+        test_write_vlong_write_impl( tc, lcn_index_output_write_vlong, out );
+        LCN_TEST( lcn_index_output_close( out ) );
         apr_pool_destroy( pool );
     }
 
@@ -358,9 +358,9 @@ test_write_long(CuTest* tc)
         {
             apr_pool_t *os_pool;
             LCN_TEST( apr_pool_create( &os_pool, main_pool ) );
-            LCN_TEST( lcn_ram_ostream_create( &out, file, os_pool ) );
-            test_write_int_write_impl( lcn_ostream_write_int, out );
-            LCN_TEST( lcn_ostream_close( out ) );
+            LCN_TEST( lcn_ram_index_output_create( &out, file, os_pool ) );
+            test_write_int_write_impl( lcn_index_output_write_int, out );
+            LCN_TEST( lcn_index_output_close( out ) );
             apr_pool_destroy( os_pool );
         }
 
@@ -382,16 +382,16 @@ test_write_long(CuTest* tc)
 static void
 test_write_vint(CuTest* tc)
 {
-    lcn_ostream_t *out;
+    lcn_index_output_t *out;
     lcn_index_input_t *in;
     lcn_ram_file_t *file;
 
     {
         apr_pool_t *pool;
         LCN_TEST( apr_pool_create( &pool, main_pool ) );
-        LCN_TEST( lcn_fs_ostream_create( &out, "test_file", pool ) );
-        test_write_vint_write_impl( tc, lcn_ostream_write_vint, out );
-        LCN_TEST( lcn_ostream_close( out ) );
+        LCN_TEST( lcn_fs_index_output_create( &out, "test_file", pool ) );
+        test_write_vint_write_impl( tc, lcn_index_output_write_vint, out );
+        LCN_TEST( lcn_index_output_close( out ) );
         apr_pool_destroy( pool );
     }
 
@@ -413,9 +413,9 @@ test_write_vint(CuTest* tc)
         {
             apr_pool_t *os_pool;
             LCN_TEST( apr_pool_create( &os_pool, main_pool ) );
-            LCN_TEST( lcn_ram_ostream_create( &out, file, os_pool ) );
-            test_write_vint_write_impl( tc, lcn_ostream_write_vint, out );
-            LCN_TEST( lcn_ostream_close( out ) );
+            LCN_TEST( lcn_ram_index_output_create( &out, file, os_pool ) );
+            test_write_vint_write_impl( tc, lcn_index_output_write_vint, out );
+            LCN_TEST( lcn_index_output_close( out ) );
             apr_pool_destroy( os_pool );
         }
 
@@ -438,17 +438,17 @@ test_write_string(CuTest* tc)
     char *buf;
     unsigned int len;
 
-    lcn_ostream_t *out;
+    lcn_index_output_t *out;
     lcn_index_input_t *in;
     lcn_ram_file_t *file;
 
     {
         apr_pool_t *pool;
         LCN_TEST( apr_pool_create( &pool, main_pool ) );
-        LCN_TEST( lcn_fs_ostream_create( &out, "test_file", pool ) );
-        LCN_TEST( lcn_ostream_write_string( out, "Teste Sonderzeichen: ouml: \366, auml: \344,"
+        LCN_TEST( lcn_fs_index_output_create( &out, "test_file", pool ) );
+        LCN_TEST( lcn_index_output_write_string( out, "Teste Sonderzeichen: ouml: \366, auml: \344,"
                                                   "uuml: \374, Ouml: \326, Auml: \304, Uuml: \334, szlig: \337" ) );
-        LCN_TEST( lcn_ostream_close( out ) );
+        LCN_TEST( lcn_index_output_close( out ) );
         apr_pool_destroy( pool );
     }
 
@@ -476,10 +476,10 @@ test_write_string(CuTest* tc)
         {
             apr_pool_t *os_pool;
             LCN_TEST( apr_pool_create( &os_pool, main_pool ) );
-            LCN_TEST( lcn_ram_ostream_create( &out, file, os_pool ) );
-            LCN_TEST( lcn_ostream_write_string( out, "Teste Sonderzeichen: ouml: \366, "
+            LCN_TEST( lcn_ram_index_output_create( &out, file, os_pool ) );
+            LCN_TEST( lcn_index_output_write_string( out, "Teste Sonderzeichen: ouml: \366, "
                                                       "auml: \344, uuml: \374, Ouml: \326, Auml: \304, Uuml: \334, szlig: \337" ) );
-            LCN_TEST( lcn_ostream_close( out ) );
+            LCN_TEST( lcn_index_output_close( out ) );
             apr_pool_destroy( os_pool );
         }
 

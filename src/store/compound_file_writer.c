@@ -2,7 +2,9 @@
 #include "directory.h"
 #include "compound_file_writer.h"
 #include "lcn_util.h"
-#include "ostream.h"
+#include "index_output.h"
+#include <sys/param.h>
+#include <string.h>
 #include "io_context.h"
 
 #define BUFFER_SIZE     ( 1024 )
@@ -14,13 +16,13 @@
 static apr_status_t
 lcn_compound_file_copy( lcn_compound_file_writer_t *cfw,
                         lcn_file_entry_t *entry,
-                        lcn_ostream_t *os,
+                        lcn_index_output_t *os,
                         char buffer[])
 {
     apr_status_t s = APR_SUCCESS;
     lcn_index_input_t *istream = NULL;
 
-    apr_off_t startPtr = lcn_ostream_get_file_pointer( os );
+    apr_off_t startPtr = lcn_index_output_get_file_pointer( os );
 
     do
     {
@@ -37,7 +39,7 @@ lcn_compound_file_copy( lcn_compound_file_writer_t *cfw,
         while( istream_length_remainder > 0) {
             unsigned int len = LCN_MIN(chunck, istream_length_remainder);
             LCNCE( lcn_index_input_read_bytes(istream, buffer, 0, &len ) );
-            LCNCE( lcn_ostream_write_bytes(os, buffer, len));
+            LCNCE( lcn_index_output_write_bytes(os, buffer, len));
             istream_length_remainder -= len;
         }
         LCNCE(s);
@@ -51,7 +53,7 @@ lcn_compound_file_copy( lcn_compound_file_writer_t *cfw,
         }
 
         // Verify that the output length diff is equal to original file
-        endPtr = lcn_ostream_get_file_pointer( os );
+        endPtr = lcn_index_output_get_file_pointer( os );
         diff = endPtr - startPtr;
 
         if ( diff != istream_length )
@@ -192,7 +194,7 @@ lcn_compound_file_writer_close( lcn_compound_file_writer_t *cfw )
 
     do
     {
-        lcn_ostream_t *os = NULL;
+        lcn_index_output_t *os = NULL;
 
         LCNCE( apr_pool_create( &child_pool, cfw->pool ));
 
@@ -200,7 +202,7 @@ lcn_compound_file_writer_close( lcn_compound_file_writer_t *cfw )
         LCNCE( lcn_directory_create_output( cfw->dir, &os, cfw->cf_name, child_pool ));
 
         // Write the number of entries
-        LCNCE( lcn_ostream_write_vint( os, entries_size ) );
+        LCNCE( lcn_index_output_write_vint( os, entries_size ) );
 
         /* Write the directory with all offsets at 0.
          * Remember the positions of directory entries so that we can
@@ -211,9 +213,9 @@ lcn_compound_file_writer_close( lcn_compound_file_writer_t *cfw )
             lcn_file_entry_t *entry;
 
             LCNPV( entry = lcn_list_get( cfw->entries, i ), LCN_ERR_NULL_PTR );
-            entry->directory_offset = lcn_ostream_get_file_pointer( os );
-            LCNCE( lcn_ostream_write_long( os, 0 ) ); //for now
-            LCNCE( lcn_ostream_write_string( os, entry->file ) );
+            entry->directory_offset = lcn_index_output_get_file_pointer( os );
+            LCNCE( lcn_index_output_write_long( os, 0 ) ); //for now
+            LCNCE( lcn_index_output_write_string( os, entry->file ) );
         }
         LCNCE ( s );
 
@@ -225,7 +227,7 @@ lcn_compound_file_writer_close( lcn_compound_file_writer_t *cfw )
             lcn_file_entry_t *entry;
 
             LCNPV ( entry = lcn_list_get( cfw->entries, i ), LCN_ERR_NULL_PTR );
-            entry->data_offset = lcn_ostream_get_file_pointer( os );
+            entry->data_offset = lcn_index_output_get_file_pointer( os );
             LCNCE(lcn_compound_file_copy( cfw, entry, os, buffer ));
         }
         LCNCE ( s );
@@ -236,14 +238,14 @@ lcn_compound_file_writer_close( lcn_compound_file_writer_t *cfw )
             lcn_file_entry_t *entry;
 
             LCNPV ( entry = lcn_list_get( cfw->entries, i ), LCN_ERR_NULL_PTR );
-            LCNCE ( lcn_ostream_seek( os, entry->directory_offset ) );
-            LCNCE ( lcn_ostream_write_long( os, entry->data_offset ) );
+            LCNCE ( lcn_index_output_seek( os, entry->directory_offset ) );
+            LCNCE ( lcn_index_output_write_long( os, entry->data_offset ) );
         }
         LCNCE ( s )
 
         if ( os != NULL )
         {
-            LCNCE ( lcn_ostream_close(os) );
+            LCNCE ( lcn_index_output_close(os) );
         }
     }
     while(0);

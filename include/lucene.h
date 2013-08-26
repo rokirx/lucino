@@ -119,6 +119,10 @@ typedef struct file_entry lcn_file_entry_t;
 #define LCN_MIN(a,b) (((a)<(b))?(a):(b))
 #define LCN_MAX(a,b) (((a)>(b))?(a):(b))
 
+/**
+ * The maximum radix available for conversion to and from strings.
+ */
+#define CHARACTER_MAX_RADIX (36);
 
 #ifdef _LCNTRACE
 
@@ -323,7 +327,7 @@ typedef struct lcn_field_info_t lcn_field_info_t;
 typedef struct lcn_field_t lcn_field_t;
 typedef struct lcn_index_input_t lcn_index_input_t;
 typedef struct lcn_list_t lcn_list_t;
-typedef struct lcn_ostream_t lcn_ostream_t;
+typedef struct lcn_index_output_t lcn_index_output_t;
 typedef struct lcn_ram_file_t lcn_ram_file_t;
 typedef struct lcn_similarity_t lcn_similarity_t;
 typedef struct lcn_term_enum_t lcn_term_enum_t;
@@ -908,7 +912,7 @@ lcn_directory_open_input( lcn_directory_t *directory,
  */
 apr_status_t
 lcn_directory_create_output( lcn_directory_t *directory,
-                             lcn_ostream_t **new_os,
+                             lcn_index_output_t **new_os,
                              const char *file_name,
                              apr_pool_t *pool );
 

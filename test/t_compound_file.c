@@ -24,17 +24,17 @@ create_sequence_file( lcn_directory_t *dir,
 
     do
     {
-        lcn_ostream_t *os;
+        lcn_index_output_t *os;
 
         LCNCE( lcn_directory_create_output( dir, &os, file_name, pool ));
 
         for( i = 0; i <= size; i++ )
         {
-            lcn_ostream_write_int( os, start);
+            lcn_index_output_write_int( os, start);
             start++;
         }
 
-        lcn_ostream_close( os );
+        lcn_index_output_close( os );
     }
     while(0);
 
@@ -119,7 +119,7 @@ create_random_file ( CuTest *tc,
 {
     apr_status_t s = APR_SUCCESS;
     int i = 0;
-    lcn_ostream_t* os;
+    lcn_index_output_t* os;
 
     srand( ( unsigned int ) time(NULL) );
 
@@ -134,10 +134,10 @@ create_random_file ( CuTest *tc,
              */
             unsigned int data = ( ( unsigned int ) rand() ) + 1;
             CuAssertTrue( tc, data > 0 );
-            lcn_ostream_write_long( os, data );
+            lcn_index_output_write_long( os, data );
         }
 
-        lcn_ostream_close ( os );
+        lcn_index_output_close ( os );
     }
     while(0);
 

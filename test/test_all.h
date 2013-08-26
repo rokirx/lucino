@@ -98,6 +98,9 @@ void teardown_test_dir(void);
 
 CuSuite* make_50_document_writer_suite( void );
 CuSuite* make_50_index_writer_suite( void );
+CuSuite* make_50_crc32_suite( void );
+CuSuite* make_50_checksum_index_output_suite( void );
+CuSuite* make_50_segment_infos_suite( void );
 CuSuite* make_array_suite( void );
 CuSuite* make_atom_suite(void);
 CuSuite* make_bitvector_suite( void );

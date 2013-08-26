@@ -112,7 +112,7 @@ lcn_fs_field_open_input( lcn_directory_fs_field_t *field,
 
         if ( create_file && (! file_exists) )
         {
-            lcn_ostream_t *os;
+            lcn_index_output_t *os;
 
             LCNCE( lcn_directory_create_output( field->directory,
                                                 &os,
@@ -120,7 +120,7 @@ lcn_fs_field_open_input( lcn_directory_fs_field_t *field,
                                                 cp ));
 
             LCNCE( lcn_fs_field_write_info( field, os ));
-            LCNCE( lcn_ostream_close( os ));
+            LCNCE( lcn_index_output_close( os ));
         }
 
         LCNCE( lcn_directory_open_input( field->directory,
@@ -472,7 +472,7 @@ lcn_fs_field_update_fields_def( lcn_directory_fs_field_t *field,
                                 apr_pool_t *pool )
 {
     apr_status_t s = APR_SUCCESS;
-    lcn_ostream_t *info_os = NULL;
+    lcn_index_output_t *info_os = NULL;
 
     do
     {
@@ -491,7 +491,7 @@ lcn_fs_field_update_fields_def( lcn_directory_fs_field_t *field,
                                             LCN_INDEX_WRITER_FIXED_SIZE_FIELD_DEF,
                                             pool ));
 
-        LCNCE( lcn_ostream_write_int( info_os, apr_hash_count( hash )));
+        LCNCE( lcn_index_output_write_int( info_os, apr_hash_count( hash )));
 	LCNCE( lcn_list_create( &sorted_names, 10, pool ));
 
         for( hi = apr_hash_first( pool, hash ); hi; hi = apr_hash_next( hi ))
@@ -518,7 +518,7 @@ lcn_fs_field_update_fields_def( lcn_directory_fs_field_t *field,
 
     if ( NULL != info_os )
     {
-        apr_status_t save_s = lcn_ostream_close( info_os );
+        apr_status_t save_s = lcn_index_output_close( info_os );
         s = s ? s : save_s;
     }
 
@@ -977,24 +977,24 @@ lcn_fs_field_default_val( const lcn_fs_field_t *field )
 
 apr_status_t
 lcn_fs_field_write_info( lcn_directory_fs_field_t *field,
-                         lcn_ostream_t *ostream )
+                         lcn_index_output_t *ostream )
 {
     apr_status_t s;
 
-    LCNCR( lcn_ostream_write_int( ostream, 1 )); /* version number */
-    LCNCR( lcn_ostream_write_string( ostream, field->parent.name ));
-    LCNCR( lcn_ostream_write_int( ostream, field->parent.docs_count ));
-    LCNCR( lcn_ostream_write_int( ostream, field->parent.data_size ));
-    LCNCR( lcn_ostream_write_bytes( ostream, field->parent.default_value, BITS2BYTE( field->parent.data_size )));
+    LCNCR( lcn_index_output_write_int( ostream, 1 )); /* version number */
+    LCNCR( lcn_index_output_write_string( ostream, field->parent.name ));
+    LCNCR( lcn_index_output_write_int( ostream, field->parent.docs_count ));
+    LCNCR( lcn_index_output_write_int( ostream, field->parent.data_size ));
+    LCNCR( lcn_index_output_write_bytes( ostream, field->parent.default_value, BITS2BYTE( field->parent.data_size )));
 
     return s;
 }
 
 apr_status_t
 lcn_fs_field_write_content( lcn_directory_fs_field_t *field,
-                            lcn_ostream_t *ostream )
+                            lcn_index_output_t *ostream )
 {
-    return lcn_ostream_write_bytes( ostream,
+    return lcn_index_output_write_bytes( ostream,
                                     NULL == field->buf ?
                                     field->parent.default_value : field->buf,
                                     BITS2BYTE( field->parent.docs_count * field->parent.data_size ));
@@ -1089,7 +1089,7 @@ lcn_directory_fs_field_commit( lcn_fs_field_t *base_field,
     do
     {
         char *file_name;
-        lcn_ostream_t *os;
+        lcn_index_output_t *os;
 
         LCNPV( file_name = apr_pstrcat( pool, field->parent.name, ".fsf", NULL ), APR_ENOMEM );
         LCNPV( field->directory, LCN_ERR_INVALID_ARGUMENT );
@@ -1101,7 +1101,7 @@ lcn_directory_fs_field_commit( lcn_fs_field_t *base_field,
 
         LCNCE( lcn_fs_field_write_info( field, os ));
         LCNCE( lcn_fs_field_write_content( field, os ));
-        LCNCE( lcn_ostream_close( os ));
+        LCNCE( lcn_index_output_close( os ));
         LCNCE( lcn_fs_field_update_fields_def( field, field->directory, pool ));
 
         field->parent.is_modified = LCN_FALSE;

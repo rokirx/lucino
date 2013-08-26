@@ -168,7 +168,7 @@ static char *term_list[1158][2] = {
  { "text", "germanstemmer" }, { "text", "getanalyzer" }, { "text", "getdirectory" }, { "text", "getfieldnames" },
  { "text", "getfields" }, { "text", "getproperty" }, { "text", "getting" }, { "text", "getvalues" },
  { "text", "global" }, { "text", "gluzberg" }, { "text", "goller" }, { "text", "good" },
- { "text", "grammar" }, { "text", "gschwarz" }, { "text", "had" }, { "text", "halácsy" },
+ { "text", "grammar" }, { "text", "gschwarz" }, { "text", "had" }, { "text", "hal\341csy" },
  { "text", "handling" }, { "text", "hang" }, { "text", "harwood" }, { "text", "has" },
  { "text", "hatcher" }, { "text", "have" }, { "text", "having" }, { "text", "hayes" },
  { "text", "hettesheimer" }, { "text", "hfs" }, { "text", "highlighting" }, { "text", "hit" },
@@ -232,7 +232,7 @@ static char *term_list[1158][2] = {
  { "text", "produces" }, { "text", "programmatically" }, { "text", "programming" }, { "text", "properly" },
  { "text", "properties" }, { "text", "property" }, { "text", "protected" }, { "text", "provided" },
  { "text", "provides" }, { "text", "providing" }, { "text", "public" }, { "text", "purpose" },
- { "text", "purposes" }, { "text", "péter" }, { "text", "q" }, { "text", "queries" },
+ { "text", "purposes" }, { "text", "pï¿½ter" }, { "text", "q" }, { "text", "queries" },
  { "text", "query" }, { "text", "queryfilter" }, { "text", "queryparser" }, { "text", "race" },
  { "text", "raised" }, { "text", "ralf" }, { "text", "ramdirectory" }, { "text", "ramlcn" },
  { "text", "range" }, { "text", "rangequery" }, { "text", "rasik" }, { "text", "rc" },
@@ -848,7 +848,7 @@ CuSuite *make_index_reader_suite (void)
     SUITE_ADD_TEST( s, test_term_enum_from );
 
     /*
-     * Test für die compound file Komponenten
+     * Test fï¿½r die compound file Komponenten
      */
     SUITE_ADD_TEST( s, make_csf_index );
     SUITE_ADD_TEST( s, setup_compound_file );

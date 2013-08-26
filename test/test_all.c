@@ -44,11 +44,22 @@ int main (void)
 
     setbuf(stdout, 0);
 
-    //CuSuiteAddSuite(sr, make_50_document_writer_suite() );
-
-#if 1
-    CuSuiteAddSuite(sr, make_50_document_writer_suite() );
     CuSuiteAddSuite(sr, make_50_index_writer_suite());
+    CuSuiteAddSuite(sr, make_50_checksum_index_output_suite());
+    CuSuiteAddSuite(sr, make_ostream_suite());
+    CuSuiteAddSuite(sr, make_ram_file_suite() ); 
+   
+#if 0
+    CuSuiteAddSuite(sr, make_50_index_writer_suite());
+    CuSuiteAddSuite(sr, make_50_crc32_suite());
+    CuSuiteAddSuite(sr, make_ostream_suite());
+    CuSuiteAddSuite(sr, make_50_checksum_index_output_suite());
+#endif
+#if 0
+    CuSuiteAddSuite(sr, make_50_document_writer_suite());
+    CuSuiteAddSuite(sr, make_50_index_writer_suite());
+    CuSuiteAddSuite(sr, make_50_crc32_suite());
+    CuSuiteAddSuite(sr, make_50_checksum_index_output_suite());
     CuSuiteAddSuite(sr, make_array_suite() );
     CuSuiteAddSuite(sr, make_atom_suite());
     CuSuiteAddSuite(sr, make_bitvector_suite());

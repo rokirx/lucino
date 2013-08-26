@@ -77,6 +77,8 @@ struct lcn_index_writer_t {
 
     unsigned int pending_commit_change_count;
 
+    unsigned int last_commit_change_count;
+
     lcn_list_t *files_to_commit;
 };
 

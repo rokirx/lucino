@@ -89,7 +89,7 @@ lcn_field_infos_add_field_info( lcn_field_infos_t *field_infos,
 
 apr_status_t
 lcn_field_infos_write_to_ostream( lcn_field_infos_t *field_infos,
-                                  lcn_ostream_t *ostream );
+                                  lcn_index_output_t *ostream );
 
 apr_status_t
 lcn_field_infos_read( lcn_field_infos_t *field_infos,

@@ -322,7 +322,7 @@ lcn_directory_fs_field_read( lcn_directory_fs_field_t **field,
  */
 apr_status_t
 lcn_fs_field_write_info( lcn_directory_fs_field_t *field,
-                         lcn_ostream_t *ostream );
+                         lcn_index_output_t *ostream );
 
 /**
  * @brief Writes field contents to an output stream
@@ -344,7 +344,7 @@ lcn_fs_field_write_info( lcn_directory_fs_field_t *field,
  */
 apr_status_t
 lcn_fs_field_write_content( lcn_directory_fs_field_t *field,
-                            lcn_ostream_t *ostream );
+                            lcn_index_output_t *ostream );
 
 /**
  * @brief  Creates a new fixed size field

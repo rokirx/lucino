@@ -19,6 +19,7 @@ ADD_LIBRARY( lucino
              ../src/analysis/token
              ../src/analysis/whitespace_analyzer
              ../src/analysis/whitespace_tokenizer
+             ../src/codecs/codec_util
              ../src/document/document
              ../src/document/document_dump_reader
              ../src/document/field
@@ -91,12 +92,15 @@ ADD_LIBRARY( lucino
              ../src/search/weight
              ../src/store/directory
              ../src/store/index_input
-             ../src/store/ostream
+             ../src/store/index_output
              ../src/store/compound_file_reader
              ../src/store/compound_file_writer
              ../src/store/compound_file_util
              ../src/store/ram_directory
              ../src/store/ram_input_stream
+             ../src/store/checksum_index_output
+             ../src/store/fs_index_output
+             ../src/store/ram_index_output
              ../src/util/array
              ../src/util/atom
              ../src/util/bitvector
@@ -107,6 +111,7 @@ ADD_LIBRARY( lucino
              ../src/util/smallfloat
              ../src/util/string_buffer
              ../src/util/to_string_utils
+             ../src/util/crc32
              ../src/util/util )
 
 INCLUDE_DIRECTORIES( ${APR_INCLUDE}
@@ -121,7 +126,7 @@ INCLUDE_DIRECTORIES( ${APR_INCLUDE}
                      ../examples/
                      ../src/query_parser )
 
-#ADD_DEFINITIONS( -D_LCNTRACE )
+ADD_DEFINITIONS( -D_LCNTRACE )
 
 IF( NOT WIN32 )
     ADD_EXECUTABLE(

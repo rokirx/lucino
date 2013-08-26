@@ -99,3 +99,18 @@ lcn_segment_info_to_string( char** str,
 
     return s;
 }
+
+/**
+ * TODO: implementation missing. 
+ */
+
+apr_status_t
+lcn_segment_info_files( lcn_segment_info_t *segment_info,
+                        apr_pool_t *pool,
+                        apr_hash_t **files )
+{
+
+    *files = apr_hash_make( pool );
+    
+    return APR_SUCCESS;
+}

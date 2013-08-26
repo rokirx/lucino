@@ -5,7 +5,7 @@ static void
 test_read_write(CuTest* tc)
 {
     apr_pool_t *p;
-    lcn_ostream_t *os;
+    lcn_index_output_t *os;
     lcn_index_input_t *is;
     lcn_ram_file_t *file;
     unsigned char i;
@@ -13,14 +13,14 @@ test_read_write(CuTest* tc)
 
     LCN_TEST( apr_pool_create( &p, main_pool ) );
     LCN_TEST( lcn_ram_file_create( &file, p ) );
-    LCN_TEST( lcn_ram_ostream_create( &os, file, p ) );
+    LCN_TEST( lcn_ram_index_output_create( &os, file, p ) );
 
     for( i = 0; i < 100; i++ )
     {
-        LCN_TEST( lcn_ostream_write_byte( os, i ));
+        LCN_TEST( lcn_index_output_write_byte( os, i ));
     }
 
-    LCN_TEST( lcn_ostream_close( os ) );
+    LCN_TEST( lcn_index_output_close( os ) );
 
     LCN_TEST( lcn_ram_input_stream_create( &is, NULL, file, p ) );
 

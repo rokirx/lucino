@@ -70,7 +70,7 @@ lcn_cfs_directory_file_exists( const lcn_directory_t *directory,
  */
 static apr_status_t
 lcn_cfs_directory_create_file( lcn_directory_t *directory,
-                               lcn_ostream_t **os,
+                               lcn_index_output_t **os,
                                const char *file_name,
                                apr_pool_t *pool );
 
@@ -219,7 +219,7 @@ lcn_directory_remove( lcn_directory_t *directory )
 
 apr_status_t
 lcn_directory_create_output ( lcn_directory_t *directory,
-                              lcn_ostream_t **os,
+                              lcn_index_output_t **os,
                               const char *file_name,
                               apr_pool_t *pool )
 {
@@ -231,14 +231,14 @@ lcn_directory_create_output ( lcn_directory_t *directory,
 static apr_status_t
 lcn_directory_open_ostream ( const char *path,
                              const char *name,
-                             lcn_ostream_t **os,
+                             lcn_index_output_t **os,
                              apr_pool_t *pool )
 {
     apr_status_t s;
     char *fpath;
 
     LCNCR( apr_filepath_merge( &fpath, path, name, 0, pool ));
-    LCNCR( lcn_fs_ostream_create( os, fpath, pool ));
+    LCNCR( lcn_fs_index_output_create( os, fpath, pool ));
 
     return s;
 }
@@ -308,7 +308,7 @@ lcn_cfs_directory_open_file( lcn_directory_t *directory,
 
 static apr_status_t
 lcn_cfs_directory_create_file( lcn_directory_t *directory,
-                               lcn_ostream_t **os,
+                               lcn_index_output_t **os,
                                const char *file_name,
                                apr_pool_t *pool )
 {
@@ -477,7 +477,7 @@ lcn_directory_open_segment_file ( lcn_directory_t *directory,
 
 apr_status_t
 lcn_directory_create_segment_file ( lcn_directory_t *directory,
-                                    lcn_ostream_t **ostream,
+                                    lcn_index_output_t **ostream,
                                     const char *seg_name,
                                     const char *ext,
                                     apr_pool_t *pool )
@@ -594,12 +594,12 @@ lcn_fs_directory_list( const lcn_directory_t *directory,
 
 static apr_status_t
 lcn_fs_directory_create_file ( lcn_directory_t *directory,
-                               lcn_ostream_t **os,
+                               lcn_index_output_t **os,
                                const char *file_name,
                                apr_pool_t *pool )
 {
     apr_status_t s;
-    LCNCR( lcn_directory_open_ostream ( directory->name, file_name, os, pool ));
+    LCNCR( lcn_directory_open_ostream ( directory->name, file_name, os, pool ) );
     return s;
 }
 

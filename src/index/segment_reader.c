@@ -315,7 +315,6 @@ lcn_segment_reader_initialize( lcn_segment_reader_t *segment_reader,
                                apr_pool_t* pool)
 {
     apr_status_t s;
-    apr_pool_t* child_pool = NULL;
 
     do
     {
@@ -323,10 +322,8 @@ lcn_segment_reader_initialize( lcn_segment_reader_t *segment_reader,
         lcn_bool_t cf_segment_exists = LCN_FALSE;
         char* cf_segment_file_name= NULL;
 
-        LCNCE( apr_pool_create( &child_pool, pool ));
-
         segment_reader->segment = segment_info->name;
-        LCNPV( cf_segment_file_name = apr_pstrcat( child_pool,
+        LCNPV( cf_segment_file_name = apr_pstrcat( pool,
                                                    segment_reader->segment,
                                                    ".cfs", NULL ), APR_ENOMEM );
 
@@ -340,7 +337,7 @@ lcn_segment_reader_initialize( lcn_segment_reader_t *segment_reader,
             LCNCE(lcn_cfs_directory_create( &cf_dir,
                                             segment_reader->parent.directory,
                                             cf_segment_file_name,
-                                            child_pool) );
+                                            pool) );
 
             segment_reader->parent.directory = cf_dir;
         }

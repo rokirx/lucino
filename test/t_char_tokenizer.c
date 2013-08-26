@@ -167,7 +167,7 @@ test_whitespace_tokenizer( CuTest* tc )
                                                         pool ) );
     LCN_TEST( lcn_analyzer_token_stream( analyzer,
                                          &ts,
-                                         " eins zwei drei vier fünf sechs"
+                                         " eins zwei drei vier f\374nf sechs"
                                          " abc-123",
                                          pool ) );
 
@@ -179,7 +179,7 @@ test_whitespace_tokenizer( CuTest* tc )
     CHECK_OFFSETS( 11, 15 );
     NEXT_TOKEN( "vier" );
     CHECK_OFFSETS( 16, 20 );
-    NEXT_TOKEN( "fünf" );
+    NEXT_TOKEN( "f\374nf" );
     CHECK_OFFSETS( 21, 25 );
     NEXT_TOKEN( "sechs" );
     CHECK_OFFSETS( 26, 31 );

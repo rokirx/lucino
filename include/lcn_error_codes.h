@@ -156,7 +156,7 @@ LCN_ERRDEF( LCN_ERR_EMPTY_QUERY,
 
 LCN_ERRDEF( LCN_ERR_SCAN_ENUM_NO_MATCH,
             40,
-            "lcn_term_infos_reader_term_enum positions enum not at an exact match")
+            "lcn_term_infos_reader_term_enum positions enum not at an exact match" )
 
 LCN_ERRDEF( LCN_ERR_DOCUMENT_DUMP_FMT,
             41,
@@ -164,15 +164,15 @@ LCN_ERRDEF( LCN_ERR_DOCUMENT_DUMP_FMT,
 
 LCN_ERRDEF( LCN_ERR_DOCUMENT_DUMP_NO_SUCH_ANALYZER,
             42,
-            "An analyzer specified in a document_dump was not provided")
+            "An analyzer specified in a document_dump was not provided" )
 
 LCN_ERRDEF( LCN_ERR_INDEX_WRITER_ADDING_EMTY_DOCUMENT,
             43,
-            "Attemt to add a document without fields to an index")
+            "Attemt to add a document without fields to an index" )
 
 LCN_ERRDEF( LCN_ERR_IO,
             44,
-            "An error while writing to a stream via printf-funcions occured")
+            "An error while writing to a stream via printf-funcions occured" )
 
 LCN_ERRDEF( LCN_ERR_TERM_INFOS_READER_NO_TIS_FILE,
             45, "Index does not contain any indexed fields and therefore no .tis-file" )
@@ -181,13 +181,13 @@ LCN_ERRDEF( LCN_ERR_INVALID_FILE_VERSION_NUMBER,
             46, "Index file has a not supported version number" )
 
 LCN_ERRDEF( LCN_ERR_QUERY_PARSER_SYNTAX_ERROR,
-            47, "Syntax error in the lucene query")
+            47, "Syntax error in the lucene query" )
 
 LCN_ERRDEF( LCN_ERR_FS_FIELD_INCONSISTENT_OFFSET,
-            48, "Inconsistent offsets in multi fs field")
+            48, "Inconsistent offsets in multi fs field" )
 
 LCN_ERRDEF( LCN_ERR_GROUP_INDEX_OUT_OF_RANGE,
-            49, "Group index in hits points to a group member not cached in the hit group")
+            49, "Group index in hits points to a group member not cached in the hit group" )
 
 LCN_ERRDEF( LCN_ERR_SETTING_FROZEN_FIELD_TYPE,
             50, "Trying to set a value on a frozen field type" )
@@ -215,6 +215,15 @@ LCN_ERRDEF( LCN_ERR_INDEX_NOT_FOUND,
 
 LCN_ERRDEF( LCN_PRIORITY_QUEUE_MAX_SIZE_EXCEEDED,
             58, "Priority queue max size exceeded." )
+
+LCN_ERRDEF( LCN_ERR_PREPARE_COMMIT_WAS_NOT_CALLED,
+            59, "prepareCommit was not called" )
+
+LCN_ERRDEF( LCN_ERR_PREPARE_COMMIT_WAS_ALREADY_CALLED,
+            60, "prepareCommit was already calles" )
+        
+LCN_ERRDEF( LCN_ERR_CODE_MUSST_BE_SIMPLE_ASCII, 
+          61, "codec must be simple ASCII, less than 128 characters in length" )
 
 LCN_ERROR_END
 

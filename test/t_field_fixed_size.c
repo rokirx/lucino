@@ -1503,11 +1503,11 @@ test_fs_field_size_char( CuTest* tc )
     CHECK_CHAR_VAL( val, v2 );
 
     {
-        lcn_ostream_t *os;
-        LCN_TEST( lcn_fs_ostream_create( &os, "fsfile", pool ));
+        lcn_index_output_t *os;
+        LCN_TEST( lcn_fs_index_output_create( &os, "fsfile", pool ));
         LCN_TEST( lcn_fs_field_write_info( (lcn_directory_fs_field_t*) field, os ));
         LCN_TEST( lcn_fs_field_write_content( (lcn_directory_fs_field_t*) field, os ));
-        LCN_TEST( lcn_ostream_close( os ));
+        LCN_TEST( lcn_index_output_close( os ));
     }
 
     {

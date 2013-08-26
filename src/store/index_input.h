@@ -2,7 +2,7 @@
 #define INDEX_INPUT_H
 
 #include "lucene.h"
-#include "ostream.h"
+#include "index_output.h"
 
 #define STREAM_BUFFER_SIZE (1096)
 #ifdef __cplusplus

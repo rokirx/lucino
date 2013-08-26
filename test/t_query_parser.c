@@ -119,7 +119,7 @@ test_parser_errors(CuTest* tc)
     check_error( tc, ":y", p );
     check_error( tc, "?245", p );
     check_error( tc, "abcd", p );
-    check_error( tc, "term:á", p );
+    check_error( tc, "term:\341", p );
 
     apr_pool_destroy( p );
 }

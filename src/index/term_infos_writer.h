@@ -12,7 +12,7 @@ typedef struct _lcn_term_infos_writer_t {
     /**
      * The output is written to this output stream;
      */
-    lcn_ostream_t *output;
+    lcn_index_output_t *output;
 
     /**
      * Last written term. For efficient memory usage

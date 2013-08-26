@@ -95,7 +95,7 @@ struct lcn_directory_t {
 
     apr_status_t
     (*_create_file) ( lcn_directory_t *directory,
-                      lcn_ostream_t **new_os,
+                      lcn_index_output_t **new_os,
                       const char *file_name,
                       apr_pool_t *pool );
 
@@ -140,7 +140,7 @@ struct lcn_directory_t {
  */
 apr_status_t
 lcn_directory_create_segment_file ( lcn_directory_t *directory,
-                                    lcn_ostream_t **new_out,
+                                    lcn_index_output_t **new_out,
                                     const char *seg_name,
                                     const char *ext,
                                     apr_pool_t *pool );
