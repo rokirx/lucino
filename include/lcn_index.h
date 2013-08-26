@@ -844,6 +844,10 @@ lcn_directory_reader_index_exists( lcn_directory_t *directory,
                                    apr_pool_t *pool );
 
 
+apr_status_t
+lcn_doc_helper_setup_doc( lcn_document_t *doc,
+                          apr_pool_t *pool );
+
 
 END_C_DECLS
 
