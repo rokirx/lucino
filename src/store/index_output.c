@@ -18,28 +18,22 @@ lcn_index_output_get_file_pointer_impl( lcn_index_output_t *io )
 apr_status_t
 lcn_index_output_close( lcn_index_output_t *io )
 {
-    apr_status_t s = APR_SUCCESS;
-    LCNCR( io->_close( io ) );
-    return s;
+    return io->_close( io );
 }
 
 apr_status_t
 lcn_index_output_close_impl( lcn_index_output_t *ostream )
 {
     apr_status_t s = APR_SUCCESS;
-
     LCNCR( lcn_index_output_flush( ostream ) );
     ostream->isOpen = FALSE;
-
     return s;
 }
 
 apr_status_t
 lcn_index_output_seek( lcn_index_output_t *ostream, apr_off_t pos )
 {
-    apr_status_t s;
-    LCNCR( ostream->_seek( ostream, pos ) );
-    return s;
+    return ostream->_seek( ostream, pos );
 }
 
 
@@ -48,15 +42,13 @@ lcn_index_output_write_bytes( lcn_index_output_t *io,
                               const char *b,
                               unsigned int length )
 {
-    apr_status_t s = APR_SUCCESS;
-    LCNCR( io->_write_bytes( io, b, length ) );
-    return s;
+    return io->_write_bytes( io, b, length );
 }
 
 apr_status_t
 lcn_index_output_write_bytes_impl( lcn_index_output_t *io,
-                              const char *b,
-                              unsigned int length )
+                                   const char *b,
+                                   unsigned int length )
 {
     apr_status_t s = APR_SUCCESS;
     unsigned int i;
@@ -85,11 +77,7 @@ lcn_index_output_write_bytes_impl( lcn_index_output_t *io,
 apr_status_t
 lcn_index_output_write_byte ( lcn_index_output_t *os, unsigned char b)
 {
-    apr_status_t s = APR_SUCCESS;
-    
-    LCNCR( os->_write_byte( os, b ) );
-    
-    return s;
+    return os->_write_byte( os, b );
 }
 
 /**
@@ -158,8 +146,8 @@ lcn_index_output_write_bitvector( lcn_index_output_t *os, lcn_bitvector_t *bitve
     }
 
     LCNCR( lcn_index_output_write_bytes( os,
-                                    lcn_bitvector_bits( bitvector ),
-                                    (size_t) ((lcn_bitvector_size( bitvector )>>3) + 1) ) );
+                                         lcn_bitvector_bits( bitvector ),
+                                         (size_t) ((lcn_bitvector_size( bitvector )>>3) + 1) ) );
 
     return s;
 }
@@ -306,8 +294,7 @@ lcn_index_output_init_struct ( lcn_index_output_t *new_os, apr_pool_t *pool )
 
     do
     {
-        LCNPV( new_os->buffer = (char*) apr_palloc( pool, sizeof(char) * LCN_STREAM_BUFFER_SIZE),
-               APR_ENOMEM );
+        LCNPV( new_os->buffer = (char*) apr_palloc( pool, sizeof(char) * LCN_STREAM_BUFFER_SIZE), APR_ENOMEM );
 
         new_os->pool = pool;
         new_os->buffer_length = LCN_STREAM_BUFFER_SIZE;
