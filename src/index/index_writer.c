@@ -926,6 +926,9 @@ lcn_index_writer_create_impl_neu( lcn_index_writer_t **index_writer,
 
         LCNCE( apr_pool_create( &cp, pool ));
         LCNPV( *index_writer = lcn_object_create( lcn_index_writer_t, pool ), APR_ENOMEM );
+
+        LCNCE( apr_pool_create( &( ( *index_writer )->seg_name_subpool ), pool ));
+
         (*index_writer)->directory = directory;
         (*index_writer)->info_stream = stderr;
         (*index_writer)->pool = pool;
@@ -1016,7 +1019,7 @@ lcn_index_writer_create_impl_neu( lcn_index_writer_t **index_writer,
          *                          OLD CODE SECTION
          * *********************************************************************
          *
-         * TODO: replace with new Lucene funcktions.
+         * TODO: replace with new Lucene functions.
          */
 
         LCNCE( apr_pool_create( &( ( *index_writer )->ram_dir_subpool ), pool ));
@@ -1045,12 +1048,7 @@ lcn_index_writer_create_by_config( lcn_index_writer_t **index_writer,
                                    apr_pool_t *pool )
 {
     apr_status_t s = APR_SUCCESS;
-
-    LCNCR( lcn_index_writer_create_impl_neu( index_writer,
-                                             directory,
-                                             iwc,
-                                             pool ));
-
+    LCNCR( lcn_index_writer_create_impl_neu( index_writer, directory, iwc, pool ));
     return s;
 }
 
@@ -1061,9 +1059,7 @@ lcn_index_writer_create_by_directory( lcn_index_writer_t **index_writer,
                                       apr_pool_t *pool )
 {
     apr_status_t s;
-
     LCNCR( lcn_index_writer_create_impl( index_writer, directory, create, LCN_FALSE, pool ));
-
     return s;
 }
 

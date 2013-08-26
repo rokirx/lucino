@@ -74,12 +74,10 @@ lcn_document_writer_create( lcn_document_writer_t **document_writer,
 
     do
     {
-        LCNPV( *document_writer = (lcn_document_writer_t*) apr_pcalloc( pool, sizeof(lcn_document_writer_t)),
-               APR_ENOMEM );
+        LCNPV( *document_writer = (lcn_document_writer_t*) apr_pcalloc( pool, sizeof(lcn_document_writer_t)), APR_ENOMEM );
 
         LCNCE( apr_pool_create( &((*document_writer)->posting_table_pool), pool ) );
-        LCNPV( (*document_writer)->posting_table = apr_hash_make((*document_writer)->posting_table_pool ),
-               APR_ENOMEM );
+        LCNPV( (*document_writer)->posting_table = apr_hash_make((*document_writer)->posting_table_pool ), APR_ENOMEM );
 
         LCNCE( lcn_term_create( &((*document_writer)->term), "", "", LCN_TERM_NO_TEXT_COPY, pool ) );
 

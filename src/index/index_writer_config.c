@@ -2,11 +2,9 @@
 #include "index_writer_config.h"
 
 struct _lcn_index_writer_config_t {
-    
-    unsigned int open_mode;
-    
-    unsigned int default_max_buffered_docs;
 
+    unsigned int open_mode;
+    unsigned int default_max_buffered_docs;
 };
 
 apr_status_t

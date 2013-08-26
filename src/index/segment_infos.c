@@ -506,10 +506,7 @@ find_segments_file( lcn_directory_t *directory,
 
         /* more simplification's going on, fix it eventually */
 
-        *segments_file = lcn_index_file_names_file_name_from_generation( LCN_INDEX_FILE_NAMES_SEGMENTS,
-                                                                         "",
-                                                                         gen,
-                                                                         pool );
+        *segments_file = lcn_index_file_names_file_name_from_generation( LCN_INDEX_FILE_NAMES_SEGMENTS, "", gen, pool );
 
         flog( stderr, "segments_file:  %s\n", *segments_file );
 
