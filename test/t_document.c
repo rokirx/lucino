@@ -3,7 +3,7 @@
 #include "lcn_index.h"
 
 const char* dump =                                                      \
-"\t\n \nlcn_document fields = 3\n"                                      \
+"\t\n \nlcn_document fields = 4\n"                                      \
 "lcn_field=\"title with \\\"trouble\\\"\"\n"                            \
 "properties=INDEXED TOKENIZED STORED OMIT_NORMS\n"                      \
 "lcn_analyzer=lcn_simple_analyzer\n"                                    \
@@ -16,6 +16,10 @@ const char* dump =                                                      \
 "properties=STORED BINARY\n"                                            \
 "lcn_analyzer=NONE\n"                                                   \
 "char bin_value[10]={ 1, 20, 255, 127, 27, 6, 7, 8, 9, 0 }\n\n"         \
+"lcn_field=\"unicodefield\"\n"						\
+"properties=STORED INDEXED TOKENIZED\n"						\
+"lcn_analyzer=lcn_simple_analyzer\n"					\
+"value=\"schöne grüße передача\"\n\n"							\
 "\t\n \nlcn_document fields = 2\n"                                      \
 "lcn_field=\"text\"\n"                                                  \
 "properties=INDEXED TOKENIZED\n"                                        \
@@ -55,7 +59,7 @@ test_create_from_dump( CuTest* tc )
     LCN_TEST( lcn_document_dump_iterator_create( &it, dump, analyzers, pool ) );
     LCN_TEST( lcn_document_dump_iterator_next( it, &doc, pool ) );
 
-    CuAssertIntEquals( tc, 3, lcn_list_size( lcn_document_get_fields( doc ) ) );
+    CuAssertIntEquals( tc, 4, lcn_list_size( lcn_document_get_fields( doc ) ) );
 
     field = lcn_list_get( lcn_document_get_fields( doc ), 0 );
 
@@ -67,6 +71,10 @@ test_create_from_dump( CuTest* tc )
     CuAssertStrEquals( tc, "text", lcn_field_name( field ) );
     CuAssertStrEquals( tc, "open", lcn_field_value( field ) );
 
+    field = lcn_list_get( lcn_document_get_fields( doc ), 3 );
+    CuAssertStrEquals( tc, "unicodefield", lcn_field_name( field ) );
+    CuAssertStrEquals( tc, "schöne grüße передача", lcn_field_value( field ) );
+
     LCN_TEST( lcn_document_dump_iterator_next( it, &doc, pool ) );
 
     field = lcn_list_get( lcn_document_get_fields(
@@ -76,6 +84,8 @@ test_create_from_dump( CuTest* tc )
 
     field = lcn_list_get( lcn_document_get_fields( doc ), 1 );
     CuAssertStrEquals( tc, "data", lcn_field_name( field ) );
+
+
 
     LCN_TEST_STATUS( lcn_document_dump_iterator_next( it, &doc, pool ), LCN_ERR_ITERATOR_NO_NEXT );
 
